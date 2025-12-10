@@ -8,21 +8,15 @@ const surveySchema = z.object({
   waitlistId: z.string().uuid("無効なIDです"),
   ota: z.enum(
     ["rakuten", "jalan", "booking", "agoda", "expedia", "other"],
-    {
-      errorMap: () => ({ message: "OTAを選択してください" }),
-    }
+    { message: "OTAを選択してください" }
   ),
   osOrNotification: z.enum(
     ["ios", "android", "pc", "line", "email"],
-    {
-      errorMap: () => ({ message: "OS/通知手段を選択してください" }),
-    }
+    { message: "OS/通知手段を選択してください" }
   ),
   bookingTiming: z.enum(
     ["6months", "2-3months", "1month", "lastminute"],
-    {
-      errorMap: () => ({ message: "予約タイミングを選択してください" }),
-    }
+    { message: "予約タイミングを選択してください" }
   ),
 });
 
@@ -84,7 +78,7 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: error.errors[0].message },
+        { success: false, error: error.issues[0].message },
         { status: 400 }
       );
     }
