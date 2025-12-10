@@ -219,3 +219,38 @@ export type NewNotification = typeof notification.$inferInsert;
 
 export type UserSettings = typeof userSettings.$inferSelect;
 export type NewUserSettings = typeof userSettings.$inferInsert;
+
+// ==========================================
+// Waitlist Tables
+// ==========================================
+
+// ウェイトリストテーブル
+export const waitlist = pgTable(
+  "waitlist",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    email: text("email").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("waitlist_email_idx").on(table.email)]
+);
+
+// ウェイトリストアンケートテーブル
+export const waitlistSurvey = pgTable("waitlist_survey", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  waitlistId: uuid("waitlist_id")
+    .notNull()
+    .references(() => waitlist.id, { onDelete: "cascade" }),
+  ota: text("ota").notNull(), // 普段利用するOTA
+  osOrNotification: text("os_or_notification").notNull(), // OS/通知希望
+  bookingTiming: text("booking_timing").notNull(), // 予約タイミング
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Waitlist = typeof waitlist.$inferSelect;
+export type NewWaitlist = typeof waitlist.$inferInsert;
+
+export type WaitlistSurvey = typeof waitlistSurvey.$inferSelect;
+export type NewWaitlistSurvey = typeof waitlistSurvey.$inferInsert;
+
+

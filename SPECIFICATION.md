@@ -359,3 +359,5 @@ CRON_SECRET=your-cron-secret
 4. **環境変数**: 機密情報は環境変数で管理
 5. **Cron認証**: Cron エンドポイントはシークレットで保護
 
+
+

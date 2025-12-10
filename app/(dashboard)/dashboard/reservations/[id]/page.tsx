@@ -72,3 +72,5 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   );
 }
 
+
+

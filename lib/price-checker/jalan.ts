@@ -53,3 +53,5 @@ export function getJalanHotelUrl(hotelId: string): string {
   return `https://www.jalan.net/yad${hotelId}/`;
 }
 
+
+

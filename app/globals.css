@@ -1,8 +1,50 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
+  /* Shadcn Standard Variables (Light Mode Default) */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Custom Theme Variables (Restored for Tra-bell) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e5e7eb;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+
+  /* Accent Colors (Orange/Yellow based on shadow classes) */
+  --accent-primary: #f97316; /* Orange 500 */
+  --accent-hover: #ea580c; /* Orange 600 */
+  --accent-secondary: #eab308; /* Yellow 500 */
+  --accent-light: #ffedd5; /* Orange 100 */
+  --text-on-accent: #ffffff;
+
+  /* Brand Colors */
+  --rakuten: #bf0000;
+  --jalan: #ff6600;
+
+  /* Shadcn Component Variables (mapped to our theme or defaults) */
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #f8f9fa;
+  --secondary-foreground: #171717;
+  --muted: #f8f9fa;
+  --muted-foreground: #737373;
+  --accent: #f8f9fa;
+  --accent-foreground: #171717;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #f97316;
+  --radius: 0.5rem;
 }
 
 @theme inline {
@@ -10,17 +52,24 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Map Custom Colors if needed in Tailwind v4 Theme, 
+     but standard CSS variables work with arbitrary values too */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Force Light Mode Styles (Ignore system preference for now to restore "original" look) */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Base Styles for Shadcn/Tailwind */
+@layer base {
+  * {
+    @apply border-[var(--border)];
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
 }
