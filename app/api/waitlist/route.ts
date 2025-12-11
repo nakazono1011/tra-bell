@@ -31,7 +31,7 @@ export async function POST(request: Request) {
           alreadyRegistered: true,
           waitlistId: existing[0].id,
         },
-        { status: 200 },
+        { status: 200 }
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     // ウェルカムメールを送信
     try {
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
+        from: process.env.RESEND_FROM_EMAIL || "support@tra-bell.com",
         to: email,
         subject: "Tra-bellウェイトリストへようこそ",
         html: `
@@ -109,20 +109,20 @@ export async function POST(request: Request) {
         message: "ウェイトリストに登録しました",
         waitlistId: newWaitlist.id,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: error.issues[0].message },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     console.error("Waitlist registration error:", error);
     return NextResponse.json(
       { success: false, error: "登録に失敗しました" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

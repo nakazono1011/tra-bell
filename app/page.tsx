@@ -156,9 +156,9 @@ function HeroSection() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="max-w-7xl mx-auto px-6 lg:px-12 mb-32"
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
     >
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-16 items-center">
         <div>
           <motion.div
             variants={itemVariants}
@@ -170,9 +170,9 @@ function HeroSection() {
 
           <motion.h1
             variants={itemVariants}
-            className="text-4xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-8 text-[var(--text-primary)]"
+            className="text-2xl lg:text-6xl font-bold tracking-tight leading-10 lg:leading-[1.1] mb-4 lg:mb-8 text-[var(--text-primary)]"
           >
-            そのホテル予約、
+            そのホテル予約
             <br />
             <span className="text-[var(--accent-secondary)]">
               もっと安くなる
@@ -182,7 +182,7 @@ function HeroSection() {
 
           <motion.p
             variants={itemVariants}
-            className="text-lg text-[var(--text-secondary)] mb-10 leading-relaxed max-w-md"
+            className="text-base lg:text-lg text-[var(--text-secondary)] mb-4 lg:mb-10 leading-relaxed max-w-md"
           >
             楽天トラベル・じゃらんで予約済みですか？
             <br />
@@ -191,10 +191,10 @@ function HeroSection() {
             もっと安いプランに簡単に乗り換えられます。
           </motion.p>
 
-          <motion.div variants={itemVariants} className="mb-8">
+          <motion.div variants={itemVariants} className="mb-4 lg:mb-8">
             <a
               href="#waitlist"
-              className="inline-flex justify-center items-center bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex justify-center items-center bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] lg:px-8 px-4 lg:py-3 py-2 rounded-xl font-bold text-base lg:text-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               ウェイトリストに登録
             </a>
@@ -202,7 +202,7 @@ function HeroSection() {
 
           <motion.div
             variants={itemVariants}
-            className="mt-8 flex items-center gap-6 text-xs font-medium text-[var(--text-tertiary)]"
+            className="mt-4 lg:mt-8 flex items-center gap-4 lg:gap-6 text-xs font-medium text-[var(--text-tertiary)]"
           >
             {features.map((feature, i) => {
               const Icon = feature.icon;
@@ -226,10 +226,10 @@ function PriceComparisonCard() {
   return (
     <motion.div
       variants={itemVariants}
-      className="relative aspect-square md:aspect-[4/3] lg:aspect-square bg-[var(--bg-secondary)] rounded-[2rem] overflow-hidden border border-[var(--bg-tertiary)]"
+      className="relative aspect-[4/3] lg:aspect-square bg-[var(--bg-secondary)] rounded-[2rem] overflow-hidden border border-[var(--bg-tertiary)]"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(241,196,43,0.1),transparent_50%)]" />
-      <div className="absolute inset-0 flex items-center justify-center p-8">
+      <div className="absolute inset-0 flex items-center justify-center p-4">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[80%] h-[200px] bg-white rounded-2xl shadow-sm border border-[var(--bg-tertiary)] opacity-60 scale-90" />
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -289,9 +289,15 @@ function PriceComparisonCard() {
 
 function ProblemSection() {
   return (
-    <section className="max-w-7xl mx-auto px-6 lg:px-12 mb-32" id="problem">
+    <section
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      id="problem"
+    >
       <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold mb-4"> Tra-bell（トラベル）とは？</h2>
+        <h2 className="text-2xl lg:text-3xl font-bold mb-4">
+          {" "}
+          Tra-bell（トラベル）とは？
+        </h2>
         <p className="text-[var(--text-secondary)]">
           予約キャンセル料発生まで、最安値を監視し続け、「あとで安くなった」悔しさを無くします
         </p>
@@ -398,11 +404,13 @@ function PriceTimelineDiagram() {
 function HowItWorksSection() {
   return (
     <section
-      className="max-w-7xl mx-auto px-6 lg:px-12 mb-32"
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
       id="how-it-works"
     >
       <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold mb-4">たった3ステップで完了</h2>
+        <h2 className="text-2xl lg:text-3xl font-bold mb-4">
+          たった3ステップで完了
+        </h2>
         <p className="text-[var(--text-secondary)]">
           Gmailをワンタップで連携するだけで、予約確認メールを自動取得し、最安値を監視します。
           <br />
@@ -452,9 +460,12 @@ function HowItWorksSection() {
 
 function FeaturesSection() {
   return (
-    <section className="max-w-7xl mx-auto px-6 lg:px-12 mb-32" id="features">
-      <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold mb-4">
+    <section
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      id="features"
+    >
+      <div className="mb-8 lg:mb-12 text-center">
+        <h2 className="text-xl lg:text-2xl font-bold mb-4">
           国内最大手の予約サイトで対応！
         </h2>
       </div>
@@ -465,7 +476,7 @@ function FeaturesSection() {
 
 function SupportedSitesSection() {
   return (
-    <section className="mt-16">
+    <section className="mt-12 lg:mt-16">
       <div className="relative bg-[var(--bg-secondary)] rounded-3xl p-12 lg:p-16 overflow-hidden">
         <div className="relative z-10">
           {/* Callout badge */}
@@ -528,9 +539,12 @@ function SupportedSitesSection() {
 
 function FAQSection() {
   return (
-    <section className="max-w-5xl mx-auto px-6 lg:px-12 mb-32" id="faq">
+    <section
+      className="max-w-5xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      id="faq"
+    >
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-4">よくある質問</h2>
+        <h2 className="text-2xl lg:text-3xl font-bold mb-4">よくある質問</h2>
         <p className="text-[var(--text-secondary)]">
           ご不明な点は、こちらをご確認ください。
         </p>
@@ -567,16 +581,16 @@ function FAQSection() {
 
 function CTASection() {
   return (
-    <section className="bg-[var(--accent-light)] text-[var(--text-primary)] py-24 px-6 relative overflow-hidden">
+    <section className="bg-[var(--accent-light)] text-[var(--text-primary)] py-16 lg:py-24 px-6 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-primary)] opacity-10 rounded-full blur-3xl -mr-20 -mt-20"></div>
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-[var(--accent-secondary)] opacity-10 rounded-full blur-3xl -ml-20 -mb-20"></div>
       <div className="max-w-3xl mx-auto text-center relative z-10">
-        <h2 className="text-4xl lg:text-5xl font-bold mb-8 tracking-tight">
+        <h2 className="text-2xl lg:text-4xl font-bold mb-8 tracking-tight">
           まずは1件、
           <br />
           試してみませんか？
         </h2>
-        <p className="text-[var(--text-secondary)] text-lg max-w-xl mx-auto">
+        <p className="text-[var(--text-secondary)] text-base lg:text-lg max-w-xl mx-auto">
           登録は30秒で完了します。もちろん無料です。
           <br />
           ホテル宿泊をお得に、Tra-bell（トラベル）を始めてみませんか？
@@ -657,7 +671,7 @@ function WaitlistSection() {
       } else if (data.alreadyRegistered) {
         // 既に登録済みの場合でも、waitlistIdが返されない場合はエラーを表示
         setError(
-          "登録情報の取得に失敗しました。ページを再読み込みしてください。",
+          "登録情報の取得に失敗しました。ページを再読み込みしてください。"
         );
         setIsSubmitted(false);
       }
@@ -698,7 +712,7 @@ function WaitlistSection() {
       setIsSurveySubmitted(true);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "アンケートの送信に失敗しました",
+        err instanceof Error ? err.message : "アンケートの送信に失敗しました"
       );
     } finally {
       setIsSurveySubmitting(false);
@@ -708,7 +722,7 @@ function WaitlistSection() {
   return (
     <section
       id="waitlist"
-      className="max-w-4xl mx-auto px-6 lg:px-12 mb-32 mt-32 scroll-mt-32"
+      className="max-w-4xl mx-auto px-4 lg:px-6 lg:px-12 mb-16 lg:mb-32 mt-16 lg:mt-32 scroll-mt-32"
     >
       <motion.div
         initial="hidden"
@@ -721,15 +735,15 @@ function WaitlistSection() {
           <>
             <motion.h2
               variants={itemVariants}
-              className="text-3xl lg:text-4xl font-bold mb-4 text-center text-[var(--text-primary)]"
+              className="text-2xl lg:text-3xl font-bold mb-4 text-center text-[var(--text-primary)]"
             >
               ウェイトリストに登録
             </motion.h2>
             <motion.p
               variants={itemVariants}
-              className="text-[var(--text-secondary)] text-lg mb-8 text-center"
+              className="text-[var(--text-secondary)] text-base lg:text-lg mb-8 text-center"
             >
-              サービスリリース時に優先的にご案内します
+              サービス公開時に優先的にご案内します
             </motion.p>
             <motion.form
               variants={itemVariants}
@@ -750,7 +764,7 @@ function WaitlistSection() {
                   disabled={isSubmitting}
                   className="bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "登録中..." : "登録する"}
+                  {isSubmitting ? "登録中..." : "ウェイトリストに登録"}
                 </button>
               </div>
               {error && (
@@ -931,7 +945,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] overflow-x-hidden selection:bg-[var(--accent-primary)] selection:text-[var(--text-on-accent)]">
       <Navbar />
-      <main className="pt-32">
+      <main className="pt-20 lg:pt-32">
         <HeroSection />
         <ProblemSection />
         <HowItWorksSection />
