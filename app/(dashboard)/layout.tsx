@@ -22,13 +22,8 @@ export default async function DashboardLayout({
       <DashboardHeader user={session.user} />
       <div className="flex">
         <DashboardNav />
-        <main className="flex-1 p-6 lg:p-8">
-          {children}
-        </main>
+        <main className="flex-1 p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
 }
-
-
-

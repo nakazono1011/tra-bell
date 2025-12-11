@@ -37,7 +37,7 @@ export default async function PriceHistoryPage() {
         ...r,
         priceHistory: history,
       };
-    })
+    }),
   );
 
   return (
@@ -45,9 +45,7 @@ export default async function PriceHistoryPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">価格履歴</h1>
-        <p className="text-slate-400 mt-1">
-          予約ごとの価格変動を確認
-        </p>
+        <p className="text-slate-400 mt-1">予約ごとの価格変動を確認</p>
       </div>
 
       {/* Price History Cards */}
@@ -94,7 +92,8 @@ export default async function PriceHistoryPage() {
                       {r.hotelName}
                     </Link>
                     <p className="text-sm text-slate-400 mt-0.5">
-                      {formatDateShort(r.checkInDate)} 〜 {formatDateShort(r.checkOutDate)}
+                      {formatDateShort(r.checkInDate)} 〜{" "}
+                      {formatDateShort(r.checkOutDate)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -137,7 +136,8 @@ export default async function PriceHistoryPage() {
                                       : "bg-red-400/10 text-red-400"
                                   }`}
                                 >
-                                  {diff < 0 ? "↓" : "↑"} {formatPrice(Math.abs(diff))}
+                                  {diff < 0 ? "↓" : "↑"}{" "}
+                                  {formatPrice(Math.abs(diff))}
                                 </span>
                               )}
                             </div>
@@ -161,6 +161,3 @@ export default async function PriceHistoryPage() {
     </div>
   );
 }
-
-
-

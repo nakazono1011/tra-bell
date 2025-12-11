@@ -37,7 +37,9 @@ export function ReservationList({ reservations }: ReservationListProps) {
   const sortedReservations = [...filteredReservations].sort((a, b) => {
     switch (sortBy) {
       case "checkInDate":
-        return new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime();
+        return (
+          new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime()
+        );
       case "price":
         return b.currentPrice - a.currentPrice;
       case "savings":
@@ -119,7 +121,10 @@ export function ReservationList({ reservations }: ReservationListProps) {
       ) : (
         <div className="grid gap-4">
           {sortedReservations.map((r) => {
-            const priceDrop = calculatePriceDrop(r.originalPrice, r.currentPrice);
+            const priceDrop = calculatePriceDrop(
+              r.originalPrice,
+              r.currentPrice,
+            );
             const daysUntilCheckIn = getDaysUntil(r.checkInDate);
             const canCancel = isBeforeDeadline(r.cancellationDeadline);
 
@@ -143,7 +148,7 @@ export function ReservationList({ reservations }: ReservationListProps) {
                       )}
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getSiteBadgeColor(
-                          r.reservationSite
+                          r.reservationSite,
                         )}`}
                       >
                         {getSiteLabel(r.reservationSite)}
@@ -165,7 +170,8 @@ export function ReservationList({ reservations }: ReservationListProps) {
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                           />
                         </svg>
-                        {formatDate(r.checkInDate)} 〜 {formatDate(r.checkOutDate)}
+                        {formatDate(r.checkInDate)} 〜{" "}
+                        {formatDate(r.checkOutDate)}
                       </span>
                       {r.roomType && (
                         <span className="flex items-center gap-1">
@@ -218,7 +224,8 @@ export function ReservationList({ reservations }: ReservationListProps) {
                           {formatPrice(r.originalPrice)}
                         </span>
                         <span className="ml-2 text-sm font-medium text-emerald-400">
-                          ↓ {formatPrice(priceDrop.amount)} ({priceDrop.percentage}%)
+                          ↓ {formatPrice(priceDrop.amount)} (
+                          {priceDrop.percentage}%)
                         </span>
                       </div>
                     )}
@@ -232,4 +239,3 @@ export function ReservationList({ reservations }: ReservationListProps) {
     </div>
   );
 }
-

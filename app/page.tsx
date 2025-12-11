@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import {
   Check,
-  ChevronRight,
   Clock,
   Mail,
   Sparkles,
@@ -59,7 +58,7 @@ const steps = [
   {
     step: "01",
     title: "連携する",
-    desc: "Googleアカウントでログインするか、予約確認メールを転送するだけです。",
+    desc: "Googleアカウントでログインして過去の予約確認メールを自動取得します。",
     icon: Mail,
     color: "bg-blue-500",
   },
@@ -73,7 +72,7 @@ const steps = [
   {
     step: "03",
     title: "通知が届く",
-    desc: "価格が下がったら、LINEやメールでお知らせします。リンクから再予約して節約完了です。",
+    desc: "価格が下がったら、LINEやメールでお知らせします。そのままリンクから再予約・キャンセルすれば、節約完了です。",
     icon: MessageCircleIcon,
     color: "bg-green-500",
   },
@@ -166,7 +165,7 @@ function HeroSection() {
             className="mb-6 inline-flex items-center gap-2 bg-[var(--bg-secondary)] px-3 py-1 rounded-full text-xs font-semibold text-[var(--text-secondary)] border border-[var(--bg-tertiary)]"
           >
             <Sparkles className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
-            <span>予約後の「損」をゼロにするAI</span>
+            <span>予約後の「損」をゼロにするAIエージェント</span>
           </motion.div>
 
           <motion.h1
@@ -189,7 +188,7 @@ function HeroSection() {
             <br />
             キャンセル料発生前なら、
             <br />
-            もっと安いプランに自動で乗り換えられます。
+            もっと安いプランに簡単に乗り換えられます。
           </motion.p>
 
           <motion.div variants={itemVariants} className="mb-8">
@@ -620,20 +619,6 @@ function Footer() {
   );
 }
 
-function StickyMobileCTA() {
-  return (
-    <div className="fixed bottom-6 left-6 right-6 z-40 md:hidden">
-      <a
-        href="#waitlist"
-        className="flex items-center justify-center w-full bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] py-4 rounded-xl font-bold shadow-2xl transition-colors"
-      >
-        無料で始める
-        <ChevronRight className="w-5 h-5 ml-1 opacity-50" />
-      </a>
-    </div>
-  );
-}
-
 function WaitlistSection() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -672,7 +657,7 @@ function WaitlistSection() {
       } else if (data.alreadyRegistered) {
         // 既に登録済みの場合でも、waitlistIdが返されない場合はエラーを表示
         setError(
-          "登録情報の取得に失敗しました。ページを再読み込みしてください。"
+          "登録情報の取得に失敗しました。ページを再読み込みしてください。",
         );
         setIsSubmitted(false);
       }
@@ -713,7 +698,7 @@ function WaitlistSection() {
       setIsSurveySubmitted(true);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "アンケートの送信に失敗しました"
+        err instanceof Error ? err.message : "アンケートの送信に失敗しました",
       );
     } finally {
       setIsSurveySubmitting(false);
@@ -787,7 +772,7 @@ function WaitlistSection() {
                 登録完了！
               </h3>
               <p className="text-[var(--text-secondary)]">
-                ご登録ありがとうございます。確認メールをお送りしました。
+                ご登録ありがとうございます。アンケートにご回答いただけますと、お客様のご意見をサービスに反映させていただきます。
               </p>
             </div>
 
@@ -800,6 +785,8 @@ function WaitlistSection() {
                   {[
                     { value: "rakuten", label: "楽天トラベル" },
                     { value: "jalan", label: "じゃらん" },
+                    { value: "ikkyu", label: "一休.com" },
+                    { value: "yahoo", label: "Yahoo!トラベル" },
                     { value: "booking", label: "Booking.com" },
                     { value: "agoda", label: "Agoda" },
                     { value: "expedia", label: "Expedia" },
@@ -830,15 +817,14 @@ function WaitlistSection() {
 
               <div>
                 <label className="block text-sm font-bold mb-3 text-[var(--text-primary)]">
-                  B. スマホのOSは？ / 通知の希望手段は？
+                  B. 通知の希望手段は？
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
-                    { value: "ios", label: "iOS" },
-                    { value: "android", label: "Android" },
-                    { value: "pc", label: "PCブラウザ" },
-                    { value: "line", label: "LINEで通知が欲しい" },
                     { value: "email", label: "メールで通知が欲しい" },
+                    { value: "line", label: "LINEで通知が欲しい" },
+                    { value: "ios", label: "iOSアプリから通知" },
+                    { value: "android", label: "Androidアプリから通知" },
                   ].map((option) => (
                     <label
                       key={option.value}
@@ -955,7 +941,6 @@ export default function Home() {
         <WaitlistSection />
       </main>
       <Footer />
-      <StickyMobileCTA />
     </div>
   );
 }

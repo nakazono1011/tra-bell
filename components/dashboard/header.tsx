@@ -158,6 +158,3 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
     </header>
   );
 }
-
-
-

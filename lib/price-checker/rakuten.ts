@@ -9,17 +9,17 @@ export async function checkRakutenPrice(
   checkInDate: string,
   checkOutDate: string,
   reservationId: string,
-  currentPrice: number
+  currentPrice: number,
 ): Promise<PriceCheckResult | null> {
   try {
     // TODO: 楽天トラベルAPIを使用して価格を取得
     // 現在はモック実装
-    
+
     // 楽天トラベルAPI のアプリケーションIDが必要
     // https://webservice.rakuten.co.jp/
-    
+
     const applicationId = process.env.RAKUTEN_APPLICATION_ID;
-    
+
     if (!applicationId) {
       console.log("Rakuten API key not configured");
       // APIキーがない場合は現在価格を返す
@@ -47,12 +47,12 @@ export async function checkRakutenPrice(
     const newPrice = Math.round(currentPrice * (1 + priceVariation));
 
     const priceDropAmount = currentPrice - newPrice;
-    const priceDropPercentage = currentPrice > 0 
-      ? (priceDropAmount / currentPrice) * 100 
-      : 0;
-    
+    const priceDropPercentage =
+      currentPrice > 0 ? (priceDropAmount / currentPrice) * 100 : 0;
+
     // 500円以上または5%以上の値下がりを重要とみなす
-    const isSignificantDrop = priceDropAmount >= 500 || priceDropPercentage >= 5;
+    const isSignificantDrop =
+      priceDropAmount >= 500 || priceDropPercentage >= 5;
 
     return {
       reservationId,
@@ -75,6 +75,3 @@ export async function checkRakutenPrice(
 export function getRakutenHotelUrl(hotelId: string): string {
   return `https://travel.rakuten.co.jp/HOTEL/${hotelId}/`;
 }
-
-
-

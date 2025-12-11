@@ -9,7 +9,7 @@ const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error(
-    "DATABASE_URL が設定されていません。.env.local を確認してください。"
+    "DATABASE_URL が設定されていません。.env.local を確認してください。",
   );
 }
 

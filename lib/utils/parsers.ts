@@ -6,7 +6,7 @@ import { GmailClient } from "@/lib/gmail/client";
  */
 export function extractDate(
   body: string,
-  patterns: RegExp[]
+  patterns: RegExp[],
 ): string | undefined {
   for (const pattern of patterns) {
     const match = body.match(pattern);
@@ -25,7 +25,7 @@ export function extractDate(
  */
 export function extractNumber(
   body: string,
-  patterns: RegExp[]
+  patterns: RegExp[],
 ): number | undefined {
   for (const pattern of patterns) {
     const match = body.match(pattern);
@@ -41,7 +41,7 @@ export function extractNumber(
  */
 export function extractText(
   body: string,
-  patterns: RegExp[]
+  patterns: RegExp[],
 ): string | undefined {
   for (const pattern of patterns) {
     const match = body.match(pattern);

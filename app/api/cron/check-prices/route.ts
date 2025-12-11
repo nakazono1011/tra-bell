@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       if (authHeader !== `Bearer ${cronSecret}`) {
         return NextResponse.json(
           { success: false, error: "Unauthorized" },
-          { status: 401 }
+          { status: 401 },
         );
       }
     }
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     const duration = Date.now() - startTime;
     console.log(
-      `Price check completed: ${result.checked} checked, ${result.priceDrops} drops, ${result.errors} errors (${duration}ms)`
+      `Price check completed: ${result.checked} checked, ${result.priceDrops} drops, ${result.errors} errors (${duration}ms)`,
     );
 
     return NextResponse.json({
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -60,4 +60,3 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   return GET(request);
 }
-

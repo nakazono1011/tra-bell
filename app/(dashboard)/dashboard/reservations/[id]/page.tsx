@@ -27,12 +27,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   const [reservationData] = await db
     .select()
     .from(reservation)
-    .where(
-      and(
-        eq(reservation.id, id),
-        eq(reservation.userId, session.user.id)
-      )
-    )
+    .where(and(eq(reservation.id, id), eq(reservation.userId, session.user.id)))
     .limit(1);
 
   if (!reservationData) {
@@ -71,6 +66,3 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     </div>
   );
 }
-
-
-

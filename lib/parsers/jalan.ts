@@ -12,7 +12,7 @@ import {
  * じゃらんの予約確認メールをパース
  */
 export function parseJalanReservationEmail(
-  message: GmailMessage
+  message: GmailMessage,
 ): ParsedReservation | null {
   try {
     const body = getEmailBody(message);
@@ -121,4 +121,3 @@ export function isJalanEmail(message: GmailMessage): boolean {
   const from = GmailClient.getHeader(message, "From") || "";
   return from.includes("jalan.net") || from.includes("じゃらん");
 }
-

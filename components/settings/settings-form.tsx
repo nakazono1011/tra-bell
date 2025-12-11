@@ -14,13 +14,17 @@ interface SettingsFormProps {
   hasGmailScope: boolean;
 }
 
-export function SettingsForm({ initialSettings, hasGmailScope }: SettingsFormProps) {
+export function SettingsForm({
+  initialSettings,
+  hasGmailScope,
+}: SettingsFormProps) {
   const [settings, setSettings] = useState(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
   const [isConnectingGmail, setIsConnectingGmail] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(
-    null
-  );
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const router = useRouter();
 
   const handleSave = async () => {
@@ -92,7 +96,9 @@ export function SettingsForm({ initialSettings, hasGmailScope }: SettingsFormPro
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm font-medium text-emerald-400">連携済み</span>
+              <span className="text-sm font-medium text-emerald-400">
+                連携済み
+              </span>
             </div>
           ) : (
             <button
@@ -293,4 +299,3 @@ export function SettingsForm({ initialSettings, hasGmailScope }: SettingsFormPro
     </div>
   );
 }
-

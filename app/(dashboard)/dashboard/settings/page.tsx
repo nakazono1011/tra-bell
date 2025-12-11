@@ -29,21 +29,20 @@ export default async function SettingsPage() {
     .where(
       and(
         eq(account.userId, session.user.id),
-        eq(account.providerId, "google")
-      )
+        eq(account.providerId, "google"),
+      ),
     )
     .limit(1);
 
-  const hasGmailScope = googleAccount?.scope?.includes("gmail.readonly") || false;
+  const hasGmailScope =
+    googleAccount?.scope?.includes("gmail.readonly") || false;
 
   return (
     <div className="space-y-8">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">設定</h1>
-        <p className="text-slate-400 mt-1">
-          価格監視と自動処理の設定を管理
-        </p>
+        <p className="text-slate-400 mt-1">価格監視と自動処理の設定を管理</p>
       </div>
 
       {/* Settings Form */}
@@ -59,4 +58,3 @@ export default async function SettingsPage() {
     </div>
   );
 }
-

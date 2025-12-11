@@ -207,7 +207,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
                     </h3>
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadgeColor(
-                        n.type
+                        n.type,
                       )}`}
                     >
                       {getTypeLabel(n.type)}
@@ -229,6 +229,3 @@ export function NotificationList({ notifications }: NotificationListProps) {
     </div>
   );
 }
-
-
-

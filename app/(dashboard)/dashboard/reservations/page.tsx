@@ -29,9 +29,7 @@ export default async function ReservationsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">予約一覧</h1>
-          <p className="text-slate-400 mt-1">
-            すべての予約と価格変動を確認
-          </p>
+          <p className="text-slate-400 mt-1">すべての予約と価格変動を確認</p>
         </div>
         <SyncGmailButton />
       </div>
@@ -41,6 +39,3 @@ export default async function ReservationsPage() {
     </div>
   );
 }
-
-
-

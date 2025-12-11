@@ -6,18 +6,15 @@ import { z } from "zod";
 
 const surveySchema = z.object({
   waitlistId: z.string().uuid("無効なIDです"),
-  ota: z.enum(
-    ["rakuten", "jalan", "booking", "agoda", "expedia", "other"],
-    { message: "OTAを選択してください" }
-  ),
-  osOrNotification: z.enum(
-    ["ios", "android", "pc", "line", "email"],
-    { message: "OS/通知手段を選択してください" }
-  ),
-  bookingTiming: z.enum(
-    ["6months", "2-3months", "1month", "lastminute"],
-    { message: "予約タイミングを選択してください" }
-  ),
+  ota: z.enum(["rakuten", "jalan", "booking", "agoda", "expedia", "other"], {
+    message: "OTAを選択してください",
+  }),
+  osOrNotification: z.enum(["ios", "android", "pc", "line", "email"], {
+    message: "OS/通知手段を選択してください",
+  }),
+  bookingTiming: z.enum(["6months", "2-3months", "1month", "lastminute"], {
+    message: "予約タイミングを選択してください",
+  }),
 });
 
 export async function POST(request: Request) {
@@ -35,7 +32,7 @@ export async function POST(request: Request) {
     if (!waitlistEntry) {
       return NextResponse.json(
         { success: false, error: "ウェイトリスト登録が見つかりません" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -59,7 +56,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json(
         { success: true, message: "アンケートを更新しました" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -72,22 +69,24 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(
-      { success: true, message: "アンケートにご回答いただき、ありがとうございます" },
-      { status: 201 }
+      {
+        success: true,
+        message: "アンケートにご回答いただき、ありがとうございます",
+      },
+      { status: 201 },
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Survey submission error:", error);
     return NextResponse.json(
       { success: false, error: "アンケートの送信に失敗しました" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

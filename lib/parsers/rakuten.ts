@@ -41,7 +41,7 @@ const rakutenReservationSchema = z.object({
  * 楽天トラベルの予約確認メールをパース
  */
 export async function parseRakutenReservationEmail(
-  message: GmailMessage
+  message: GmailMessage,
 ): Promise<ParsedReservation | null> {
   try {
     const body = getEmailBody(message);

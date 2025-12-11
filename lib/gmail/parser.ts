@@ -17,7 +17,7 @@ export interface ParsedEmailResult {
  * Gmailメッセージから予約情報をパース
  */
 export async function parseReservationEmail(
-  message: GmailMessage
+  message: GmailMessage,
 ): Promise<ParsedEmailResult> {
   const messageId = message.id;
   const receivedAt = new Date(parseInt(message.internalDate, 10));
@@ -57,7 +57,7 @@ export async function parseReservationEmail(
  * 複数のGmailメッセージから予約情報をパース
  */
 export async function parseReservationEmails(
-  messages: GmailMessage[]
+  messages: GmailMessage[],
 ): Promise<ParsedEmailResult[]> {
   return Promise.all(messages.map((message) => parseReservationEmail(message)));
 }
@@ -66,7 +66,7 @@ export async function parseReservationEmails(
  * パースされた予約情報から有効なものだけをフィルタ
  */
 export function filterValidReservations(
-  results: ParsedEmailResult[]
+  results: ParsedEmailResult[],
 ): ParsedEmailResult[] {
   return results.filter((result) => result.reservation !== null);
 }
@@ -75,7 +75,7 @@ export function filterValidReservations(
  * 重複する予約を除去（予約番号でユニーク）
  */
 export function deduplicateReservations(
-  results: ParsedEmailResult[]
+  results: ParsedEmailResult[],
 ): ParsedEmailResult[] {
   const seen = new Set<string>();
   return results.filter((result) => {

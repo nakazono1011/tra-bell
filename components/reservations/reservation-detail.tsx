@@ -25,7 +25,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
 
   const priceDrop = calculatePriceDrop(
     reservation.originalPrice,
-    reservation.currentPrice
+    reservation.currentPrice,
   );
   const daysUntilCheckIn = getDaysUntil(reservation.checkInDate);
   const canCancel = isBeforeDeadline(reservation.cancellationDeadline);
@@ -61,7 +61,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
             <div className="flex items-center gap-3 mt-2">
               <span
                 className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getSiteBadgeColor(
-                  reservation.reservationSite
+                  reservation.reservationSite,
                 )}`}
               >
                 {getSiteLabel(reservation.reservationSite)}
@@ -174,7 +174,9 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
 
             {reservation.roomType && (
               <div>
-                <p className="text-sm text-slate-400 mb-1">プラン・部屋タイプ</p>
+                <p className="text-sm text-slate-400 mb-1">
+                  プラン・部屋タイプ
+                </p>
                 <p className="text-white">{reservation.roomType}</p>
               </div>
             )}
@@ -213,7 +215,9 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
 
             <div>
               <p className="text-sm text-slate-400 mb-1">予約登録日</p>
-              <p className="text-white">{formatDateTime(reservation.createdAt)}</p>
+              <p className="text-white">
+                {formatDateTime(reservation.createdAt)}
+              </p>
             </div>
 
             {reservation.hotelUrl && (
@@ -247,4 +251,3 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
     </div>
   );
 }
-

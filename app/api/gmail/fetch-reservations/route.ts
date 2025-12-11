@@ -21,7 +21,7 @@ export async function GET() {
     if (!session) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -33,7 +33,7 @@ export async function GET() {
     if (!gmailClient) {
       return NextResponse.json(
         { success: false, error: "Gmail not connected" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,7 +65,9 @@ export async function GET() {
       .where(eq(reservation.userId, userId));
 
     const existingIds = new Set(
-      existingReservations.map((r) => `${r.reservationSite}-${r.reservationId}`)
+      existingReservations.map(
+        (r) => `${r.reservationSite}-${r.reservationId}`,
+      ),
     );
 
     // 新しい予約を保存
@@ -144,7 +146,7 @@ export async function GET() {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

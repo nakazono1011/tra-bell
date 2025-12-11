@@ -47,7 +47,9 @@ export default async function DashboardPage() {
     .from(reservation)
     .where(eq(reservation.userId, session.user.id));
 
-  const activeCount = allReservations.filter((r) => r.status === "active").length;
+  const activeCount = allReservations.filter(
+    (r) => r.status === "active",
+  ).length;
   const totalSavings = allReservations.reduce((acc, r) => {
     if (r.originalPrice > r.currentPrice) {
       return acc + (r.originalPrice - r.currentPrice);
@@ -60,15 +62,11 @@ export default async function DashboardPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">ダッシュボード</h1>
-        <p className="text-slate-400 mt-1">
-          予約状況と価格変動をチェック
-        </p>
+        <p className="text-slate-400 mt-1">予約状況と価格変動をチェック</p>
       </div>
 
       {/* Gmail Connect Card (if not connected) */}
-      {!settings?.gmailConnected && (
-        <GmailConnectCard />
-      )}
+      {!settings?.gmailConnected && <GmailConnectCard />}
 
       {/* Stats */}
       <DashboardStats
@@ -89,4 +87,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-

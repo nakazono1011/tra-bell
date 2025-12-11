@@ -28,10 +28,7 @@ export async function POST(
       .update(notification)
       .set({ isRead: true })
       .where(
-        and(
-          eq(notification.id, id),
-          eq(notification.userId, session.user.id)
-        )
+        and(eq(notification.id, id), eq(notification.userId, session.user.id))
       );
 
     return NextResponse.json({ success: true });
@@ -46,6 +43,3 @@ export async function POST(
     );
   }
 }
-
-
-

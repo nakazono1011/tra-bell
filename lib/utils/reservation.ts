@@ -55,6 +55,3 @@ export function getStatusBadge(status: ReservationStatus | string) {
       return null;
   }
 }
-
-
-

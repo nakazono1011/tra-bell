@@ -252,5 +252,3 @@ export type NewWaitlist = typeof waitlist.$inferInsert;
 
 export type WaitlistSurvey = typeof waitlistSurvey.$inferSelect;
 export type NewWaitlistSurvey = typeof waitlistSurvey.$inferInsert;
-
-

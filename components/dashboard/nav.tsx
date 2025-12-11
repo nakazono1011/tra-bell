@@ -9,7 +9,12 @@ const navItems = [
     name: "ダッシュボード",
     href: "/dashboard",
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -23,7 +28,12 @@ const navItems = [
     name: "予約一覧",
     href: "/dashboard/reservations",
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -37,7 +47,12 @@ const navItems = [
     name: "価格履歴",
     href: "/dashboard/price-history",
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -51,7 +66,12 @@ const navItems = [
     name: "通知",
     href: "/dashboard/notifications",
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -65,7 +85,12 @@ const navItems = [
     name: "設定",
     href: "/dashboard/settings",
     icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -99,7 +124,7 @@ export function DashboardNav() {
                 "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
                 isActive
                   ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-400 border border-emerald-500/30"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800",
               )}
             >
               {item.icon}
@@ -111,6 +136,3 @@ export function DashboardNav() {
     </nav>
   );
 }
-
-
-

@@ -43,7 +43,10 @@ export function formatDateTime(date: Date | string): string {
   }).format(d);
 }
 
-export function calculatePriceDrop(originalPrice: number, currentPrice: number): {
+export function calculatePriceDrop(
+  originalPrice: number,
+  currentPrice: number
+): {
   amount: number;
   percentage: number;
 } {
@@ -64,4 +67,3 @@ export function isBeforeDeadline(deadline: Date | string | null): boolean {
   const d = typeof deadline === "string" ? new Date(deadline) : deadline;
   return new Date() < d;
 }
-

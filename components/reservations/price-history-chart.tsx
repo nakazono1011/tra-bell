@@ -43,7 +43,7 @@ export function PriceHistoryChart({
 
   // 価格データを時系列順に並び替え
   const sortedHistory = [...priceHistory].sort(
-    (a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime()
+    (a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime(),
   );
 
   // 最小・最大価格を計算
@@ -70,7 +70,8 @@ export function PriceHistoryChart({
   const areaPath = `${pathPoints} L 100 ${chartHeight} L 0 ${chartHeight} Z`;
 
   // 現在価格と予約時価格の差
-  const currentPrice = sortedHistory[sortedHistory.length - 1]?.price || originalPrice;
+  const currentPrice =
+    sortedHistory[sortedHistory.length - 1]?.price || originalPrice;
   const priceDiff = originalPrice - currentPrice;
   const isLower = priceDiff > 0;
 
@@ -151,11 +152,7 @@ export function PriceHistoryChart({
             />
 
             {/* Area fill */}
-            <path
-              d={areaPath}
-              fill="url(#gradient)"
-              opacity="0.2"
-            />
+            <path d={areaPath} fill="url(#gradient)" opacity="0.2" />
 
             {/* Line */}
             <path
@@ -188,7 +185,11 @@ export function PriceHistoryChart({
             <defs>
               <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="rgb(52, 211, 153)" />
-                <stop offset="100%" stopColor="rgb(52, 211, 153)" stopOpacity="0" />
+                <stop
+                  offset="100%"
+                  stopColor="rgb(52, 211, 153)"
+                  stopOpacity="0"
+                />
               </linearGradient>
             </defs>
           </svg>
@@ -206,7 +207,9 @@ export function PriceHistoryChart({
             <>
               <span>{formatDateShort(sortedHistory[0].checkedAt)}</span>
               <span>
-                {formatDateShort(sortedHistory[sortedHistory.length - 1].checkedAt)}
+                {formatDateShort(
+                  sortedHistory[sortedHistory.length - 1].checkedAt,
+                )}
               </span>
             </>
           )}
@@ -253,6 +256,3 @@ export function PriceHistoryChart({
     </div>
   );
 }
-
-
-

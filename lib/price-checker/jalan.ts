@@ -9,7 +9,7 @@ export async function checkJalanPrice(
   checkInDate: string,
   checkOutDate: string,
   reservationId: string,
-  currentPrice: number
+  currentPrice: number,
 ): Promise<PriceCheckResult | null> {
   try {
     // TODO: じゃらんの価格を取得する方法を実装
@@ -24,12 +24,12 @@ export async function checkJalanPrice(
     const newPrice = Math.round(currentPrice * (1 + priceVariation));
 
     const priceDropAmount = currentPrice - newPrice;
-    const priceDropPercentage = currentPrice > 0 
-      ? (priceDropAmount / currentPrice) * 100 
-      : 0;
-    
+    const priceDropPercentage =
+      currentPrice > 0 ? (priceDropAmount / currentPrice) * 100 : 0;
+
     // 500円以上または5%以上の値下がりを重要とみなす
-    const isSignificantDrop = priceDropAmount >= 500 || priceDropPercentage >= 5;
+    const isSignificantDrop =
+      priceDropAmount >= 500 || priceDropPercentage >= 5;
 
     return {
       reservationId,
@@ -52,6 +52,3 @@ export async function checkJalanPrice(
 export function getJalanHotelUrl(hotelId: string): string {
   return `https://www.jalan.net/yad${hotelId}/`;
 }
-
-
-

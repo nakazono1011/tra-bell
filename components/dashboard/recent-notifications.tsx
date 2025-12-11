@@ -6,7 +6,9 @@ interface RecentNotificationsProps {
   notifications: Notification[];
 }
 
-export function RecentNotifications({ notifications }: RecentNotificationsProps) {
+export function RecentNotifications({
+  notifications,
+}: RecentNotificationsProps) {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "price_drop":
@@ -151,6 +153,3 @@ export function RecentNotifications({ notifications }: RecentNotificationsProps)
     </div>
   );
 }
-
-
-

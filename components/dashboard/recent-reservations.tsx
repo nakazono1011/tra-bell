@@ -8,7 +8,6 @@ interface RecentReservationsProps {
 }
 
 export function RecentReservations({ reservations }: RecentReservationsProps) {
-
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden">
       <div className="flex items-center justify-between p-6 border-b border-slate-800">
@@ -48,7 +47,7 @@ export function RecentReservations({ reservations }: RecentReservationsProps) {
           {reservations.map((reservation) => {
             const priceDrop = calculatePriceDrop(
               reservation.originalPrice,
-              reservation.currentPrice
+              reservation.currentPrice,
             );
             const hasDrop = priceDrop.amount > 0;
 
@@ -66,7 +65,9 @@ export function RecentReservations({ reservations }: RecentReservationsProps) {
                       </h3>
                       {getStatusBadge(reservation.status) && (
                         <span
-                          className={getStatusBadge(reservation.status)!.className}
+                          className={
+                            getStatusBadge(reservation.status)!.className
+                          }
                         >
                           {getStatusBadge(reservation.status)!.label}
                         </span>
@@ -86,7 +87,8 @@ export function RecentReservations({ reservations }: RecentReservationsProps) {
                     </p>
                     {hasDrop && (
                       <p className="text-xs text-emerald-400 mt-0.5">
-                        ↓ {formatPrice(priceDrop.amount)} ({priceDrop.percentage}%)
+                        ↓ {formatPrice(priceDrop.amount)} (
+                        {priceDrop.percentage}%)
                       </p>
                     )}
                   </div>
@@ -99,4 +101,3 @@ export function RecentReservations({ reservations }: RecentReservationsProps) {
     </div>
   );
 }
-

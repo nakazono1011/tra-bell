@@ -25,9 +25,20 @@ export function GmailConnectCard() {
     <div className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/10 p-6">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
           <defs>
-            <pattern id="gmail-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <pattern
+              id="gmail-pattern"
+              x="0"
+              y="0"
+              width="20"
+              height="20"
+              patternUnits="userSpaceOnUse"
+            >
               <circle cx="10" cy="10" r="1" fill="currentColor" />
             </pattern>
           </defs>
@@ -38,7 +49,11 @@ export function GmailConnectCard() {
       <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-4">
         {/* Icon */}
         <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg">
-          <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <svg
+            className="w-7 h-7 text-white"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
             <path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" />
           </svg>
         </div>
@@ -153,6 +168,3 @@ export function GmailConnectCard() {
     </div>
   );
 }
-
-
-
