@@ -75,3 +75,6 @@ export async function checkRakutenPrice(
 export function getRakutenHotelUrl(hotelId: string): string {
   return `https://travel.rakuten.co.jp/HOTEL/${hotelId}/`;
 }
+
+
+

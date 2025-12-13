@@ -256,3 +256,6 @@ export function PriceHistoryChart({
     </div>
   );
 }
+
+
+
