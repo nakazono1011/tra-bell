@@ -10,9 +10,30 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Tra-bell - ホテル価格を自動監視",
+  title: {
+    default: "Tra-bell - 予約後のホテル価格を自動監視",
+    template: "%s | Tra-bell",
+  },
   description:
-    "楽天・じゃらんの予約が安くなったら自動で再予約。Tra-bellがあなたの代わりにホテル価格を監視し、キャンセル料発生前に節約します。",
+    "そのホテル予約、もっと安くなるかも？Tra-bellは楽天・じゃらんの価格を自動監視。値下がりしたら通知でお知らせし、あなたの代わりに旅費を賢く節約します。",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://tra-bell.com"
+  ),
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: "/",
+    title: "Tra-bell - ホテル価格を自動監視",
+    description:
+      "そのホテル予約、もっと安くなるかも？Tra-bellは楽天・じゃらんの価格を自動監視。値下がりしたら通知でお知らせし、あなたの代わりに旅費を賢く節約します。",
+    siteName: "Tra-bell",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tra-bell - ホテル価格を自動監視",
+    description:
+      "そのホテル予約、もっと安くなるかも？Tra-bellは楽天・じゃらんの価格を自動監視。値下がりしたら通知でお知らせし、あなたの代わりに旅費を賢く節約します。",
+  },
 };
 
 export default function RootLayout({
