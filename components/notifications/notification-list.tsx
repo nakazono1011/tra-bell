@@ -74,7 +74,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
         );
       default:
         return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-700">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--bg-secondary)]">
             <svg
               className="w-5 h-5 text-slate-400"
               fill="none"
@@ -115,7 +115,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
       case "auto_rebook":
         return "bg-blue-400/10 text-blue-400 border-blue-400/20";
       default:
-        return "bg-slate-400/10 text-slate-400 border-slate-400/20";
+        return "bg-[var(--bg-tertiary)]/10 text-[var(--text-secondary)] border-[var(--bg-tertiary)]/20";
     }
   };
 
@@ -134,14 +134,14 @@ export function NotificationList({ notifications }: NotificationListProps) {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-slate-900/50 border border-slate-800">
+      <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-[var(--bg-tertiary)]">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter("all")}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filter === "all"
                 ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/30"
-                : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
             }`}
           >
             すべて ({notifications.length})
@@ -151,7 +151,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filter === "unread"
                 ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/30"
-                : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
             }`}
           >
             未読 ({unreadCount})
@@ -162,7 +162,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
       {/* Notification Cards */}
       {filteredNotifications.length === 0 ? (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--bg-secondary)] mb-4">
             <svg
               className="w-8 h-8 text-slate-500"
               fill="none"
@@ -194,8 +194,8 @@ export function NotificationList({ notifications }: NotificationListProps) {
               onClick={() => !n.isRead && markAsRead(n.id)}
               className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer ${
                 n.isRead
-                  ? "bg-slate-900/30 border-slate-800/50 opacity-70"
-                  : "bg-slate-900/50 border-slate-800 hover:border-slate-700"
+                  ? "bg-white/30 border-[var(--bg-tertiary)]/50 opacity-70"
+                  : "bg-white border-[var(--bg-tertiary)] hover:border-[var(--bg-tertiary)]"
               }`}
             >
               <div className="flex items-start gap-4">
@@ -207,7 +207,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
                     </h3>
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadgeColor(
-                        n.type,
+                        n.type
                       )}`}
                     >
                       {getTypeLabel(n.type)}
@@ -229,6 +229,3 @@ export function NotificationList({ notifications }: NotificationListProps) {
     </div>
   );
 }
-
-
-

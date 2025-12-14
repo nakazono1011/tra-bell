@@ -37,14 +37,6 @@ export interface ReservationWithHistory extends Reservation {
   priceHistory: PriceHistory[];
 }
 
-// Dashboard stats
-export interface DashboardStats {
-  totalReservations: number;
-  activeReservations: number;
-  totalSavings: number;
-  pendingPriceDrops: number;
-}
-
 // Gmail API types
 export interface GmailMessage {
   id: string;

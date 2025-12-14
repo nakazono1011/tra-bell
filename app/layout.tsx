@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ClarityAnalytics } from "@/components/analytics/clarity";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -48,7 +49,7 @@ export default function RootLayout({
         className={`${manrope.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
       </body>
       <GoogleAnalytics gaId="G-RTWEDVKT9Y" />
       <ClarityAnalytics />

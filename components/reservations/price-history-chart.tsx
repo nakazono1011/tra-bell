@@ -14,12 +14,14 @@ export function PriceHistoryChart({
 }: PriceHistoryChartProps) {
   if (priceHistory.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">価格履歴</h2>
+      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+          価格履歴
+        </h2>
         <div className="text-center py-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-800 mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--bg-secondary)] mb-4">
             <svg
-              className="w-6 h-6 text-slate-500"
+              className="w-6 h-6 text-[var(--text-secondary)]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -32,8 +34,10 @@ export function PriceHistoryChart({
               />
             </svg>
           </div>
-          <p className="text-slate-400">価格履歴はまだありません</p>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-[var(--text-secondary)] font-medium">
+            価格履歴はまだありません
+          </p>
+          <p className="text-[var(--text-secondary)] text-sm mt-1">
             価格チェックが実行されると履歴が記録されます
           </p>
         </div>
@@ -43,7 +47,7 @@ export function PriceHistoryChart({
 
   // 価格データを時系列順に並び替え
   const sortedHistory = [...priceHistory].sort(
-    (a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime(),
+    (a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime()
   );
 
   // 最小・最大価格を計算
@@ -53,7 +57,7 @@ export function PriceHistoryChart({
   const priceRange = maxPrice - minPrice || 1;
 
   // チャートの高さを計算
-  const chartHeight = 200;
+  const chartHeight = 220; // 少し高くして見やすく
   const getY = (price: number) =>
     chartHeight - ((price - minPrice) / priceRange) * chartHeight;
 
@@ -76,18 +80,24 @@ export function PriceHistoryChart({
   const isLower = priceDiff > 0;
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden">
-      <div className="p-6 border-b border-slate-800">
+    <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white overflow-hidden shadow-sm">
+      <div className="p-6 border-b border-[var(--bg-tertiary)]">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">価格履歴</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+            価格履歴
+          </h2>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-400" />
-              <span className="text-slate-400">価格推移</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200" />
+              <span className="text-[var(--text-secondary)] font-medium">
+                価格推移
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-0.5 bg-amber-400" />
-              <span className="text-slate-400">予約時価格</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-400 opacity-50" />
+              <span className="text-[var(--text-secondary)] font-medium">
+                予約時価格
+              </span>
             </div>
           </div>
         </div>
@@ -95,24 +105,30 @@ export function PriceHistoryChart({
 
       <div className="p-6">
         {/* Summary */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="text-center p-3 rounded-xl bg-slate-800/50">
-            <p className="text-xs text-slate-400 mb-1">最高価格</p>
-            <p className="text-lg font-semibold text-white">
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="text-center p-4 rounded-2xl bg-[var(--bg-warm)] border border-orange-100">
+            <p className="text-xs font-medium text-[var(--text-secondary)] mb-1 uppercase tracking-wide">
+              最高価格
+            </p>
+            <p className="text-lg font-bold text-[var(--text-primary)]">
               {formatPrice(maxPrice)}
             </p>
           </div>
-          <div className="text-center p-3 rounded-xl bg-slate-800/50">
-            <p className="text-xs text-slate-400 mb-1">最低価格</p>
-            <p className="text-lg font-semibold text-emerald-400">
+          <div className="text-center p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+            <p className="text-xs font-medium text-[var(--text-secondary)] mb-1 uppercase tracking-wide">
+              最低価格
+            </p>
+            <p className="text-lg font-bold text-emerald-600">
               {formatPrice(minPrice)}
             </p>
           </div>
-          <div className="text-center p-3 rounded-xl bg-slate-800/50">
-            <p className="text-xs text-slate-400 mb-1">変動幅</p>
+          <div className="text-center p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--bg-tertiary)]">
+            <p className="text-xs font-medium text-[var(--text-secondary)] mb-1 uppercase tracking-wide">
+              変動幅
+            </p>
             <p
-              className={`text-lg font-semibold ${
-                isLower ? "text-emerald-400" : "text-slate-400"
+              className={`text-lg font-bold ${
+                isLower ? "text-emerald-600" : "text-[var(--text-secondary)]"
               }`}
             >
               {isLower ? "↓" : ""} {formatPrice(Math.abs(priceDiff))}
@@ -121,11 +137,11 @@ export function PriceHistoryChart({
         </div>
 
         {/* Chart */}
-        <div className="relative h-[200px] w-full">
+        <div className="relative h-[220px] w-full pl-12">
           <svg
             viewBox={`0 0 100 ${chartHeight}`}
             preserveAspectRatio="none"
-            className="w-full h-full"
+            className="w-full h-full overflow-visible"
           >
             {/* Grid lines */}
             {[0, 25, 50, 75, 100].map((y) => (
@@ -135,8 +151,9 @@ export function PriceHistoryChart({
                 y1={(y / 100) * chartHeight}
                 x2="100"
                 y2={(y / 100) * chartHeight}
-                stroke="rgb(51, 65, 85)"
-                strokeWidth="0.5"
+                stroke="rgb(226, 232, 240)"
+                strokeWidth="1"
+                strokeDasharray="4 4"
               />
             ))}
 
@@ -147,19 +164,20 @@ export function PriceHistoryChart({
               x2="100"
               y2={getY(originalPrice)}
               stroke="rgb(251, 191, 36)"
-              strokeWidth="1"
-              strokeDasharray="2 2"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              opacity="0.6"
             />
 
             {/* Area fill */}
-            <path d={areaPath} fill="url(#gradient)" opacity="0.2" />
+            <path d={areaPath} fill="url(#gradient)" opacity="0.15" />
 
             {/* Line */}
             <path
               d={pathPoints}
               fill="none"
-              stroke="rgb(52, 211, 153)"
-              strokeWidth="2"
+              stroke="rgb(16, 185, 129)"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -168,26 +186,40 @@ export function PriceHistoryChart({
             {sortedHistory.map((h, i) => {
               const x = (i / (sortedHistory.length - 1 || 1)) * 100;
               const y = getY(h.price);
+              const isLast = i === sortedHistory.length - 1;
+
               return (
-                <circle
-                  key={h.id}
-                  cx={x}
-                  cy={y}
-                  r="3"
-                  fill="rgb(52, 211, 153)"
-                  stroke="rgb(15, 23, 42)"
-                  strokeWidth="2"
-                />
+                <g key={h.id}>
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={isLast ? "5" : "3.5"}
+                    fill="white"
+                    stroke="rgb(16, 185, 129)"
+                    strokeWidth="2.5"
+                    className="transition-all duration-300 hover:r-6"
+                  />
+                  {isLast && (
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r="8"
+                      fill="rgb(16, 185, 129)"
+                      opacity="0.2"
+                      className="animate-pulse"
+                    />
+                  )}
+                </g>
               );
             })}
 
             {/* Gradient definition */}
             <defs>
               <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(52, 211, 153)" />
+                <stop offset="0%" stopColor="rgb(16, 185, 129)" />
                 <stop
                   offset="100%"
-                  stopColor="rgb(52, 211, 153)"
+                  stopColor="rgb(16, 185, 129)"
                   stopOpacity="0"
                 />
               </linearGradient>
@@ -195,67 +227,26 @@ export function PriceHistoryChart({
           </svg>
 
           {/* Y-axis labels */}
-          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-slate-500 -translate-x-full pr-2">
+          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs font-medium text-[var(--text-tertiary)] pr-3 select-none">
             <span>{formatPrice(maxPrice)}</span>
             <span>{formatPrice(minPrice)}</span>
           </div>
         </div>
 
         {/* X-axis labels */}
-        <div className="flex justify-between mt-2 text-xs text-slate-500">
+        <div className="flex justify-between mt-3 text-xs font-medium text-[var(--text-tertiary)] pl-12 select-none">
           {sortedHistory.length > 0 && (
             <>
               <span>{formatDateShort(sortedHistory[0].checkedAt)}</span>
               <span>
                 {formatDateShort(
-                  sortedHistory[sortedHistory.length - 1].checkedAt,
+                  sortedHistory[sortedHistory.length - 1].checkedAt
                 )}
               </span>
             </>
           )}
         </div>
-
-        {/* History Table */}
-        <div className="mt-6">
-          <h3 className="text-sm font-medium text-slate-400 mb-3">履歴詳細</h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {sortedHistory
-              .slice()
-              .reverse()
-              .map((h, i, arr) => {
-                const prevPrice = arr[i + 1]?.price;
-                const diff = prevPrice ? h.price - prevPrice : 0;
-                return (
-                  <div
-                    key={h.id}
-                    className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50"
-                  >
-                    <span className="text-sm text-slate-400">
-                      {formatDateShort(h.checkedAt)}
-                    </span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-white">
-                        {formatPrice(h.price)}
-                      </span>
-                      {diff !== 0 && (
-                        <span
-                          className={`text-xs ${
-                            diff < 0 ? "text-emerald-400" : "text-red-400"
-                          }`}
-                        >
-                          {diff < 0 ? "↓" : "↑"} {formatPrice(Math.abs(diff))}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
       </div>
     </div>
   );
 }
-
-
-

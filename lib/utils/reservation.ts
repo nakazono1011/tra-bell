@@ -24,7 +24,7 @@ export function getSiteBadgeColor(site: ReservationSite | string): string {
     case "jalan":
       return "bg-orange-400/10 text-orange-400 border-orange-400/20";
     default:
-      return "bg-slate-400/10 text-slate-400 border-slate-400/20";
+      return "bg-[var(--bg-tertiary)]/10 text-[var(--text-secondary)] border-[var(--bg-tertiary)]/20";
   }
 }
 
@@ -55,6 +55,3 @@ export function getStatusBadge(status: ReservationStatus | string) {
       return null;
   }
 }
-
-
-

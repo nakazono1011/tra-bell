@@ -41,8 +41,10 @@ export default async function SettingsPage() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">設定</h1>
-        <p className="text-slate-400 mt-1">価格監視と自動処理の設定を管理</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">設定</h1>
+        <p className="text-[var(--text-secondary)] mt-1">
+          価格監視と自動処理の設定を管理
+        </p>
       </div>
 
       {/* Settings Form */}

@@ -12,6 +12,7 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #e5e7eb;
+  --bg-warm: #fff9ed;
 
   --text-primary: #111827;
   --text-secondary: #4b5563;
@@ -70,6 +71,7 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-bg-warm: var(--bg-warm);
 
   /* Map Custom Colors if needed in Tailwind v4 Theme, 
      but standard CSS variables work with arbitrary values too */

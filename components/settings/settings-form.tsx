@@ -70,7 +70,7 @@ export function SettingsForm({
   return (
     <div className="space-y-6">
       {/* Gmail Connection */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6">
         <h2 className="text-lg font-semibold text-white mb-4">Gmail連携</h2>
 
         <div className="flex items-center justify-between">
@@ -143,7 +143,7 @@ export function SettingsForm({
       </div>
 
       {/* Price Drop Thresholds */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6">
         <h2 className="text-lg font-semibold text-white mb-4">価格監視設定</h2>
 
         <div className="space-y-6">
@@ -162,7 +162,7 @@ export function SettingsForm({
                     priceDropThreshold: parseInt(e.target.value, 10) || 0,
                   })
                 }
-                className="w-32 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                className="w-32 px-4 py-2 rounded-xl bg-white border border-[var(--bg-tertiary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 min="0"
                 step="100"
               />
@@ -188,7 +188,7 @@ export function SettingsForm({
                     priceDropPercentage: parseInt(e.target.value, 10) || 0,
                   })
                 }
-                className="w-32 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                className="w-32 px-4 py-2 rounded-xl bg-white border border-[var(--bg-tertiary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 min="0"
                 max="100"
               />
@@ -202,7 +202,7 @@ export function SettingsForm({
       </div>
 
       {/* Auto Rebook Settings */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6">
         <h2 className="text-lg font-semibold text-white mb-4">自動処理設定</h2>
 
         <div className="flex items-center justify-between">
@@ -225,7 +225,7 @@ export function SettingsForm({
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-400/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
+            <div className="w-11 h-6 bg-[var(--bg-tertiary)] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-400/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--bg-tertiary)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
           </label>
         </div>
 

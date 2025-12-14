@@ -26,8 +26,10 @@ export default async function NotificationsPage() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">通知</h1>
-        <p className="text-slate-400 mt-1">価格変動と自動処理の通知を確認</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">通知</h1>
+        <p className="text-[var(--text-secondary)] mt-1">
+          価格変動と自動処理の通知を確認
+        </p>
       </div>
 
       {/* Notifications List */}

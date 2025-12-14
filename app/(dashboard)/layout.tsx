@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { DashboardNav } from "@/components/dashboard/nav";
 import { DashboardHeader } from "@/components/dashboard/header";
+import { FooterNav } from "@/components/dashboard/footer-nav";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -30,12 +30,12 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col">
       <DashboardHeader user={session.user} />
-      <div className="flex">
-        <DashboardNav />
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
-      </div>
+      <main className="flex-1 pb-20 md:pb-6">
+        <div className="max-w-md mx-auto py-6">{children}</div>
+      </main>
+      <FooterNav />
     </div>
   );
 }

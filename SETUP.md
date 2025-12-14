@@ -1,6 +1,6 @@
 # セットアップガイド
 
-このドキュメントでは、Hotel Price Guardian プロジェクトをセットアップするために必要な設定を説明します。
+このドキュメントでは、Tra-bell プロジェクトをセットアップするために必要な設定を説明します。
 
 ---
 
@@ -115,7 +115,7 @@ pnpm db:generate
 
 1. 「OAuth 同意画面」を設定
    - ユーザータイプ: 外部（一般公開）
-   - アプリ名: Hotel Price Guardian
+   - アプリ名: Tra-bell
    - ユーザーサポートメール: あなたのメールアドレス
    - スコープ: 以下のスコープを追加
      - `openid`
@@ -143,11 +143,11 @@ pnpm db:generate
 1. 「API とサービス」→「ライブラリ」に移動
 2. 「Generative Language API」を検索して有効化
 3. [Google AI Studio](https://makersuite.google.com/app/apikey) にアクセス
-4. 「Get API Key」をクリックしてAPIキーを作成
-5. 作成したAPIキーをコピー
+4. 「Get API Key」をクリックして API キーを作成
+5. 作成した API キーをコピー
 6. `.env.local` の `GOOGLE_GENERATIVE_AI_API_KEY` に設定
 
-**注意:** 楽天トラベルの予約メール解析にGemini APIを使用します。APIキーは環境変数として安全に管理してください。
+**注意:** 楽天トラベルの予約メール解析に Gemini API を使用します。API キーは環境変数として安全に管理してください。
 
 ---
 

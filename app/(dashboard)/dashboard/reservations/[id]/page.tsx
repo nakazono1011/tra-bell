@@ -46,13 +46,15 @@ export default async function ReservationDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link
-          href="/dashboard/reservations"
-          className="text-slate-400 hover:text-white transition-colors"
+          href="/dashboard"
+          className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
-          予約一覧
+          プラン
         </Link>
-        <span className="text-slate-600">/</span>
-        <span className="text-white">{reservationData.hotelName}</span>
+        <span className="text-[var(--text-tertiary)]">/</span>
+        <span className="text-[var(--text-primary)]">
+          {reservationData.hotelName}
+        </span>
       </div>
 
       {/* Reservation Detail */}
@@ -66,6 +68,3 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     </div>
   );
 }
-
-
-

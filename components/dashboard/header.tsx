@@ -27,35 +27,24 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-[var(--bg-tertiary)] bg-[var(--bg-warm)]/80 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-400">
-            <svg
-              className="w-5 h-5 text-slate-900"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-          </div>
-          <span className="text-lg font-semibold text-white hidden sm:block">
-            Hotel Price Guardian
-          </span>
+          <Image
+            src="/logos/logo.png"
+            alt="Tra-bell"
+            width={100}
+            height={36}
+            className="rounded-xl"
+          />
         </div>
 
         {/* User Menu */}
         <div className="relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-white/50 transition-colors hover:cursor-pointer"
           >
             {user.image ? (
               <Image
@@ -72,24 +61,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                 </span>
               </div>
             )}
-            <span className="text-sm text-slate-300 hidden sm:block">
-              {user.name}
-            </span>
-            <svg
-              className={`w-4 h-4 text-slate-400 transition-transform ${
-                isMenuOpen ? "rotate-180" : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            <span className="text-sm hidden sm:block">{user.name}</span>
           </button>
 
           {/* Dropdown Menu */}
@@ -99,15 +71,19 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                 className="fixed inset-0 z-10"
                 onClick={() => setIsMenuOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-700 bg-slate-800 shadow-xl z-20">
-                <div className="p-3 border-b border-slate-700">
-                  <p className="text-sm font-medium text-white">{user.name}</p>
-                  <p className="text-xs text-slate-400">{user.email}</p>
+              <div className="absolute right-0 mt-2 w-56 rounded-xl border border-[var(--bg-tertiary)] bg-white shadow-xl z-20">
+                <div className="p-3 border-b border-[var(--bg-tertiary)]">
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    {user.email}
+                  </p>
                 </div>
                 <div className="p-2">
                   <a
                     href="/dashboard/settings"
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-700 transition-colors"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] transition-colors"
                   >
                     <svg
                       className="w-4 h-4"
@@ -132,7 +108,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                   </a>
                   <button
                     onClick={handleSignOut}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-slate-700 transition-colors"
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-[var(--bg-secondary)] transition-colors"
                   >
                     <svg
                       className="w-4 h-4"
@@ -158,6 +134,3 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
     </header>
   );
 }
-
-
-

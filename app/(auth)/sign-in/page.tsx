@@ -27,7 +27,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-6 text-[var(--text-primary)]">
+    <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col items-center justify-center p-6 text-[var(--text-primary)]">
       <div className="w-full max-w-[360px] flex flex-col items-center">
         {/* Logo */}
         <div className="w-64 relative h-40">

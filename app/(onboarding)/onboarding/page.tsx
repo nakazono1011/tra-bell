@@ -137,7 +137,7 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-6 text-[var(--text-primary)]">
+    <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col items-center justify-center p-6 text-[var(--text-primary)]">
       <div className="w-full max-w-[360px] flex flex-col items-center">
         {/* Progress Dots */}
         <div className="flex space-x-2 mb-8 shrink-0">
