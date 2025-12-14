@@ -290,7 +290,7 @@ function PriceComparisonCard() {
 function ProblemSection() {
   return (
     <section
-      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32 scroll-mt-32"
       id="problem"
     >
       <div className="text-center mb-16">
@@ -305,7 +305,7 @@ function ProblemSection() {
       <div className="bg-[var(--bg-secondary)] rounded-3xl p-8 lg:p-16 border border-[var(--bg-tertiary)]">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h3 className="text-3xl font-bold mb-6 text-[var(--text-primary)]">
+            <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-[var(--text-primary)]">
               ホテルの価格は、
               <br />
               <span className="text-[var(--accent-primary)]">予約後</span>
@@ -361,10 +361,12 @@ function PriceTimelineDiagram() {
       <div className="space-y-6">
         <div className="flex items-center justify-between opacity-50">
           <div className="flex items-center gap-3">
-            <div className="size-12 text-xs bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-500">
+            <div className="size-12 text-[10px] lg:text-xs bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-500">
               1ヶ月前
             </div>
-            <span className="font-medium text-gray-500">あなたが予約</span>
+            <span className="font-medium text-xs lg:text-base text-gray-500">
+              あなたが予約
+            </span>
           </div>
           <span className="font-bold text-xl text-gray-400 line-through">
             ¥20,000
@@ -375,10 +377,10 @@ function PriceTimelineDiagram() {
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 text-xs bg-[var(--accent-light)] rounded-full flex items-center justify-center font-bold text-[var(--accent-primary)]">
+            <div className="w-12 h-12 text-[10px] lg:text-xs bg-[var(--accent-light)] rounded-full flex items-center justify-center font-bold text-[var(--accent-primary)]">
               1週間前
             </div>
-            <span className="font-bold text-[var(--text-primary)]">
+            <span className="font-bold text-xs lg:text-base text-[var(--text-primary)]">
               空室を埋めるために値下げ
             </span>
           </div>
@@ -404,7 +406,7 @@ function PriceTimelineDiagram() {
 function HowItWorksSection() {
   return (
     <section
-      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32 scroll-mt-32"
       id="how-it-works"
     >
       <div className="text-center mb-16">
@@ -461,7 +463,7 @@ function HowItWorksSection() {
 function FeaturesSection() {
   return (
     <section
-      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      className="max-w-7xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32 scroll-mt-32"
       id="features"
     >
       <div className="mb-8 lg:mb-12 text-center">
@@ -540,7 +542,7 @@ function SupportedSitesSection() {
 function FAQSection() {
   return (
     <section
-      className="max-w-5xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32"
+      className="max-w-5xl mx-auto px-6 lg:px-12 mb-16 lg:mb-32 scroll-mt-32"
       id="faq"
     >
       <div className="text-center mb-12">
@@ -630,6 +632,50 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function RadioOption({
+  name,
+  value,
+  label,
+  checked,
+  onChange,
+}: {
+  name: string;
+  value: string;
+  label: string;
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <label
+      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+        checked
+          ? "border-[var(--accent-primary)] bg-orange-50"
+          : "border-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)]"
+      }`}
+    >
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={checked}
+        onChange={onChange}
+        required
+        className="sr-only"
+      />
+      <div
+        className={`w-5 h-5 rounded-full border mr-3 flex items-center justify-center shrink-0 transition-all ${
+          checked
+            ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]"
+            : "border-gray-300 bg-white"
+        }`}
+      >
+        {checked && <div className="w-2 h-2 rounded-full bg-white" />}
+      </div>
+      <span className="text-sm text-[var(--text-primary)]">{label}</span>
+    </label>
   );
 }
 
@@ -750,7 +796,7 @@ function WaitlistSection() {
               onSubmit={handleEmailSubmit}
               className="max-w-md mx-auto"
             >
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-4">
                 <input
                   type="email"
                   value={email}
@@ -806,25 +852,16 @@ function WaitlistSection() {
                     { value: "expedia", label: "Expedia" },
                     { value: "other", label: "その他" },
                   ].map((option) => (
-                    <label
+                    <RadioOption
                       key={option.value}
-                      className="flex items-center p-3 border border-[var(--bg-tertiary)] rounded-lg cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors"
-                    >
-                      <input
-                        type="radio"
-                        name="ota"
-                        value={option.value}
-                        checked={surveyData.ota === option.value}
-                        onChange={(e) =>
-                          setSurveyData({ ...surveyData, ota: e.target.value })
-                        }
-                        required
-                        className="mr-2"
-                      />
-                      <span className="text-sm text-[var(--text-primary)]">
-                        {option.label}
-                      </span>
-                    </label>
+                      name="ota"
+                      value={option.value}
+                      label={option.label}
+                      checked={surveyData.ota === option.value}
+                      onChange={(e) =>
+                        setSurveyData({ ...surveyData, ota: e.target.value })
+                      }
+                    />
                   ))}
                 </div>
               </div>
@@ -840,28 +877,19 @@ function WaitlistSection() {
                     { value: "ios", label: "iOSアプリから通知" },
                     { value: "android", label: "Androidアプリから通知" },
                   ].map((option) => (
-                    <label
+                    <RadioOption
                       key={option.value}
-                      className="flex items-center p-3 border border-[var(--bg-tertiary)] rounded-lg cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors"
-                    >
-                      <input
-                        type="radio"
-                        name="osOrNotification"
-                        value={option.value}
-                        checked={surveyData.osOrNotification === option.value}
-                        onChange={(e) =>
-                          setSurveyData({
-                            ...surveyData,
-                            osOrNotification: e.target.value,
-                          })
-                        }
-                        required
-                        className="mr-2"
-                      />
-                      <span className="text-sm text-[var(--text-primary)]">
-                        {option.label}
-                      </span>
-                    </label>
+                      name="osOrNotification"
+                      value={option.value}
+                      label={option.label}
+                      checked={surveyData.osOrNotification === option.value}
+                      onChange={(e) =>
+                        setSurveyData({
+                          ...surveyData,
+                          osOrNotification: e.target.value,
+                        })
+                      }
+                    />
                   ))}
                 </div>
               </div>
@@ -877,28 +905,19 @@ function WaitlistSection() {
                     { value: "1month", label: "1ヶ月前" },
                     { value: "lastminute", label: "直前" },
                   ].map((option) => (
-                    <label
+                    <RadioOption
                       key={option.value}
-                      className="flex items-center p-3 border border-[var(--bg-tertiary)] rounded-lg cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors"
-                    >
-                      <input
-                        type="radio"
-                        name="bookingTiming"
-                        value={option.value}
-                        checked={surveyData.bookingTiming === option.value}
-                        onChange={(e) =>
-                          setSurveyData({
-                            ...surveyData,
-                            bookingTiming: e.target.value,
-                          })
-                        }
-                        required
-                        className="mr-2"
-                      />
-                      <span className="text-sm text-[var(--text-primary)]">
-                        {option.label}
-                      </span>
-                    </label>
+                      name="bookingTiming"
+                      value={option.value}
+                      label={option.label}
+                      checked={surveyData.bookingTiming === option.value}
+                      onChange={(e) =>
+                        setSurveyData({
+                          ...surveyData,
+                          bookingTiming: e.target.value,
+                        })
+                      }
+                    />
                   ))}
                 </div>
               </div>
