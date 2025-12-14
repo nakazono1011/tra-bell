@@ -1,11 +1,24 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
+import * as schema from "@/db/schema"; // schemaを追加インポート
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    usePlural: true,
+    schema: {
+      ...schema,
+    },
   }),
+  user: {
+    additionalFields: {
+      onboardingCompletedAt: {
+        type: "date",
+        required: false,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: false, // Googleログインのみ使用
   },

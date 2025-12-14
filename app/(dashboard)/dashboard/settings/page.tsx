@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { userSettings, account } from "@/db/schema";
+import { userSettings, accounts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { SettingsForm } from "@/components/settings/settings-form";
 
@@ -25,12 +25,12 @@ export default async function SettingsPage() {
   // Google連携状態を確認
   const [googleAccount] = await db
     .select()
-    .from(account)
+    .from(accounts)
     .where(
       and(
-        eq(account.userId, session.user.id),
-        eq(account.providerId, "google"),
-      ),
+        eq(accounts.userId, session.user.id),
+        eq(accounts.providerId, "google")
+      )
     )
     .limit(1);
 

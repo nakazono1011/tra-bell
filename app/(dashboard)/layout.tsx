@@ -3,6 +3,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { DashboardNav } from "@/components/dashboard/nav";
 import { DashboardHeader } from "@/components/dashboard/header";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function DashboardLayout({
   children,
@@ -15,6 +18,15 @@ export default async function DashboardLayout({
 
   if (!session) {
     redirect("/sign-in");
+  }
+
+  // オンボーディング完了チェック
+  const dbUser = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+  });
+
+  if (!dbUser?.onboardingCompletedAt) {
+    redirect("/onboarding");
   }
 
   return (

@@ -34,7 +34,7 @@ export function SyncGmailButton() {
           message: data.error || "同期に失敗しました",
         });
       }
-    } catch (error) {
+    } catch {
       setResult({
         success: false,
         message: "同期中にエラーが発生しました",

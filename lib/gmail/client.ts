@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import { db } from "@/db";
-import { account } from "@/db/schema";
+import { accounts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import type { GmailMessage } from "@/types";
 
@@ -25,8 +25,10 @@ export class GmailClient {
   static async fromUserId(userId: string): Promise<GmailClient | null> {
     const [userAccount] = await db
       .select()
-      .from(account)
-      .where(and(eq(account.userId, userId), eq(account.providerId, "google")))
+      .from(accounts)
+      .where(
+        and(eq(accounts.userId, userId), eq(accounts.providerId, "google"))
+      )
       .limit(1);
 
     if (!userAccount || !userAccount.accessToken) {
@@ -45,14 +47,14 @@ export class GmailClient {
    */
   private async saveTokens(accessToken: string, refreshToken: string | null) {
     await db
-      .update(account)
+      .update(accounts)
       .set({
         accessToken,
         refreshToken,
         updatedAt: new Date(),
       })
       .where(
-        and(eq(account.userId, this.userId), eq(account.providerId, "google"))
+        and(eq(accounts.userId, this.userId), eq(accounts.providerId, "google"))
       );
 
     // インスタンスのトークンも更新

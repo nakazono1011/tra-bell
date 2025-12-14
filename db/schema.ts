@@ -13,7 +13,7 @@ import {
 // Better Auth Tables
 // ==========================================
 
-export const user = pgTable("user", {
+export const users = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -24,9 +24,10 @@ export const user = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
+  onboardingCompletedAt: timestamp("onboarding_completed_at"),
 });
 
-export const session = pgTable("session", {
+export const sessions = pgTable("sessions", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
@@ -39,18 +40,18 @@ export const session = pgTable("session", {
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
-export const account = pgTable(
-  "account",
+export const accounts = pgTable(
+  "accounts",
   {
     id: text("id").primaryKey(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -67,8 +68,8 @@ export const account = pgTable(
   (table) => [index("account_userId_idx").on(table.userId)]
 );
 
-export const verification = pgTable(
-  "verification",
+export const verifications = pgTable(
+  "verifications",
   {
     id: text("id").primaryKey(),
     identifier: text("identifier").notNull(),
@@ -107,7 +108,7 @@ export const reservation = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     hotelName: text("hotel_name").notNull(),
     checkInDate: date("check_in_date").notNull(),
     checkOutDate: date("check_out_date").notNull(),
@@ -160,7 +161,7 @@ export const notification = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     reservationId: uuid("reservation_id").references(() => reservation.id, {
       onDelete: "set null",
     }),
@@ -182,7 +183,7 @@ export const userSettings = pgTable("user_settings", {
   userId: text("user_id")
     .notNull()
     .unique()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
   priceDropThreshold: integer("price_drop_threshold").default(500), // 値下がり通知閾値（円）
   priceDropPercentage: integer("price_drop_percentage").default(5), // 値下がり通知閾値（%）
   autoRebookEnabled: boolean("auto_rebook_enabled").default(false), // 自動再予約有効フラグ
@@ -199,14 +200,14 @@ export const userSettings = pgTable("user_settings", {
 // Type Exports
 // ==========================================
 
-export type User = typeof user.$inferSelect;
-export type NewUser = typeof user.$inferInsert;
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 
-export type Session = typeof session.$inferSelect;
-export type NewSession = typeof session.$inferInsert;
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
 
-export type Account = typeof account.$inferSelect;
-export type NewAccount = typeof account.$inferInsert;
+export type Account = typeof accounts.$inferSelect;
+export type NewAccount = typeof accounts.$inferInsert;
 
 export type Reservation = typeof reservation.$inferSelect;
 export type NewReservation = typeof reservation.$inferInsert;

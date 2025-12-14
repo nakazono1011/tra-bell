@@ -48,7 +48,7 @@ export default async function DashboardPage() {
     .where(eq(reservation.userId, session.user.id));
 
   const activeCount = allReservations.filter(
-    (r) => r.status === "active",
+    (r) => r.status === "active"
   ).length;
   const totalSavings = allReservations.reduce((acc, r) => {
     if (r.originalPrice > r.currentPrice) {
