@@ -12,7 +12,7 @@ import {
  * じゃらんの予約確認メールをパース
  */
 export function parseJalanReservationEmail(
-  message: GmailMessage,
+  message: GmailMessage
 ): ParsedReservation | null {
   try {
     const body = getEmailBody(message);
@@ -88,14 +88,53 @@ export function parseJalanReservationEmail(
       ? `${cancelDate}T23:59:59`
       : undefined;
 
-    // プラン名を抽出
-    const roomType = extractText(body, [
+    // プラン名を抽出（roomTypeとplanNameで同じ値を使用）
+    const planName = extractText(body, [
       /【プラン】\s*(.+?)(?:\n|<br|<\/)/,
       /プラン名[：:]\s*(.+?)(?:\n|<br|<\/)/,
     ]);
+    const roomType = planName;
+    const planUrl = extractText(body, [
+      /プランURL[：:]\s*(https?:\/\/[^\s]+)/,
+      /プラン[：:]\s*(https?:\/\/[^\s]+)/,
+    ]);
 
-    // 宿泊人数を抽出
-    const guestCount = extractNumber(body, [/(\d+)\s*名/]);
+    // 大人と子供の人数を別々に抽出
+    const adultCount = extractNumber(body, [
+      /大人[：:]\s*(\d+)\s*名/,
+      /大人\s*(\d+)\s*名/,
+      /(\d+)\s*名\s*（大人）/,
+    ]);
+    const childCount = extractNumber(body, [
+      /子供[：:]\s*(\d+)\s*名/,
+      /子供\s*(\d+)\s*名/,
+      /(\d+)\s*名\s*（子供）/,
+      /小人[：:]\s*(\d+)\s*名/,
+      /小人\s*(\d+)\s*名/,
+    ]);
+
+    // 部屋数を抽出
+    const roomCount = extractNumber(body, [
+      /部屋数[：:]\s*(\d+)\s*室/,
+      /申込部屋数[：:]\s*(\d+)/,
+      /(\d+)\s*室/,
+      /部屋[：:]\s*(\d+)\s*室/,
+    ]);
+
+    // ホテル情報を抽出
+    const hotelPostalCode = extractText(body, [
+      /郵便番号[：:]\s*(\d{3}-?\d{4})/,
+      /〒\s*(\d{3}-?\d{4})/,
+    ]);
+    const hotelAddress = extractText(body, [
+      /住所[：:]\s*(.+?)(?:\n|<br|郵便番号|電話)/,
+      /【住所】\s*(.+?)(?:\n|<br|郵便番号|電話)/,
+    ]);
+    const hotelTelNo = extractText(body, [
+      /電話番号[：:]\s*([\d-]+)/,
+      /TEL[：:]\s*([\d-]+)/,
+      /【電話】\s*([\d-]+)/,
+    ]);
 
     return {
       hotelName,
@@ -106,7 +145,14 @@ export function parseJalanReservationEmail(
       reservationSite: "jalan",
       cancellationDeadline,
       roomType,
-      guestCount,
+      adultCount: adultCount || undefined,
+      childCount: childCount || undefined,
+      roomCount: roomCount || undefined,
+      planName: planName || undefined,
+      planUrl: planUrl || undefined,
+      hotelPostalCode: hotelPostalCode || undefined,
+      hotelAddress: hotelAddress || undefined,
+      hotelTelNo: hotelTelNo || undefined,
     };
   } catch (error) {
     console.error("Error parsing Jalan reservation email:", error);

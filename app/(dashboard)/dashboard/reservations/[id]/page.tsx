@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/db";
-import { reservation, priceHistory } from "@/db/schema";
+import { reservations, priceHistory } from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import Link from "next/link";
 import { ReservationDetail } from "@/components/reservations/reservation-detail";
@@ -26,8 +26,10 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   // 予約を取得（ユーザー所有確認付き）
   const [reservationData] = await db
     .select()
-    .from(reservation)
-    .where(and(eq(reservation.id, id), eq(reservation.userId, session.user.id)))
+    .from(reservations)
+    .where(
+      and(eq(reservations.id, id), eq(reservations.userId, session.user.id))
+    )
     .limit(1);
 
   if (!reservationData) {

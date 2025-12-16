@@ -4,13 +4,13 @@ import {
   formatPrice,
   formatDate,
   calculatePriceDrop,
-  getDaysUntil,
   isBeforeDeadline,
 } from "@/lib/utils";
 import {
   getSiteLabel,
   getSiteBadgeColor,
   getStatusBadge,
+  formatGuestCount,
 } from "@/lib/utils/reservation";
 import type { Reservation } from "@/db/schema";
 import {
@@ -20,6 +20,8 @@ import {
   Clock,
   ExternalLink,
   CalendarClock,
+  MapPin,
+  Phone,
 } from "lucide-react";
 
 interface ReservationDetailProps {
@@ -31,13 +33,11 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
     reservation.originalPrice,
     reservation.currentPrice
   );
-  const daysUntilCheckIn = getDaysUntil(reservation.checkInDate);
   const canCancel = isBeforeDeadline(reservation.cancellationDeadline);
 
   return (
     <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white overflow-hidden shadow-sm">
-      {/* Header */}
-      <div className="p-6 border-b border-[var(--bg-tertiary)] bg-white">
+      <div className="py-4 px-6 border-b border-[var(--bg-tertiary)] bg-white">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -62,6 +62,11 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
               <h1 className="text-2xl font-bold text-[var(--text-primary)] leading-tight">
                 {reservation.hotelName}
               </h1>
+              {reservation.planName && (
+                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  {reservation.planName}
+                </p>
+              )}
               <p className="text-xs text-[var(--text-secondary)] mt-2">
                 予約番号: {reservation.reservationId}
               </p>
@@ -71,39 +76,41 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
       </div>
 
       {/* Price Section */}
-      <div className="p-6 border-b border-[var(--bg-tertiary)] bg-[var(--bg-secondary)]">
+      <div className="px-6 py-4 border-b border-[var(--bg-tertiary)] bg-[var(--bg-secondary)]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
           <div>
-            <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
               現在の価格
             </p>
-            <p className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
+            <p className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
               {formatPrice(reservation.currentPrice)}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
               予約時の価格
             </p>
-            <p className="text-2xl font-semibold text-[var(--text-secondary)]">
+            <p className="text-xl font-semibold text-[var(--text-secondary)]">
               {formatPrice(reservation.originalPrice)}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
-              節約額
-            </p>
-            {priceDrop.amount > 0 ? (
-              <div className="flex items-baseline gap-2">
-                <p className="text-2xl font-bold text-emerald-600">
-                  {formatPrice(priceDrop.amount)}
-                </p>
-                <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-xs font-medium text-[var(--text-secondary)]">
+                節約額
+              </p>
+              {priceDrop.amount > 0 && (
+                <span className="text-xs text-emerald-600">
                   {priceDrop.percentage}% OFF
                 </span>
-              </div>
+              )}
+            </div>
+            {priceDrop.amount > 0 ? (
+              <p className="text-xl font-bold text-emerald-600">
+                {formatPrice(priceDrop.amount)}
+              </p>
             ) : (
-              <p className="text-2xl font-semibold text-[var(--text-tertiary)]">
+              <p className="text-xl font-semibold text-[var(--text-tertiary)]">
                 ¥0
               </p>
             )}
@@ -121,48 +128,62 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                 <Calendar className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
                   宿泊日程
                 </p>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
                   {formatDate(reservation.checkInDate)} 〜{" "}
                   {formatDate(reservation.checkOutDate)}
                 </p>
-                {daysUntilCheckIn > 0 && (
-                  <p className="text-sm text-orange-600 mt-1 font-medium">
-                    チェックインまであと{daysUntilCheckIn}日
-                  </p>
-                )}
               </div>
             </div>
 
             {reservation.roomType && (
               <div className="flex gap-4">
-                <div className="mt-1 p-2 bg-blue-50 rounded-lg text-blue-500 shrink-0">
+                <div className="mt-1 p-2 bg-purple-50 rounded-lg text-purple-500 shrink-0">
                   <Bed className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
-                    プラン
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
+                    部屋タイプ
                   </p>
-                  <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                  <p className="text-xs text-[var(--text-primary)] leading-normal">
                     {reservation.roomType}
                   </p>
                 </div>
               </div>
             )}
 
-            {reservation.guestCount && (
+            {reservation.roomCount && (
+              <div className="flex gap-4">
+                <div className="mt-1 p-2 bg-cyan-50 rounded-lg text-cyan-500 shrink-0">
+                  <Bed className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
+                    部屋数
+                  </p>
+                  <p className="text-xs text-[var(--text-primary)]">
+                    {reservation.roomCount}室
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {(reservation.adultCount || reservation.childCount) && (
               <div className="flex gap-4">
                 <div className="mt-1 p-2 bg-indigo-50 rounded-lg text-indigo-500 shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
                     宿泊人数
                   </p>
                   <p className="text-xs text-[var(--text-primary)]">
-                    {reservation.guestCount}名
+                    {formatGuestCount(
+                      reservation.adultCount,
+                      reservation.childCount
+                    )}
                   </p>
                 </div>
               </div>
@@ -176,7 +197,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
                   キャンセル期限
                 </p>
                 {reservation.cancellationDeadline ? (
@@ -185,12 +206,12 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                       {formatDate(reservation.cancellationDeadline)}
                     </p>
                     {canCancel ? (
-                      <p className="text-sm text-emerald-600 mt-1 font-medium flex items-center gap-1">
+                      <p className="text-xs text-emerald-600 mt-1 font-medium flex items-center gap-1">
                         ✓ 無料キャンセル可能
                       </p>
                     ) : (
-                      <p className="text-sm text-rose-600 mt-1 font-medium flex items-center gap-1">
-                        ✗ キャンセル料が発生します
+                      <p className="text-xs text-rose-600 mt-1 font-medium flex items-center gap-1">
+                        ✗ キャンセル料発生
                       </p>
                     )}
                   </div>
@@ -205,7 +226,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                 <CalendarClock className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
                   予約登録日
                 </p>
                 <p className="text-xs text-[var(--text-primary)]">
@@ -214,21 +235,59 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
               </div>
             </div>
 
-            {reservation.hotelUrl && (
-              <div className="pt-2">
-                <a
-                  href={reservation.hotelUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-sm font-medium"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  予約ページを開く
-                </a>
+            {(reservation.hotelPostalCode || reservation.hotelAddress) && (
+              <div className="flex gap-4">
+                <div className="mt-1 p-2 bg-green-50 rounded-lg text-green-500 shrink-0">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
+                    ホテル住所
+                  </p>
+                  {reservation.hotelPostalCode && (
+                    <p className="text-xs text-[var(--text-primary)]">
+                      〒{reservation.hotelPostalCode}
+                    </p>
+                  )}
+                  {reservation.hotelAddress && (
+                    <p className="text-xs text-[var(--text-primary)] mt-1">
+                      {reservation.hotelAddress}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {reservation.hotelTelNo && (
+              <div className="flex gap-4">
+                <div className="mt-1 p-2 bg-teal-50 rounded-lg text-teal-500 shrink-0">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
+                    ホテル電話番号
+                  </p>
+                  <p className="text-xs text-[var(--text-primary)]">
+                    {reservation.hotelTelNo}
+                  </p>
+                </div>
               </div>
             )}
           </div>
         </div>
+        {reservation.hotelUrl && (
+          <div className="w-full pt-2">
+            <a
+              href={reservation.hotelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-xs font-medium"
+            >
+              <ExternalLink className="w-4 h-4" />
+              予約ページを開く
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

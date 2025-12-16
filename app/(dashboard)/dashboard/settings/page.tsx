@@ -52,7 +52,6 @@ export default async function SettingsPage() {
         initialSettings={{
           priceDropThreshold: settings?.priceDropThreshold ?? 500,
           priceDropPercentage: settings?.priceDropPercentage ?? 5,
-          autoRebookEnabled: settings?.autoRebookEnabled ?? false,
           gmailConnected: settings?.gmailConnected ?? false,
         }}
         hasGmailScope={hasGmailScope || (settings?.gmailConnected ?? false)}

@@ -24,9 +24,9 @@ export function StatusFilter({ value, onChange }: StatusFilterProps) {
             <button
               key={option.value}
               onClick={() => onChange(option.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:cursor-pointer ${
                 value === option.value
-                  ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/30"
+                  ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                   : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
               }`}
             >

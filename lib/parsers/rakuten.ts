@@ -2,6 +2,11 @@ import type { ParsedReservation } from "@/types";
 import type { GmailMessage } from "@/types";
 import { GmailClient } from "@/lib/gmail/client";
 import { getEmailBody } from "@/lib/utils/parsers";
+import {
+  extractHotelIdFromRakutenUrl,
+  buildRakutenPlanUrl,
+  addQueryParamsToRakutenPlanUrl,
+} from "@/lib/utils/rakuten";
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
@@ -29,6 +34,13 @@ const rakutenReservationSchema = z.object({
   hotelUrl: z.string().url().optional().describe("ホテルURL"),
   planName: z.string().optional().describe("宿泊プラン名"),
   planUrl: z.string().url().optional().describe("宿泊プランURL"),
+  hotelId: z
+    .string()
+    .optional()
+    .describe("ホテルID（URLから抽出、hotelinfo/plan/{数字}の形式）"),
+  hotelPostalCode: z.string().optional().describe("ホテル郵便番号"),
+  hotelAddress: z.string().optional().describe("ホテル住所"),
+  hotelTelNo: z.string().optional().describe("ホテル電話番号"),
   totalPrice: z.number().describe("宿泊合計金額（円）、クーポン差し引き後"),
   paymentMethod: z.string().optional().describe("支払方法"),
   cancellationFeeStartDate: z
@@ -41,7 +53,7 @@ const rakutenReservationSchema = z.object({
  * 楽天トラベルの予約確認メールをパース
  */
 export async function parseRakutenReservationEmail(
-  message: GmailMessage,
+  message: GmailMessage
 ): Promise<ParsedReservation | null> {
   try {
     const body = getEmailBody(message);
@@ -74,6 +86,10 @@ ${body}
 - ホテルURL（見つからない場合は省略）
 - 宿泊プラン名（見つからない場合は省略）
 - 宿泊プランURL（見つからない場合は省略）
+- ホテルID（URLから抽出、hotelinfo/plan/{数字}の形式、見つからない場合は省略）
+- ホテル郵便番号（見つからない場合は省略）
+- ホテル住所（見つからない場合は省略）
+- ホテル電話番号（見つからない場合は省略）
 - 宿泊合計金額（円単位、カンマは除去、クーポン差し引き後）
 - 支払方法（見つからない場合は省略）
 - キャンセル料発生開始日（見つからない場合は省略）
@@ -82,12 +98,34 @@ ${body}
     });
     console.log("object", object);
 
-    // 宿泊人数を計算（大人と子供の合計）
-    const guestCount =
-      (object.adultCount || 0) + (object.childCount || 0) || undefined;
+    // hotelIdを抽出（スキーマから取得、またはplanUrlから抽出）
+    const hotelId =
+      object.hotelId ||
+      (object.planUrl ? extractHotelIdFromRakutenUrl(object.planUrl) : null);
+
+    // planUrlを構築または更新
+    const planUrl = hotelId
+      ? buildRakutenPlanUrl(
+          hotelId,
+          object.checkInDate,
+          object.checkOutDate,
+          object.roomCount,
+          object.adultCount,
+          object.childCount
+        )
+      : object.planUrl
+      ? addQueryParamsToRakutenPlanUrl(
+          object.planUrl,
+          object.checkInDate,
+          object.checkOutDate,
+          object.roomCount,
+          object.adultCount,
+          object.childCount
+        )
+      : undefined;
 
     return {
-      hotelName: object.planName || "",
+      hotelName: object.hotelName || "",
       checkInDate: object.checkInDate,
       checkOutDate: object.checkOutDate,
       price: object.totalPrice,
@@ -95,8 +133,16 @@ ${body}
       reservationSite: "rakuten",
       cancellationDeadline: object.cancellationFeeStartDate,
       roomType: object.roomType,
-      guestCount,
-      hotelUrl: object.planUrl,
+      adultCount: object.adultCount,
+      childCount: object.childCount,
+      roomCount: object.roomCount,
+      hotelUrl: object.hotelUrl,
+      planName: object.planName,
+      planUrl,
+      hotelId: hotelId || undefined,
+      hotelPostalCode: object.hotelPostalCode,
+      hotelAddress: object.hotelAddress,
+      hotelTelNo: object.hotelTelNo,
     };
   } catch (error) {
     console.error("Error parsing Rakuten reservation email:", error);

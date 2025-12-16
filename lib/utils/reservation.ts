@@ -55,3 +55,19 @@ export function getStatusBadge(status: ReservationStatus | string) {
       return null;
   }
 }
+
+/**
+ * 宿泊人数をフォーマット（大人と子供の人数から表示用文字列を生成）
+ */
+export function formatGuestCount(
+  adultCount?: number | null,
+  childCount?: number | null
+): string {
+  const adult = adultCount || 0;
+  const child = childCount || 0;
+  const total = adult + child;
+  const parts: string[] = [];
+  if (adult > 0) parts.push(`大人${adult}名`);
+  if (child > 0) parts.push(`子供${child}名`);
+  return parts.length > 0 ? parts.join("・") : `${total}名`;
+}

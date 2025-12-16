@@ -20,9 +20,9 @@ export function NotificationList({ notifications }: NotificationListProps) {
     switch (type) {
       case "price_drop":
         return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-400/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50">
             <svg
-              className="w-5 h-5 text-emerald-400"
+              className="w-5 h-5 text-emerald-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -38,9 +38,9 @@ export function NotificationList({ notifications }: NotificationListProps) {
         );
       case "auto_cancel":
         return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-400/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-50">
             <svg
-              className="w-5 h-5 text-amber-400"
+              className="w-5 h-5 text-amber-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -56,9 +56,9 @@ export function NotificationList({ notifications }: NotificationListProps) {
         );
       case "auto_rebook":
         return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-400/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50">
             <svg
-              className="w-5 h-5 text-blue-400"
+              className="w-5 h-5 text-blue-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -109,13 +109,13 @@ export function NotificationList({ notifications }: NotificationListProps) {
   const getTypeBadgeColor = (type: string) => {
     switch (type) {
       case "price_drop":
-        return "bg-emerald-400/10 text-emerald-400 border-emerald-400/20";
+        return "bg-emerald-50 text-emerald-600 border-emerald-200";
       case "auto_cancel":
-        return "bg-amber-400/10 text-amber-400 border-amber-400/20";
+        return "bg-amber-50 text-amber-600 border-amber-200";
       case "auto_rebook":
-        return "bg-blue-400/10 text-blue-400 border-blue-400/20";
+        return "bg-blue-50 text-blue-600 border-blue-200";
       default:
-        return "bg-[var(--bg-tertiary)]/10 text-[var(--text-secondary)] border-[var(--bg-tertiary)]/20";
+        return "bg-gray-50 text-gray-600 border-gray-200";
     }
   };
 
@@ -134,24 +134,24 @@ export function NotificationList({ notifications }: NotificationListProps) {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-[var(--bg-tertiary)]">
+      <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-gray-200">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filter === "all"
-                ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/30"
-                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
+                ? "bg-orange-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             すべて ({notifications.length})
           </button>
           <button
             onClick={() => setFilter("unread")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filter === "unread"
-                ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/30"
-                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
+                ? "bg-orange-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             未読 ({unreadCount})
@@ -194,17 +194,14 @@ export function NotificationList({ notifications }: NotificationListProps) {
               onClick={() => !n.isRead && markAsRead(n.id)}
               className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer ${
                 n.isRead
-                  ? "bg-white/30 border-[var(--bg-tertiary)]/50 opacity-70"
-                  : "bg-white border-[var(--bg-tertiary)] hover:border-[var(--bg-tertiary)]"
+                  ? "bg-white border-gray-200 opacity-70"
+                  : "bg-white border-gray-200 hover:border-gray-300 shadow-sm"
               }`}
             >
               <div className="flex items-start gap-4">
                 {getNotificationIcon(n.type)}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-base font-semibold text-white">
-                      {n.title}
-                    </h3>
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadgeColor(
                         n.type
@@ -213,11 +210,16 @@ export function NotificationList({ notifications }: NotificationListProps) {
                       {getTypeLabel(n.type)}
                     </span>
                     {!n.isRead && (
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
                     )}
                   </div>
-                  <p className="text-sm text-slate-400 mt-1">{n.message}</p>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                    {n.title}
+                  </h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                    {n.message}
+                  </p>
+                  <p className="text-xs text-[var(--text-tertiary)] mt-3">
                     {formatDateTime(n.createdAt)}
                   </p>
                 </div>

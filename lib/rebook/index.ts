@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { reservation, notification, userSettings } from "@/db/schema";
+import { reservations, notification, userSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { Reservation, ReservationSite } from "@/types";
 import { isBeforeDeadline, formatPrice } from "@/lib/utils";
@@ -17,7 +17,7 @@ export interface RebookResult {
  */
 export async function processAutoRebook(
   reservationData: Reservation,
-  newPrice: number,
+  newPrice: number
 ): Promise<RebookResult> {
   // キャンセル期限チェック
   if (!isBeforeDeadline(reservationData.cancellationDeadline)) {
@@ -58,7 +58,7 @@ export async function processAutoRebook(
     // 1. 現在の予約をキャンセル
     const cancelResult = await cancelReservation(
       reservationData.reservationSite as ReservationSite,
-      reservationData.reservationId,
+      reservationData.reservationId
     );
 
     if (!cancelResult.success) {
@@ -68,7 +68,7 @@ export async function processAutoRebook(
         reservationData.id,
         "auto_cancel",
         "自動キャンセルに失敗しました",
-        `${reservationData.hotelName}の自動キャンセルに失敗しました: ${cancelResult.message}`,
+        `${reservationData.hotelName}の自動キャンセルに失敗しました: ${cancelResult.message}`
       );
 
       return {
@@ -86,24 +86,25 @@ export async function processAutoRebook(
         checkInDate: reservationData.checkInDate,
         checkOutDate: reservationData.checkOutDate,
         roomType: reservationData.roomType,
-        guestCount: reservationData.guestCount,
+        adultCount: reservationData.adultCount,
+        childCount: reservationData.childCount,
       },
-      newPrice,
+      newPrice
     );
 
     if (!rebookResult.success) {
       // 再予約失敗（キャンセルは成功）
       await db
-        .update(reservation)
+        .update(reservations)
         .set({ status: "cancelled" })
-        .where(eq(reservation.id, reservationData.id));
+        .where(eq(reservations.id, reservationData.id));
 
       await createNotification(
         reservationData.userId,
         reservationData.id,
         "auto_cancel",
         "予約がキャンセルされました",
-        `${reservationData.hotelName}の予約がキャンセルされましたが、再予約に失敗しました。手動で再予約してください。`,
+        `${reservationData.hotelName}の予約がキャンセルされましたが、再予約に失敗しました。手動で再予約してください。`
       );
 
       return {
@@ -115,16 +116,16 @@ export async function processAutoRebook(
 
     // 3. 予約ステータスを更新
     await db
-      .update(reservation)
+      .update(reservations)
       .set({
         status: "rebooked",
         currentPrice: newPrice,
       })
-      .where(eq(reservation.id, reservationData.id));
+      .where(eq(reservations.id, reservationData.id));
 
     // 4. 新しい予約をDBに追加
     const [newReservation] = await db
-      .insert(reservation)
+      .insert(reservations)
       .values({
         userId: reservationData.userId,
         hotelName: reservationData.hotelName,
@@ -136,8 +137,16 @@ export async function processAutoRebook(
         reservationId: rebookResult.newReservationId!,
         cancellationDeadline: reservationData.cancellationDeadline,
         roomType: reservationData.roomType,
-        guestCount: reservationData.guestCount,
+        adultCount: reservationData.adultCount,
+        childCount: reservationData.childCount,
+        roomCount: reservationData.roomCount,
         hotelUrl: reservationData.hotelUrl,
+        planName: reservationData.planName,
+        planUrl: reservationData.planUrl,
+        hotelId: reservationData.hotelId,
+        hotelPostalCode: reservationData.hotelPostalCode,
+        hotelAddress: reservationData.hotelAddress,
+        hotelTelNo: reservationData.hotelTelNo,
         status: "active",
       })
       .returning();
@@ -148,7 +157,9 @@ export async function processAutoRebook(
       newReservation.id,
       "auto_rebook",
       "自動再予約が完了しました",
-      `${reservationData.hotelName}を${formatPrice(priceDrop)}安く再予約しました！`,
+      `${reservationData.hotelName}を${formatPrice(
+        priceDrop
+      )}安く再予約しました！`
     );
 
     return {
@@ -173,7 +184,7 @@ export async function processAutoRebook(
  */
 async function cancelReservation(
   site: ReservationSite,
-  reservationId: string,
+  reservationId: string
 ): Promise<{ success: boolean; message: string }> {
   // TODO: 実際のキャンセル処理を実装
   // 各サイトのAPIまたはブラウザ自動化を使用
@@ -201,9 +212,10 @@ async function createNewReservation(
     checkInDate: string;
     checkOutDate: string;
     roomType?: string | null;
-    guestCount?: number | null;
+    adultCount?: number | null;
+    childCount?: number | null;
   },
-  price: number,
+  price: number
 ): Promise<{ success: boolean; newReservationId?: string; message: string }> {
   // TODO: 実際の予約処理を実装
   // 各サイトのAPIまたはブラウザ自動化を使用
@@ -228,7 +240,7 @@ async function createNotification(
   reservationId: string,
   type: "price_drop" | "auto_cancel" | "auto_rebook" | "info",
   title: string,
-  message: string,
+  message: string
 ): Promise<void> {
   await db.insert(notification).values({
     userId,
@@ -245,7 +257,7 @@ async function createNotification(
  */
 export async function evaluateAndRebook(
   reservationData: Reservation,
-  newPrice: number,
+  newPrice: number
 ): Promise<RebookResult | null> {
   // ユーザー設定を取得
   const [settings] = await db
@@ -281,7 +293,9 @@ export async function evaluateAndRebook(
     reservationData.id,
     "price_drop",
     `${reservationData.hotelName}の価格が下がりました`,
-    `${formatPrice(priceDrop)}（${priceDropPercentage.toFixed(1)}%）値下がりしました。キャンセル・再予約をご検討ください。`,
+    `${formatPrice(priceDrop)}（${priceDropPercentage.toFixed(
+      1
+    )}%）値下がりしました。キャンセル・再予約をご検討ください。`
   );
 
   return {

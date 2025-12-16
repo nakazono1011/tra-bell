@@ -102,8 +102,8 @@ export type NotificationType =
   | "info";
 
 // 予約情報テーブル
-export const reservation = pgTable(
-  "reservation",
+export const reservations = pgTable(
+  "reservations",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id")
@@ -125,7 +125,15 @@ export const reservation = pgTable(
       .notNull(),
     hotelUrl: text("hotel_url"),
     roomType: text("room_type"),
-    guestCount: integer("guest_count"),
+    adultCount: integer("adult_count"),
+    childCount: integer("child_count"),
+    roomCount: integer("room_count"),
+    planName: text("plan_name"),
+    planUrl: text("plan_url"),
+    hotelId: text("hotel_id"),
+    hotelPostalCode: text("hotel_postal_code"),
+    hotelAddress: text("hotel_address"),
+    hotelTelNo: text("hotel_tel_no"),
     emailMessageId: text("email_message_id"), // Gmailのメッセージ ID
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
@@ -134,8 +142,8 @@ export const reservation = pgTable(
       .notNull(),
   },
   (table) => [
-    index("reservation_userId_idx").on(table.userId),
-    index("reservation_status_idx").on(table.status),
+    index("reservations_userId_idx").on(table.userId),
+    index("reservations_status_idx").on(table.status),
   ]
 );
 
@@ -146,7 +154,7 @@ export const priceHistory = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     reservationId: uuid("reservation_id")
       .notNull()
-      .references(() => reservation.id, { onDelete: "cascade" }),
+      .references(() => reservations.id, { onDelete: "cascade" }),
     price: integer("price").notNull(),
     checkedAt: timestamp("checked_at").defaultNow().notNull(),
     sourceUrl: text("source_url"),
@@ -162,7 +170,7 @@ export const notification = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    reservationId: uuid("reservation_id").references(() => reservation.id, {
+    reservationId: uuid("reservation_id").references(() => reservations.id, {
       onDelete: "set null",
     }),
     type: text("type").$type<NotificationType>().notNull(),
@@ -209,8 +217,8 @@ export type NewSession = typeof sessions.$inferInsert;
 export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
 
-export type Reservation = typeof reservation.$inferSelect;
-export type NewReservation = typeof reservation.$inferInsert;
+export type Reservation = typeof reservations.$inferSelect;
+export type NewReservation = typeof reservations.$inferInsert;
 
 export type PriceHistory = typeof priceHistory.$inferSelect;
 export type NewPriceHistory = typeof priceHistory.$inferInsert;

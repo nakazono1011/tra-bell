@@ -1,28 +1,39 @@
 import { NextResponse } from "next/server";
 import { checkAllActivePrices } from "@/lib/price-checker";
 
-// Vercel Cron設定: vercel.jsonで設定
-// {
-//   "crons": [{
-//     "path": "/api/cron/check-prices",
-//     "schedule": "0 */6 * * *"
-//   }]
-// }
+/**
+ * Vercel Cron認証
+ * Vercel Cronからのリクエストには `x-vercel-signature` ヘッダーが自動的に追加されます
+ * 手動トリガーの場合は `CRON_SECRET` 環境変数を使用して認証します
+ */
+function verifyCronRequest(request: Request): boolean {
+  // Vercel Cronからのリクエストか確認（x-vercel-signatureヘッダーが存在する場合）
+  const vercelSignature = request.headers.get("x-vercel-signature");
+  if (vercelSignature) {
+    // Vercel Cronからのリクエストは自動的に検証されるため、ヘッダーが存在すればOK
+    return true;
+  }
+
+  // 手動トリガーの場合、CRON_SECRETで認証
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret) {
+    const authHeader = request.headers.get("authorization");
+    return authHeader === `Bearer ${cronSecret}`;
+  }
+
+  // CRON_SECRETが設定されていない場合は、開発環境として許可
+  // 本番環境では必ずCRON_SECRETを設定してください
+  return process.env.NODE_ENV !== "production";
+}
 
 export async function GET(request: Request) {
   try {
-    // Cron認証（Vercel Cron または手動トリガー）
-    const authHeader = request.headers.get("authorization");
-    const cronSecret = process.env.CRON_SECRET;
-
-    // CRON_SECRETが設定されている場合は常に認証を要求
-    if (cronSecret) {
-      if (authHeader !== `Bearer ${cronSecret}`) {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized" },
-          { status: 401 },
-        );
-      }
+    // Cron認証
+    if (!verifyCronRequest(request)) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     console.log("Starting price check cron job...");
@@ -33,7 +44,7 @@ export async function GET(request: Request) {
 
     const duration = Date.now() - startTime;
     console.log(
-      `Price check completed: ${result.checked} checked, ${result.priceDrops} drops, ${result.errors} errors (${duration}ms)`,
+      `Price check completed: ${result.checked} checked, ${result.priceDrops} drops, ${result.errors} errors (${duration}ms)`
     );
 
     return NextResponse.json({
@@ -51,7 +62,7 @@ export async function GET(request: Request) {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

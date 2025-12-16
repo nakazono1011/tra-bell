@@ -1,4 +1,5 @@
 import type { PriceCheckResult } from "@/types";
+import { createPriceCheckResult } from "./utils";
 
 /**
  * じゃらんの価格を取得
@@ -23,23 +24,7 @@ export async function checkJalanPrice(
     const priceVariation = Math.random() * 0.1 - 0.05; // -5% から +5%
     const newPrice = Math.round(currentPrice * (1 + priceVariation));
 
-    const priceDropAmount = currentPrice - newPrice;
-    const priceDropPercentage =
-      currentPrice > 0 ? (priceDropAmount / currentPrice) * 100 : 0;
-
-    // 500円以上または5%以上の値下がりを重要とみなす
-    const isSignificantDrop =
-      priceDropAmount >= 500 || priceDropPercentage >= 5;
-
-    return {
-      reservationId,
-      previousPrice: currentPrice,
-      currentPrice: newPrice,
-      priceDropAmount: Math.max(0, priceDropAmount),
-      priceDropPercentage: Math.max(0, priceDropPercentage),
-      isSignificantDrop: priceDropAmount > 0 && isSignificantDrop,
-      checkedAt: new Date(),
-    };
+    return createPriceCheckResult(reservationId, currentPrice, newPrice);
   } catch (error) {
     console.error("Error checking Jalan price:", error);
     return null;

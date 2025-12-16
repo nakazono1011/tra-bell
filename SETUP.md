@@ -203,6 +203,51 @@ Vercel ダッシュボードの「Settings」→「Environment Variables」で�
 
 価格チェックは 6 時間ごと（`0 */6 * * *`）に実行されます。
 
+#### Cron スケジュール形式
+
+Cron スケジュールは標準的な cron 形式（5 フィールド）を使用します:
+
+```
+分 時 日 月 曜日
+0  */6  *  *  *
+```
+
+- `0 */6 * * *` - 6 時間ごと（0:00, 6:00, 12:00, 18:00）
+- `0 0 * * *` - 毎日 0:00
+- `0 9,18 * * *` - 毎日 9:00 と 18:00
+- `0 0 * * 0` - 毎週日曜日 0:00
+
+#### Cron エンドポイントの認証
+
+Cron エンドポイントは以下の方法で認証されます:
+
+1. **Vercel Cron からの自動リクエスト**: `x-vercel-signature` ヘッダーが自動的に追加され、認証されます
+2. **手動トリガー**: `Authorization: Bearer <CRON_SECRET>` ヘッダーを使用して認証できます
+
+手動で Cron を実行する場合:
+
+```bash
+curl -X GET https://your-domain.com/api/cron/check-prices \
+  -H "Authorization: Bearer your-cron-secret"
+```
+
+#### スケジュールの変更
+
+`vercel.json` の `schedule` フィールドを変更することで、実行頻度を調整できます:
+
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/check-prices",
+      "schedule": "0 */6 * * *"  // この値を変更
+    }
+  ]
+}
+```
+
+変更後、Vercel に再デプロイすると新しいスケジュールが適用されます。
+
 ---
 
 ## 7. データベーススキーマの確認

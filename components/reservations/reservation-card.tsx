@@ -20,8 +20,8 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
     ? "/images/hotel-placeholder.jpg"
     : reservation.hotelUrl || "/images/hotel-placeholder.jpg";
 
-  // プラン名（roomTypeを使用、将来的にplanNameフィールドが追加されたらそれを使用）
-  const planName = reservation.roomType || "";
+  // プラン名（planNameを優先、なければroomTypeを使用）
+  const planName = reservation.planName || reservation.roomType || "";
 
   // キャンセル発生日のフォーマット（yyyy/mm/dd形式）
   const cancellationDate = reservation.cancellationDeadline
@@ -36,13 +36,6 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
         return `${year}/${month}/${day}`;
       })()
     : null;
-
-  // 宿泊日数の計算
-  const checkIn = new Date(reservation.checkInDate);
-  const checkOut = new Date(reservation.checkOutDate);
-  const nights = Math.ceil(
-    (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
-  );
 
   return (
     <Link

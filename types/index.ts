@@ -79,8 +79,16 @@ export interface ParsedReservation {
   reservationSite: ReservationSite;
   cancellationDeadline?: string;
   roomType?: string;
-  guestCount?: number;
+  adultCount?: number;
+  childCount?: number;
+  roomCount?: number;
   hotelUrl?: string;
+  planName?: string;
+  planUrl?: string;
+  hotelId?: string;
+  hotelPostalCode?: string;
+  hotelAddress?: string;
+  hotelTelNo?: string;
 }
 
 // Price check result

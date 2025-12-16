@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { reservation, userSettings } from "@/db/schema";
+import { reservations, userSettings } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { ReservationList } from "@/components/reservations/reservation-list";
 
@@ -23,15 +23,15 @@ export default async function DashboardPage() {
     .limit(1);
 
   // ユーザーの予約を取得（全件）
-  const reservations = await db
+  const reservationsList = await db
     .select()
-    .from(reservation)
-    .where(eq(reservation.userId, session.user.id))
-    .orderBy(desc(reservation.checkInDate));
+    .from(reservations)
+    .where(eq(reservations.userId, session.user.id))
+    .orderBy(desc(reservations.checkInDate));
 
   return (
     <ReservationList
-      reservations={reservations}
+      reservations={reservationsList}
       isGmailConnected={settings?.gmailConnected ?? false}
     />
   );

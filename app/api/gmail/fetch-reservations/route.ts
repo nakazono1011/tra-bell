@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { reservation, userSettings, priceHistory } from "@/db/schema";
+import { reservations, userSettings, priceHistory } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { GmailClient } from "@/lib/gmail/client";
 import {
@@ -21,7 +21,7 @@ export async function GET() {
     if (!session) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -33,7 +33,7 @@ export async function GET() {
     if (!gmailClient) {
       return NextResponse.json(
         { success: false, error: "Gmail not connected" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -45,13 +45,12 @@ export async function GET() {
       .limit(1);
 
     // 過去60日分のメールを取得
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 60);
-    const afterDate = settings?.gmailLastSyncAt || thirtyDaysAgo;
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+    const afterDate = settings?.gmailLastSyncAt || sixtyDaysAgo;
 
     // Gmailから予約確認メールを検索
     const messages = await gmailClient.searchReservationEmails(50, afterDate);
-    console.log("messages", messages);
 
     // メールをパース
     const parsedResults = await parseReservationEmails(messages);
@@ -61,13 +60,11 @@ export async function GET() {
     // 既存の予約IDセットを取得（重複チェック用）
     const existingReservations = await db
       .select()
-      .from(reservation)
-      .where(eq(reservation.userId, userId));
+      .from(reservations)
+      .where(eq(reservations.userId, userId));
 
     const existingIds = new Set(
-      existingReservations.map(
-        (r) => `${r.reservationSite}-${r.reservationId}`,
-      ),
+      existingReservations.map((r) => `${r.reservationSite}-${r.reservationId}`)
     );
 
     // 新しい予約を保存
@@ -82,7 +79,7 @@ export async function GET() {
 
       // 予約を保存
       const [newReservation] = await db
-        .insert(reservation)
+        .insert(reservations)
         .values({
           userId,
           hotelName: result.reservation.hotelName,
@@ -96,8 +93,16 @@ export async function GET() {
             ? new Date(result.reservation.cancellationDeadline)
             : null,
           roomType: result.reservation.roomType,
-          guestCount: result.reservation.guestCount,
+          adultCount: result.reservation.adultCount,
+          childCount: result.reservation.childCount,
+          roomCount: result.reservation.roomCount,
           hotelUrl: result.reservation.hotelUrl,
+          planName: result.reservation.planName,
+          planUrl: result.reservation.planUrl,
+          hotelId: result.reservation.hotelId,
+          hotelPostalCode: result.reservation.hotelPostalCode,
+          hotelAddress: result.reservation.hotelAddress,
+          hotelTelNo: result.reservation.hotelTelNo,
           emailMessageId: result.messageId,
           status: "active",
         })
@@ -146,7 +151,7 @@ export async function GET() {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

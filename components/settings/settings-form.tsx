@@ -8,7 +8,6 @@ interface SettingsFormProps {
   initialSettings: {
     priceDropThreshold: number;
     priceDropPercentage: number;
-    autoRebookEnabled: boolean;
     gmailConnected: boolean;
   };
   hasGmailScope: boolean;
@@ -70,23 +69,25 @@ export function SettingsForm({
   return (
     <div className="space-y-6">
       {/* Gmail Connection */}
-      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Gmail連携</h2>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+          Gmail連携
+        </h2>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-slate-300">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <p className="text-sm text-[var(--text-secondary)]">
               Gmailと連携して予約確認メールを自動取得
             </p>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
               楽天トラベル・じゃらんの予約メールを自動で読み取ります
             </p>
           </div>
 
           {hasGmailScope ? (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-400/10 border border-emerald-400/20">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 shrink-0">
               <svg
-                className="w-5 h-5 text-emerald-400"
+                className="w-5 h-5 text-emerald-600 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -96,15 +97,15 @@ export function SettingsForm({
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm font-medium text-emerald-400">
-                連携済み
+              <span className="text-xs font-medium text-emerald-600 whitespace-nowrap">
+                連携済
               </span>
             </div>
           ) : (
             <button
               onClick={handleConnectGmail}
               disabled={isConnectingGmail}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-slate-900 font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 shrink-0"
             >
               {isConnectingGmail ? (
                 <>
@@ -143,13 +144,15 @@ export function SettingsForm({
       </div>
 
       {/* Price Drop Thresholds */}
-      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">価格監視設定</h2>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+          価格監視設定
+        </h2>
 
         <div className="space-y-6">
           {/* Price Drop Threshold (Amount) */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               値下がり通知閾値（金額）
             </label>
             <div className="flex items-center gap-2">
@@ -162,20 +165,20 @@ export function SettingsForm({
                     priceDropThreshold: parseInt(e.target.value, 10) || 0,
                   })
                 }
-                className="w-32 px-4 py-2 rounded-xl bg-white border border-[var(--bg-tertiary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                className="w-32 px-4 py-2 rounded-xl bg-white border border-gray-300 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                 min="0"
                 step="100"
               />
-              <span className="text-slate-400">円以上</span>
+              <span className="text-[var(--text-secondary)]">円以上</span>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
               この金額以上値下がりした場合に通知します
             </p>
           </div>
 
           {/* Price Drop Threshold (Percentage) */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               値下がり通知閾値（パーセント）
             </label>
             <div className="flex items-center gap-2">
@@ -188,71 +191,17 @@ export function SettingsForm({
                     priceDropPercentage: parseInt(e.target.value, 10) || 0,
                   })
                 }
-                className="w-32 px-4 py-2 rounded-xl bg-white border border-[var(--bg-tertiary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                className="w-32 px-4 py-2 rounded-xl bg-white border border-gray-300 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                 min="0"
                 max="100"
               />
-              <span className="text-slate-400">%以上</span>
+              <span className="text-[var(--text-secondary)]">%以上</span>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-[var(--text-tertiary)] mt-1">
               このパーセント以上値下がりした場合に通知します（金額とOR条件）
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Auto Rebook Settings */}
-      <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">自動処理設定</h2>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-slate-300">自動キャンセル・再予約</p>
-            <p className="text-xs text-slate-500 mt-1">
-              値下がりを検知した場合に自動でキャンセル・再予約を実行
-            </p>
-          </div>
-
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={settings.autoRebookEnabled}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  autoRebookEnabled: e.target.checked,
-                })
-              }
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-[var(--bg-tertiary)] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-400/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--bg-tertiary)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
-          </label>
-        </div>
-
-        {settings.autoRebookEnabled && (
-          <div className="mt-4 p-4 rounded-xl bg-amber-400/10 border border-amber-400/20">
-            <div className="flex items-start gap-2">
-              <svg
-                className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <div>
-                <p className="text-sm text-amber-400 font-medium">注意</p>
-                <p className="text-xs text-amber-300/80 mt-1">
-                  自動キャンセル・再予約を有効にすると、閾値を超える値下がりを検知した場合に
-                  自動的にキャンセル処理が実行されます。この機能は慎重に使用してください。
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Save Button */}
@@ -260,7 +209,7 @@ export function SettingsForm({
         {message && (
           <p
             className={`text-sm ${
-              message.type === "success" ? "text-emerald-400" : "text-red-400"
+              message.type === "success" ? "text-emerald-600" : "text-red-600"
             }`}
           >
             {message.text}
@@ -269,7 +218,7 @@ export function SettingsForm({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-900 font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="ml-auto flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
         >
           {isSaving ? (
             <>

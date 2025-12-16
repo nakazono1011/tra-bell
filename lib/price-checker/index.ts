@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import {
-  reservation,
+  reservations,
   priceHistory,
   notification,
   userSettings,
@@ -21,6 +21,9 @@ export async function checkReservationPrice(reservationData: {
   checkOutDate: string;
   reservationSite: ReservationSite;
   currentPrice: number;
+  planUrl?: string;
+  planName?: string;
+  roomType?: string;
 }): Promise<PriceCheckResult | null> {
   const {
     id,
@@ -29,6 +32,9 @@ export async function checkReservationPrice(reservationData: {
     checkOutDate,
     reservationSite,
     currentPrice,
+    planUrl,
+    planName,
+    roomType,
   } = reservationData;
 
   switch (reservationSite) {
@@ -39,6 +45,9 @@ export async function checkReservationPrice(reservationData: {
         checkOutDate,
         id,
         currentPrice,
+        planUrl,
+        planName,
+        roomType
       );
     case "jalan":
       return checkJalanPrice(
@@ -46,7 +55,7 @@ export async function checkReservationPrice(reservationData: {
         checkInDate,
         checkOutDate,
         id,
-        currentPrice,
+        currentPrice
       );
     default:
       return null;
@@ -78,7 +87,7 @@ async function getUserThresholds(userId: string): Promise<{
 function isSignificantPriceDrop(
   priceDropAmount: number,
   priceDropPercentage: number,
-  thresholds: { priceDropThreshold: number; priceDropPercentage: number },
+  thresholds: { priceDropThreshold: number; priceDropPercentage: number }
 ): boolean {
   return (
     priceDropAmount >= thresholds.priceDropThreshold ||
@@ -92,7 +101,7 @@ function isSignificantPriceDrop(
 async function savePriceHistory(
   reservationId: string,
   price: number,
-  sourceUrl?: string,
+  sourceUrl?: string
 ): Promise<void> {
   await db.insert(priceHistory).values({
     reservationId,
@@ -107,12 +116,12 @@ async function savePriceHistory(
  */
 async function updateReservationPrice(
   reservationId: string,
-  newPrice: number,
+  newPrice: number
 ): Promise<void> {
   await db
-    .update(reservation)
+    .update(reservations)
     .set({ currentPrice: newPrice })
-    .where(eq(reservation.id, reservationId));
+    .where(eq(reservations.id, reservationId));
 }
 
 /**
@@ -123,14 +132,16 @@ async function createPriceDropNotification(
   reservationId: string,
   hotelName: string,
   priceDropAmount: number,
-  priceDropPercentage: number,
+  priceDropPercentage: number
 ): Promise<void> {
   await db.insert(notification).values({
     userId,
     reservationId,
     type: "price_drop",
     title: `${hotelName}の価格が下がりました`,
-    message: `¥${priceDropAmount.toLocaleString()}（${priceDropPercentage.toFixed(1)}%）値下がりしました。キャンセル・再予約をご検討ください。`,
+    message: `¥${priceDropAmount.toLocaleString()}（${priceDropPercentage.toFixed(
+      1
+    )}%）値下がりしました。キャンセル・再予約をご検討ください。`,
     isRead: false,
   });
 }
@@ -142,9 +153,12 @@ async function getActiveReservations() {
   const today = new Date().toISOString().split("T")[0];
   return await db
     .select()
-    .from(reservation)
+    .from(reservations)
     .where(
-      and(eq(reservation.status, "active"), gt(reservation.checkInDate, today)),
+      and(
+        eq(reservations.status, "active"),
+        gt(reservations.checkInDate, today)
+      )
     );
 }
 
@@ -160,6 +174,9 @@ async function processReservationPriceCheck(reservation: {
   reservationSite: ReservationSite;
   currentPrice: number;
   cancellationDeadline: Date | null;
+  planUrl?: string | null;
+  planName?: string | null;
+  roomType?: string | null;
 }): Promise<{ checked: boolean; priceDrop: boolean; error: boolean }> {
   // キャンセル期限が過ぎている場合はスキップ
   if (!isBeforeDeadline(reservation.cancellationDeadline)) {
@@ -174,6 +191,9 @@ async function processReservationPriceCheck(reservation: {
     checkOutDate: reservation.checkOutDate,
     reservationSite: reservation.reservationSite,
     currentPrice: reservation.currentPrice,
+    planUrl: reservation.planUrl || undefined,
+    planName: reservation.planName || undefined,
+    roomType: reservation.roomType || undefined,
   });
 
   if (!result) {
@@ -195,7 +215,7 @@ async function processReservationPriceCheck(reservation: {
         isSignificantPriceDrop(
           result.priceDropAmount,
           result.priceDropPercentage,
-          thresholds,
+          thresholds
         )
       ) {
         await createPriceDropNotification(
@@ -203,7 +223,7 @@ async function processReservationPriceCheck(reservation: {
           reservation.id,
           reservation.hotelName,
           result.priceDropAmount,
-          result.priceDropPercentage,
+          result.priceDropPercentage
         );
         return { checked: true, priceDrop: true, error: false };
       }
@@ -238,6 +258,9 @@ export async function checkAllActivePrices(): Promise<{
         reservationSite: r.reservationSite as ReservationSite,
         currentPrice: r.currentPrice,
         cancellationDeadline: r.cancellationDeadline,
+        planUrl: r.planUrl,
+        planName: r.planName,
+        roomType: r.roomType,
       });
 
       if (result.checked) checked++;

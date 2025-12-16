@@ -52,7 +52,7 @@ export function calculatePriceDrop(
 } {
   const amount = originalPrice - currentPrice;
   const percentage = originalPrice > 0 ? (amount / originalPrice) * 100 : 0;
-  return { amount, percentage: Math.round(percentage * 10) / 10 };
+  return { amount, percentage: Math.round(percentage) };
 }
 
 export function getDaysUntil(date: Date | string): number {

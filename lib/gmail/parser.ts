@@ -5,6 +5,7 @@ import {
   parseRakutenReservationEmail,
 } from "@/lib/parsers/rakuten";
 import { isJalanEmail, parseJalanReservationEmail } from "@/lib/parsers/jalan";
+import { getTodayNormalized, normalizeDate } from "@/lib/utils/date";
 
 export interface ParsedEmailResult {
   messageId: string;
@@ -17,7 +18,7 @@ export interface ParsedEmailResult {
  * Gmailメッセージから予約情報をパース
  */
 export async function parseReservationEmail(
-  message: GmailMessage,
+  message: GmailMessage
 ): Promise<ParsedEmailResult> {
   const messageId = message.id;
   const receivedAt = new Date(parseInt(message.internalDate, 10));
@@ -25,7 +26,6 @@ export async function parseReservationEmail(
   // 楽天トラベルのメールをパース
   if (isRakutenEmail(message)) {
     const reservation = await parseRakutenReservationEmail(message);
-    console.log("reservation", reservation);
     return {
       messageId,
       reservation,
@@ -57,25 +57,35 @@ export async function parseReservationEmail(
  * 複数のGmailメッセージから予約情報をパース
  */
 export async function parseReservationEmails(
-  messages: GmailMessage[],
+  messages: GmailMessage[]
 ): Promise<ParsedEmailResult[]> {
   return Promise.all(messages.map((message) => parseReservationEmail(message)));
 }
 
 /**
  * パースされた予約情報から有効なものだけをフィルタ
+ * チェックイン日が過去の予約は除外する
  */
 export function filterValidReservations(
-  results: ParsedEmailResult[],
+  results: ParsedEmailResult[]
 ): ParsedEmailResult[] {
-  return results.filter((result) => result.reservation !== null);
+  const today = getTodayNormalized();
+
+  return results.filter((result) => {
+    if (!result.reservation) return false;
+
+    const checkInDate = normalizeDate(new Date(result.reservation.checkInDate));
+
+    // チェックイン日が今日以降の予約のみを許可
+    return checkInDate >= today;
+  });
 }
 
 /**
  * 重複する予約を除去（予約番号でユニーク）
  */
 export function deduplicateReservations(
-  results: ParsedEmailResult[],
+  results: ParsedEmailResult[]
 ): ParsedEmailResult[] {
   const seen = new Set<string>();
   return results.filter((result) => {

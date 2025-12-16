@@ -1,0 +1,1 @@
+ALTER TABLE "reservations" ADD COLUMN "room_count" integer;

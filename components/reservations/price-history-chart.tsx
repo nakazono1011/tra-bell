@@ -1,7 +1,16 @@
 "use client";
 
-import { formatPrice, formatDateShort } from "@/lib/utils";
+import { formatPrice, formatDateShort, formatDateTime } from "@/lib/utils";
 import type { PriceHistory } from "@/db/schema";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import {
+  LineChart,
+  Line,
+  ReferenceLine,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 
 interface PriceHistoryChartProps {
   priceHistory: PriceHistory[];
@@ -50,34 +59,32 @@ export function PriceHistoryChart({
     (a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime()
   );
 
+  // Recharts用のデータ形式に変換
+  const chartData = sortedHistory.map((h) => ({
+    date: formatDateShort(h.checkedAt),
+    dateTime: formatDateTime(h.checkedAt),
+    price: h.price,
+    checkedAt: h.checkedAt,
+  }));
+
   // 最小・最大価格を計算
   const prices = sortedHistory.map((h) => h.price);
   const minPrice = Math.min(...prices, originalPrice);
   const maxPrice = Math.max(...prices, originalPrice);
-  const priceRange = maxPrice - minPrice || 1;
-
-  // チャートの高さを計算
-  const chartHeight = 220; // 少し高くして見やすく
-  const getY = (price: number) =>
-    chartHeight - ((price - minPrice) / priceRange) * chartHeight;
-
-  // SVGパスを生成
-  const pathPoints = sortedHistory
-    .map((h, i) => {
-      const x = (i / (sortedHistory.length - 1 || 1)) * 100;
-      const y = getY(h.price);
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-    })
-    .join(" ");
-
-  // 塗りつぶし用のパス
-  const areaPath = `${pathPoints} L 100 ${chartHeight} L 0 ${chartHeight} Z`;
 
   // 現在価格と予約時価格の差
   const currentPrice =
     sortedHistory[sortedHistory.length - 1]?.price || originalPrice;
   const priceDiff = originalPrice - currentPrice;
   const isLower = priceDiff > 0;
+
+  // チャート設定
+  const chartConfig = {
+    price: {
+      label: "価格",
+      color: "hsl(142, 76%, 36%)", // emerald-600
+    },
+  };
 
   return (
     <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white overflow-hidden shadow-sm">
@@ -137,115 +144,107 @@ export function PriceHistoryChart({
         </div>
 
         {/* Chart */}
-        <div className="relative h-[220px] w-full pl-12">
-          <svg
-            viewBox={`0 0 100 ${chartHeight}`}
-            preserveAspectRatio="none"
-            className="w-full h-full overflow-visible"
+        <ChartContainer config={chartConfig} className="h-[220px] w-full">
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
           >
-            {/* Grid lines */}
-            {[0, 25, 50, 75, 100].map((y) => (
-              <line
-                key={y}
-                x1="0"
-                y1={(y / 100) * chartHeight}
-                x2="100"
-                y2={(y / 100) * chartHeight}
-                stroke="rgb(226, 232, 240)"
-                strokeWidth="1"
-                strokeDasharray="4 4"
-              />
-            ))}
-
-            {/* Original price line */}
-            <line
-              x1="0"
-              y1={getY(originalPrice)}
-              x2="100"
-              y2={getY(originalPrice)}
-              stroke="rgb(251, 191, 36)"
-              strokeWidth="2"
+            <CartesianGrid
               strokeDasharray="4 4"
-              opacity="0.6"
+              stroke="#e2e8f0"
+              vertical={false}
             />
-
-            {/* Area fill */}
-            <path d={areaPath} fill="url(#gradient)" opacity="0.15" />
-
-            {/* Line */}
-            <path
-              d={pathPoints}
-              fill="none"
-              stroke="rgb(16, 185, 129)"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <XAxis
+              dataKey="date"
+              tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value, index) => {
+                // 最初のデータポイントは常に表示
+                if (index === 0) {
+                  return value;
+                }
+                // 前のデータポイントの日付と比較
+                const currentDate = value;
+                const previousDate = chartData[index - 1]?.date;
+                // 日付が異なる場合のみ表示、同じ場合は空文字列を返して非表示
+                return currentDate !== previousDate ? value : "";
+              }}
             />
-
-            {/* Points */}
-            {sortedHistory.map((h, i) => {
-              const x = (i / (sortedHistory.length - 1 || 1)) * 100;
-              const y = getY(h.price);
-              const isLast = i === sortedHistory.length - 1;
-
-              return (
-                <g key={h.id}>
+            <YAxis
+              tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
+              tickLine={false}
+              axisLine={false}
+              domain={[minPrice * 0.95, maxPrice * 1.05]}
+              tickFormatter={(value) => formatPrice(value)}
+            />
+            <ChartTooltip
+              content={({ active, payload }) => {
+                if (!active || !payload || payload.length === 0) {
+                  return null;
+                }
+                const data = payload[0].payload;
+                return (
+                  <div className="rounded-lg border bg-gray-900 px-3 py-2 text-xs shadow-lg">
+                    <div className="font-semibold text-white mb-1">
+                      {formatPrice(data.price)}
+                    </div>
+                    <div className="text-gray-300">{data.dateTime}</div>
+                  </div>
+                );
+              }}
+              cursor={{ stroke: "#10b981", strokeWidth: 2 }}
+            />
+            <ReferenceLine
+              y={originalPrice}
+              stroke="#fbbf24"
+              strokeDasharray="4 4"
+              strokeOpacity={0.6}
+            />
+            <Line
+              type="monotone"
+              dataKey="price"
+              stroke="#10b981"
+              strokeWidth={3}
+              dot={(props) => {
+                const isLast = props.index === chartData.length - 1;
+                if (isLast) {
+                  return (
+                    <g>
+                      <circle
+                        cx={props.cx}
+                        cy={props.cy}
+                        r={8}
+                        fill="#10b981"
+                        opacity={0.2}
+                        className="animate-pulse"
+                      />
+                      <circle
+                        cx={props.cx}
+                        cy={props.cy}
+                        r={5}
+                        fill="#fff"
+                        stroke="#10b981"
+                        strokeWidth={2.5}
+                      />
+                    </g>
+                  );
+                }
+                return (
                   <circle
-                    cx={x}
-                    cy={y}
-                    r={isLast ? "5" : "3.5"}
-                    fill="white"
-                    stroke="rgb(16, 185, 129)"
-                    strokeWidth="2.5"
-                    className="transition-all duration-300 hover:r-6"
+                    cx={props.cx}
+                    cy={props.cy}
+                    r={3.5}
+                    fill="#fff"
+                    stroke="#10b981"
+                    strokeWidth={2.5}
                   />
-                  {isLast && (
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="8"
-                      fill="rgb(16, 185, 129)"
-                      opacity="0.2"
-                      className="animate-pulse"
-                    />
-                  )}
-                </g>
-              );
-            })}
-
-            {/* Gradient definition */}
-            <defs>
-              <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(16, 185, 129)" />
-                <stop
-                  offset="100%"
-                  stopColor="rgb(16, 185, 129)"
-                  stopOpacity="0"
-                />
-              </linearGradient>
-            </defs>
-          </svg>
-
-          {/* Y-axis labels */}
-          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs font-medium text-[var(--text-tertiary)] pr-3 select-none">
-            <span>{formatPrice(maxPrice)}</span>
-            <span>{formatPrice(minPrice)}</span>
-          </div>
-        </div>
-
-        {/* X-axis labels */}
-        <div className="flex justify-between mt-3 text-xs font-medium text-[var(--text-tertiary)] pl-12 select-none">
-          {sortedHistory.length > 0 && (
-            <>
-              <span>{formatDateShort(sortedHistory[0].checkedAt)}</span>
-              <span>
-                {formatDateShort(
-                  sortedHistory[sortedHistory.length - 1].checkedAt
-                )}
-              </span>
-            </>
-          )}
-        </div>
+                );
+              }}
+              activeDot={{ r: 6, strokeWidth: 3, fill: "#10b981" }}
+            />
+          </LineChart>
+        </ChartContainer>
       </div>
     </div>
   );
