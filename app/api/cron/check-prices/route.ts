@@ -1,35 +1,10 @@
 import { NextResponse } from "next/server";
 import { checkAllActivePrices } from "@/lib/price-checker";
 
-/**
- * Vercel Cron認証
- * Vercel Cronからのリクエストには `x-vercel-signature` ヘッダーが自動的に追加されます
- * 手動トリガーの場合は `CRON_SECRET` 環境変数を使用して認証します
- */
-function verifyCronRequest(request: Request): boolean {
-  // Vercel Cronからのリクエストか確認（x-vercel-signatureヘッダーが存在する場合）
-  const vercelSignature = request.headers.get("x-vercel-signature");
-  if (vercelSignature) {
-    // Vercel Cronからのリクエストは自動的に検証されるため、ヘッダーが存在すればOK
-    return true;
-  }
-
-  // 手動トリガーの場合、CRON_SECRETで認証
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("authorization");
-    return authHeader === `Bearer ${cronSecret}`;
-  }
-
-  // CRON_SECRETが設定されていない場合は、開発環境として許可
-  // 本番環境では必ずCRON_SECRETを設定してください
-  return process.env.NODE_ENV !== "production";
-}
-
 export async function GET(request: Request) {
   try {
-    // Cron認証
-    if (!verifyCronRequest(request)) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
