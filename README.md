@@ -2,6 +2,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+```
+curl -H "Authorization: Bearer JGDqJPIUdZ4gVju2vH+nu3oJWWzF7YK+FPCfcgAStk4=" https://www.tra-bell.com/api/cron/check-prices
+
+curl -H "Authorization: Bearer JGDqJPIUdZ4gVju2vH+nu3oJWWzF7YK+FPCfcgAStk4=" http://localhost:3000/api/cron/check-prices
+```
+
 First, run the development server:
 
 ```bash
