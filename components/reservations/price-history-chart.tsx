@@ -210,7 +210,7 @@ export function PriceHistoryChart({
                 const isLast = props.index === chartData.length - 1;
                 if (isLast) {
                   return (
-                    <g>
+                    <g key={`dot-${props.index}`}>
                       <circle
                         cx={props.cx}
                         cy={props.cy}
@@ -232,6 +232,7 @@ export function PriceHistoryChart({
                 }
                 return (
                   <circle
+                    key={`dot-${props.index}`}
                     cx={props.cx}
                     cy={props.cy}
                     r={3.5}

@@ -27,10 +27,10 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col items-center justify-center p-6 text-[var(--text-primary)]">
-      <div className="w-full max-w-[360px] flex flex-col items-center">
+    <div className="h-screen bg-warm flex flex-col items-center pt-10 p-4 sm:p-6 text-primary">
+      <div className="w-full max-w-[360px] flex flex-col items-center py-4 sm:py-6">
         {/* Logo */}
-        <div className="w-64 relative h-40">
+        <div className="w-48 sm:w-64 relative h-24 sm:h-32 shrink-0">
           <Image
             src="/logos/logo.png"
             alt="Tra-bell"
@@ -41,14 +41,14 @@ export default function SignInPage() {
         </div>
 
         {/* Hero Text */}
-        <div className="text-center mb-10">
-          <h1 className="text-2xl font-bold mb-3 tracking-tight">
+        <div className="text-center mb-4 sm:mb-6 shrink-0">
+          <h1 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight">
             そのホテル予約、
             <br />
             <span className="text-[var(--accent-primary)]">もっと安く</span>
             なるかもしれません。
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
             予約後の「損」をゼロにするAIエージェント
             <br />
             値下がりしたら、すぐにお知らせします。
@@ -56,9 +56,9 @@ export default function SignInPage() {
         </div>
 
         {/* Features */}
-        <div className="w-full space-y-4 mb-10">
-          <div className="flex items-center gap-4 p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--bg-tertiary)]">
-            <div className="bg-white p-2.5 rounded-lg shrink-0 border border-[var(--bg-tertiary)] flex items-center justify-center">
+        <div className="w-full space-y-3 sm:space-y-4 mb-6 sm:mb-10 flex-shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--bg-tertiary)]">
+            <div className="bg-white p-2 sm:p-2.5 rounded-lg shrink-0 border border-[var(--bg-tertiary)] flex items-center justify-center">
               <Image
                 src="/icon/gmail-icon.png"
                 alt="Gmail"
@@ -67,23 +67,23 @@ export default function SignInPage() {
                 className="object-contain"
               />
             </div>
-            <div className="text-sm font-bold text-[var(--text-secondary)]">
+            <div className="text-xs sm:text-sm font-bold text-[var(--text-secondary)]">
               メールから宿泊プランを自動取得
             </div>
           </div>
-          <div className="flex items-center gap-4 p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--bg-tertiary)]">
-            <div className="bg-orange-50 p-2.5 rounded-lg text-[var(--accent-primary)] shrink-0">
-              <Clock className="w-5 h-5" />
+          <div className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--bg-tertiary)]">
+            <div className="bg-orange-50 p-2 sm:p-2.5 rounded-lg text-[var(--accent-primary)] shrink-0">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div className="text-sm font-bold text-[var(--text-secondary)]">
+            <div className="text-xs sm:text-sm font-bold text-[var(--text-secondary)]">
               24時間365日 宿泊価格を監視
             </div>
           </div>
-          <div className="flex items-center gap-4 p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--bg-tertiary)]">
-            <div className="bg-green-50 p-2.5 rounded-lg text-green-600 shrink-0">
-              <MessageCircle className="w-5 h-5" />
+          <div className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--bg-tertiary)]">
+            <div className="bg-green-50 p-2 sm:p-2.5 rounded-lg text-green-600 shrink-0">
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div className="text-sm font-bold text-[var(--text-secondary)]">
+            <div className="text-xs sm:text-sm font-bold text-[var(--text-secondary)]">
               値下がりを通知でお知らせ
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function SignInPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="w-full mb-6 p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-xs text-center">
+          <div className="w-full mb-4 sm:mb-6 p-2.5 sm:p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-xs text-center shrink-0">
             {error}
           </div>
         )}
@@ -101,7 +101,7 @@ export default function SignInPage() {
           variant="outline"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-6 rounded-full bg-white border border-[var(--bg-tertiary)] text-[var(--text-primary)] font-bold shadow-sm hover:bg-gray-50 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-3 px-4 py-5 sm:py-6 rounded-full bg-white border border-[var(--bg-tertiary)] text-primary font-bold shadow-sm hover:bg-gray-50 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shrink-0"
         >
           {isLoading ? (
             <div className="w-5 h-5 border-2 border-[var(--bg-tertiary)] border-t-[var(--accent-primary)] rounded-full animate-spin" />
@@ -129,7 +129,7 @@ export default function SignInPage() {
         </Button>
 
         {/* Terms */}
-        <p className="mt-8 text-center text-xs text-[var(--text-tertiary)] leading-relaxed">
+        <p className="mt-6 sm:mt-8 text-center text-xs text-[var(--text-tertiary)] leading-relaxed shrink-0">
           ログインすることで、
           <a
             href="#"

@@ -32,8 +32,8 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col">
       <DashboardHeader user={session.user} />
-      <main className="flex-1 pb-20 md:pb-6">
-        <div className="max-w-md mx-auto py-6">{children}</div>
+      <main className="flex-1 pb-20">
+        <div className="max-w-md mx-auto py-6 px-4">{children}</div>
       </main>
       <FooterNav />
     </div>

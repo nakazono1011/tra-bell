@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { reservations, userSettings, priceHistory } from "@/db/schema";
+import { userSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { GmailClient } from "@/lib/gmail/client";
 import {
@@ -10,6 +10,10 @@ import {
   filterValidReservations,
   deduplicateReservations,
 } from "@/lib/gmail/parser";
+import {
+  saveReservations,
+  updateUserSettingsSyncStatus,
+} from "@/lib/gmail/save-reservations";
 
 export async function GET() {
   try {
@@ -57,83 +61,11 @@ export async function GET() {
     const validResults = filterValidReservations(parsedResults);
     const uniqueResults = deduplicateReservations(validResults);
 
-    // 既存の予約IDセットを取得（重複チェック用）
-    const existingReservations = await db
-      .select()
-      .from(reservations)
-      .where(eq(reservations.userId, userId));
-
-    const existingIds = new Set(
-      existingReservations.map((r) => `${r.reservationSite}-${r.reservationId}`)
-    );
-
-    // 新しい予約を保存
-    const newReservations = [];
-    for (const result of uniqueResults) {
-      if (!result.reservation) continue;
-
-      const key = `${result.reservation.reservationSite}-${result.reservation.reservationId}`;
-      if (existingIds.has(key)) {
-        continue; // 既に存在する予約はスキップ
-      }
-
-      // 予約を保存
-      const [newReservation] = await db
-        .insert(reservations)
-        .values({
-          userId,
-          hotelName: result.reservation.hotelName,
-          checkInDate: result.reservation.checkInDate,
-          checkOutDate: result.reservation.checkOutDate,
-          originalPrice: result.reservation.price,
-          currentPrice: result.reservation.price,
-          reservationSite: result.reservation.reservationSite,
-          reservationId: result.reservation.reservationId,
-          cancellationDeadline: result.reservation.cancellationDeadline
-            ? new Date(result.reservation.cancellationDeadline)
-            : null,
-          roomType: result.reservation.roomType,
-          adultCount: result.reservation.adultCount,
-          childCount: result.reservation.childCount,
-          roomCount: result.reservation.roomCount,
-          hotelUrl: result.reservation.hotelUrl,
-          planName: result.reservation.planName,
-          planUrl: result.reservation.planUrl,
-          hotelId: result.reservation.hotelId,
-          hotelPostalCode: result.reservation.hotelPostalCode,
-          hotelAddress: result.reservation.hotelAddress,
-          hotelTelNo: result.reservation.hotelTelNo,
-          emailMessageId: result.messageId,
-          status: "active",
-        })
-        .returning();
-
-      // 初期価格履歴を保存
-      await db.insert(priceHistory).values({
-        reservationId: newReservation.id,
-        price: result.reservation.price,
-        checkedAt: result.receivedAt,
-      });
-
-      newReservations.push(newReservation);
-    }
+    // 予約を保存
+    const newReservations = await saveReservations(userId, uniqueResults);
 
     // ユーザー設定を更新（Gmail連携済みフラグと最終同期日時）
-    if (settings) {
-      await db
-        .update(userSettings)
-        .set({
-          gmailConnected: true,
-          gmailLastSyncAt: new Date(),
-        })
-        .where(eq(userSettings.userId, userId));
-    } else {
-      await db.insert(userSettings).values({
-        userId,
-        gmailConnected: true,
-        gmailLastSyncAt: new Date(),
-      });
-    }
+    await updateUserSettingsSyncStatus(userId);
 
     return NextResponse.json({
       success: true,

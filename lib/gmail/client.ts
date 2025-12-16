@@ -65,9 +65,32 @@ export class GmailClient {
   }
 
   /**
+   * データベースから最新のトークンを取得
+   */
+  private async refreshTokensFromDb() {
+    const [userAccount] = await db
+      .select()
+      .from(accounts)
+      .where(
+        and(eq(accounts.userId, this.userId), eq(accounts.providerId, "google"))
+      )
+      .limit(1);
+
+    if (userAccount?.accessToken) {
+      this.accessToken = userAccount.accessToken;
+      if (userAccount.refreshToken) {
+        this.refreshToken = userAccount.refreshToken;
+      }
+    }
+  }
+
+  /**
    * OAuth2クライアントを作成
    */
   private async getOAuth2Client() {
+    // データベースから最新のトークンを取得
+    await this.refreshTokensFromDb();
+
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET
@@ -102,14 +125,38 @@ export class GmailClient {
   }
 
   /**
+   * メッセージ一覧から詳細を取得
+   */
+  private async fetchMessageDetails(
+    gmail: ReturnType<typeof google.gmail>,
+    messageIds: Array<{ id?: string | null }>
+  ): Promise<GmailMessage[]> {
+    const fullMessages: GmailMessage[] = [];
+
+    for (const message of messageIds) {
+      if (!message.id) continue;
+
+      const messageResponse = await gmail.users.messages.get({
+        userId: "me",
+        id: message.id,
+        format: "full",
+      });
+
+      if (messageResponse.data) {
+        fullMessages.push(messageResponse.data as unknown as GmailMessage);
+      }
+    }
+
+    return fullMessages;
+  }
+
+  /**
    * ホテル予約確認メールを検索
    */
   async searchReservationEmails(
     maxResults: number = 50,
     afterDate?: Date
   ): Promise<GmailMessage[]> {
-    const gmail = await this.getGmailApi();
-
     // 検索クエリを構築
     const queries: string[] = [
       // 楽天トラベルの予約確認メール
@@ -129,6 +176,8 @@ export class GmailClient {
     }`;
 
     try {
+      const gmail = await this.getGmailApi();
+
       // メッセージ一覧を取得
       const listResponse = await gmail.users.messages.list({
         userId: "me",
@@ -137,25 +186,55 @@ export class GmailClient {
       });
 
       const messages = listResponse.data.messages || [];
-      const fullMessages: GmailMessage[] = [];
+      return await this.fetchMessageDetails(gmail, messages);
+    } catch (error) {
+      // 認証エラーの場合、トークンをリフレッシュして再試行
+      const isAuthError =
+        (error as { code?: number; response?: { status?: number } })?.code ===
+          401 ||
+        (error as { code?: number; response?: { status?: number } })?.response
+          ?.status === 401;
+      if (isAuthError) {
+        console.log("Authentication error, refreshing tokens and retrying...");
 
-      // 各メッセージの詳細を取得
-      for (const message of messages) {
-        if (!message.id) continue;
+        // データベースから最新のトークンを取得
+        await this.refreshTokensFromDb();
 
-        const messageResponse = await gmail.users.messages.get({
-          userId: "me",
-          id: message.id,
-          format: "full",
-        });
+        // OAuth2クライアントを再作成して再試行
+        try {
+          const oauth2Client = await this.getOAuth2Client();
+          // トークンを強制的にリフレッシュ
+          const { credentials } = await oauth2Client.refreshAccessToken();
 
-        if (messageResponse.data) {
-          fullMessages.push(messageResponse.data as unknown as GmailMessage);
+          if (credentials.access_token) {
+            await this.saveTokens(
+              credentials.access_token,
+              credentials.refresh_token || this.refreshToken
+            );
+          }
+
+          // Gmail APIを再取得して再試行
+          const gmail = google.gmail({
+            version: "v1",
+            auth: oauth2Client,
+          });
+
+          const listResponse = await gmail.users.messages.list({
+            userId: "me",
+            q: searchQuery,
+            maxResults,
+          });
+
+          const messages = listResponse.data.messages || [];
+          return await this.fetchMessageDetails(gmail, messages);
+        } catch (retryError) {
+          console.error("Error retrying Gmail API request:", retryError);
+          throw new Error(
+            "Gmail認証に失敗しました。再度Gmail連携を行ってください。"
+          );
         }
       }
 
-      return fullMessages;
-    } catch (error) {
       console.error("Error fetching Gmail messages:", error);
       throw error;
     }

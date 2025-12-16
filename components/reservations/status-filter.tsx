@@ -11,7 +11,6 @@ const FILTER_OPTIONS: Array<{ value: FilterStatus; label: string }> = [
   { value: "all", label: "すべて" },
   { value: "active", label: "アクティブ" },
   { value: "cancelled", label: "キャンセル済" },
-  { value: "rebooked", label: "再予約済" },
 ];
 
 export function StatusFilter({ value, onChange }: StatusFilterProps) {

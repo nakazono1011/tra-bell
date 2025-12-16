@@ -6,6 +6,7 @@ import {
   extractHotelIdFromRakutenUrl,
   buildRakutenPlanUrl,
   addQueryParamsToRakutenPlanUrl,
+  fetchRakutenRoomThumbnailUrl,
 } from "@/lib/utils/rakuten";
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
@@ -124,6 +125,20 @@ ${body}
         )
       : undefined;
 
+    // 施設IDからroomThumbnailUrlを取得
+    let roomThumbnailUrl: string | undefined;
+    if (hotelId) {
+      try {
+        const thumbnailUrl = await fetchRakutenRoomThumbnailUrl(hotelId);
+        if (thumbnailUrl) {
+          roomThumbnailUrl = thumbnailUrl;
+        }
+      } catch (error) {
+        console.error("Error fetching room thumbnail URL:", error);
+        // エラーが発生しても処理を続行
+      }
+    }
+
     return {
       hotelName: object.hotelName || "",
       checkInDate: object.checkInDate,
@@ -143,6 +158,7 @@ ${body}
       hotelPostalCode: object.hotelPostalCode,
       hotelAddress: object.hotelAddress,
       hotelTelNo: object.hotelTelNo,
+      roomThumbnailUrl,
     };
   } catch (error) {
     console.error("Error parsing Rakuten reservation email:", error);

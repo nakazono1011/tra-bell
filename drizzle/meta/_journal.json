@@ -15,6 +15,13 @@
       "when": 1765714978557,
       "tag": "0001_cuddly_absorbing_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765879508513,
+      "tag": "0002_fat_jazinda",
+      "breakpoints": true
     }
   ]
 }

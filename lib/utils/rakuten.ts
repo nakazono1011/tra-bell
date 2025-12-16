@@ -160,3 +160,68 @@ function buildRakutenQueryParams(
   return params.toString();
 }
 
+/**
+ * 楽天トラベル施設検索APIを使って施設IDからroomThumbnailUrlを取得
+ */
+export async function fetchRakutenRoomThumbnailUrl(
+  hotelId: string
+): Promise<string | null> {
+  try {
+    const applicationId = process.env.RAKUTEN_APPLICATION_ID;
+    if (!applicationId) {
+      console.warn("RAKUTEN_APPLICATION_ID is not set");
+      return null;
+    }
+
+    const apiUrl = new URL(
+      "https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426"
+    );
+    apiUrl.searchParams.set("applicationId", applicationId);
+    apiUrl.searchParams.set("format", "json");
+    apiUrl.searchParams.set("formatVersion", "2");
+    apiUrl.searchParams.set("hotelNo", hotelId);
+    // 必要なフィールドのみ取得（パフォーマンス向上）
+    apiUrl.searchParams.set(
+      "elements",
+      "hotelNo,hotelImageUrl,hotelThumbnailUrl,roomThumbnailUrl"
+    );
+
+    const response = await fetch(apiUrl.toString(), {
+      headers: {
+        "User-Agent": "tra-bell/1.0",
+      },
+    });
+
+    if (!response.ok) {
+      console.error(
+        `Rakuten API error: ${response.status} ${response.statusText}`
+      );
+      return null;
+    }
+
+    const data = await response.json();
+
+    // APIレスポンスの構造を確認
+    // formatVersion=2の場合、itemsは配列で、各要素は直接フィールドを持つ
+    if (
+      data.hotels &&
+      Array.isArray(data.hotels) &&
+      data.hotels[0].length > 0
+    ) {
+      const hotel = data.hotels[0][0].hotelBasicInfo;
+
+      // roomThumbnailUrlを優先、なければhotelThumbnailUrl、それもなければhotelImageUrl
+      return (
+        hotel.hotelImageUrl ||
+        hotel.roomThumbnailUrl ||
+        hotel.hotelThumbnailUrl ||
+        null
+      );
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching Rakuten room thumbnail URL:", error);
+    return null;
+  }
+}

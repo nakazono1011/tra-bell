@@ -89,6 +89,7 @@ export interface ParsedReservation {
   hotelPostalCode?: string;
   hotelAddress?: string;
   hotelTelNo?: string;
+  roomThumbnailUrl?: string;
 }
 
 // Price check result

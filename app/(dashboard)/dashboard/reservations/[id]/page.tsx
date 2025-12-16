@@ -44,7 +44,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     .orderBy(desc(priceHistory.checkedAt));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link

@@ -14,11 +14,10 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
   const [imageError, setImageError] = useState(false);
 
   // ホテルサムネイル画像のURL
-  // 実際の実装では、hotelUrlから画像を取得するか、ホテル画像APIを使用
-  // 現時点ではプレースホルダー画像を使用
+  // roomThumbnailUrlを優先、なければプレースホルダー画像を使用
   const thumbnailUrl = imageError
     ? "/images/hotel-placeholder.jpg"
-    : reservation.hotelUrl || "/images/hotel-placeholder.jpg";
+    : reservation.roomThumbnailUrl || "/images/hotel-placeholder.jpg";
 
   // プラン名（planNameを優先、なければroomTypeを使用）
   const planName = reservation.planName || reservation.roomType || "";
@@ -74,38 +73,42 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
         </div>
 
         {/* Right: Reservation Details */}
-        <div className="flex-1 min-w-0 flex flex-col gap-1 pr-20">
-          {/* Hotel Name */}
-          <h3 className="text-base font-semibold text-[var(--text-primary)] truncate">
-            {reservation.hotelName}
-          </h3>
+        <div className="flex-1 min-w-0 flex flex-col justify-between">
+          <div className="flex flex-col gap-1">
+            {/* Hotel Name */}
+            <h3 className="text-base font-semibold text-[var(--text-primary)] truncate">
+              {reservation.hotelName}
+            </h3>
 
-          {/* Plan Name */}
-          {planName && (
-            <p className="text-xs text-[var(--text-secondary)] truncate w-full">
-              {planName}
-            </p>
-          )}
+            {/* Plan Name */}
+            {planName && (
+              <p className="text-xs text-[var(--text-secondary)] truncate w-full">
+                {planName}
+              </p>
+            )}
 
-          {/* Check-in ~ Check-out Date */}
-          <p className="text-xs text-[var(--text-secondary)]">
-            {formatDateShort(reservation.checkInDate)} ~{" "}
-            {formatDateShort(reservation.checkOutDate)}
-          </p>
-
-          {/* Cancellation Date */}
-          {cancellationDate && (
+            {/* Check-in ~ Check-out Date */}
             <p className="text-xs text-[var(--text-secondary)]">
-              {cancellationDate} にキャンセル料発生
+              {formatDateShort(reservation.checkInDate)} ~{" "}
+              {formatDateShort(reservation.checkOutDate)}
             </p>
-          )}
-        </div>
+          </div>
 
-        {/* Current Price - Bottom Right */}
-        <div className="absolute bottom-4 right-4">
-          <p className="text-lg font-bold text-[var(--text-primary)]">
-            {formatPrice(reservation.currentPrice)}
-          </p>
+          {/* Bottom: Cancellation Date and Price */}
+          <div className="flex items-end justify-between mt-2">
+            {/* Cancellation Date - Bottom Left */}
+            {cancellationDate ? (
+              <p className="text-xs text-[var(--text-secondary)]">
+                {cancellationDate} にキャンセル料発生
+              </p>
+            ) : (
+              <div />
+            )}
+            {/* Current Price - Bottom Right */}
+            <p className="text-lg font-bold text-[var(--text-primary)]">
+              {formatPrice(reservation.currentPrice)}
+            </p>
+          </div>
         </div>
       </div>
     </Link>

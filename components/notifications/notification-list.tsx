@@ -2,10 +2,74 @@
 
 import { useState } from "react";
 import { formatDateTime } from "@/lib/utils";
-import type { Notification } from "@/db/schema";
+import type { Notification, NotificationType } from "@/db/schema";
 
 interface NotificationListProps {
   notifications: Notification[];
+}
+
+type NotificationConfig = {
+  label: string;
+  badgeColor: string;
+  iconBg: string;
+  iconColor: string;
+  iconPath: string;
+};
+
+const NOTIFICATION_CONFIGS: Record<NotificationType, NotificationConfig> = {
+  price_drop: {
+    label: "価格低下",
+    badgeColor: "bg-emerald-50 text-emerald-600 border-emerald-200",
+    iconBg: "bg-emerald-50",
+    iconColor: "text-emerald-600",
+    iconPath: "M13 17h8m0 0V9m0 8l-8-8-4 4-6-6",
+  },
+  auto_cancel: {
+    label: "自動キャンセル",
+    badgeColor: "bg-amber-50 text-amber-600 border-amber-200",
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-600",
+    iconPath:
+      "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z",
+  },
+  auto_rebook: {
+    label: "自動再予約",
+    badgeColor: "bg-blue-50 text-blue-600 border-blue-200",
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-600",
+    iconPath:
+      "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
+  },
+  info: {
+    label: "お知らせ",
+    badgeColor: "bg-gray-50 text-gray-600 border-gray-200",
+    iconBg: "bg-[var(--bg-secondary)]",
+    iconColor: "text-slate-400",
+    iconPath: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+  },
+};
+
+function NotificationIcon({ type }: { type: NotificationType }) {
+  const config = NOTIFICATION_CONFIGS[type];
+  return (
+    <div
+      className={`flex items-center justify-center w-10 h-10 rounded-full ${config.iconBg}`}
+    >
+      <svg
+        className={`w-5 h-5 ${config.iconColor}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d={config.iconPath}
+        />
+      </svg>
+    </div>
+  );
 }
 
 export function NotificationList({ notifications }: NotificationListProps) {
@@ -15,109 +79,6 @@ export function NotificationList({ notifications }: NotificationListProps) {
     if (filter === "unread") return !n.isRead;
     return true;
   });
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "price_drop":
-        return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50">
-            <svg
-              className="w-5 h-5 text-emerald-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
-              />
-            </svg>
-          </div>
-        );
-      case "auto_cancel":
-        return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-50">
-            <svg
-              className="w-5 h-5 text-amber-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-        );
-      case "auto_rebook":
-        return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50">
-            <svg
-              className="w-5 h-5 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </div>
-        );
-      default:
-        return (
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--bg-secondary)]">
-            <svg
-              className="w-5 h-5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-        );
-    }
-  };
-
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case "price_drop":
-        return "価格低下";
-      case "auto_cancel":
-        return "自動キャンセル";
-      case "auto_rebook":
-        return "自動再予約";
-      default:
-        return "お知らせ";
-    }
-  };
-
-  const getTypeBadgeColor = (type: string) => {
-    switch (type) {
-      case "price_drop":
-        return "bg-emerald-50 text-emerald-600 border-emerald-200";
-      case "auto_cancel":
-        return "bg-amber-50 text-amber-600 border-amber-200";
-      case "auto_rebook":
-        return "bg-blue-50 text-blue-600 border-blue-200";
-      default:
-        return "bg-gray-50 text-gray-600 border-gray-200";
-    }
-  };
 
   const markAsRead = async (id: string) => {
     try {
@@ -138,7 +99,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
               filter === "all"
                 ? "bg-orange-500 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -148,7 +109,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
           </button>
           <button
             onClick={() => setFilter("unread")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
               filter === "unread"
                 ? "bg-orange-500 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -199,15 +160,18 @@ export function NotificationList({ notifications }: NotificationListProps) {
               }`}
             >
               <div className="flex items-start gap-4">
-                {getNotificationIcon(n.type)}
+                <NotificationIcon type={n.type} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
+                    <p className="text-xs text-[var(--text-tertiary)]">
+                      {formatDateTime(n.createdAt)}
+                    </p>
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeBadgeColor(
-                        n.type
-                      )}`}
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+                        NOTIFICATION_CONFIGS[n.type].badgeColor
+                      }`}
                     >
-                      {getTypeLabel(n.type)}
+                      {NOTIFICATION_CONFIGS[n.type].label}
                     </span>
                     {!n.isRead && (
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -218,9 +182,6 @@ export function NotificationList({ notifications }: NotificationListProps) {
                   </h3>
                   <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                     {n.message}
-                  </p>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-3">
-                    {formatDateTime(n.createdAt)}
                   </p>
                 </div>
               </div>

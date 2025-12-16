@@ -23,6 +23,7 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
+import Image from "next/image";
 
 interface ReservationDetailProps {
   reservation: Reservation;
@@ -37,6 +38,17 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
 
   return (
     <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white overflow-hidden shadow-sm">
+      {/* Hotel Thumbnail Image */}
+      {reservation.roomThumbnailUrl && (
+        <div className="w-full h-64 aspect-square relative bg-[var(--bg-secondary)]">
+          <Image
+            src={reservation.roomThumbnailUrl}
+            alt={reservation.hotelName}
+            fill
+          />
+        </div>
+      )}
+
       <div className="py-4 px-6 border-b border-[var(--bg-tertiary)] bg-white">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-4">
@@ -59,11 +71,11 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl font-bold text-[var(--text-primary)] leading-tight">
+              <h1 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] leading-tight">
                 {reservation.hotelName}
               </h1>
               {reservation.planName && (
-                <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                <p className="text-xs mt-2 text-[var(--text-primary)] leading-relaxed">
                   {reservation.planName}
                 </p>
               )}
@@ -77,7 +89,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
 
       {/* Price Section */}
       <div className="px-6 py-4 border-b border-[var(--bg-tertiary)] bg-[var(--bg-secondary)]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+        <div className="grid grid-cols-3 gap-4 md:gap-4 lg:gap-8 items-end">
           <div>
             <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
               現在の価格
@@ -120,7 +132,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
 
       {/* Details Section */}
       <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+        <div className="grid grid-cols-1 gap-x-12 gap-y-8">
           {/* Left Column */}
           <div className="space-y-6">
             <div className="flex gap-4">
