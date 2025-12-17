@@ -11,8 +11,7 @@ export function createPriceCheckResult(
   const priceDropAmount = previousPrice - currentPrice;
   const priceDropPercentage =
     previousPrice > 0 ? (priceDropAmount / previousPrice) * 100 : 0;
-  const isSignificantDrop =
-    priceDropAmount >= 500 || priceDropPercentage >= 5;
+  const isSignificantDrop = priceDropAmount >= 500 || priceDropPercentage >= 5;
 
   return {
     reservationId,

@@ -136,6 +136,7 @@ export const reservations = pgTable(
     hotelTelNo: text("hotel_tel_no"),
     roomThumbnailUrl: text("room_thumbnail_url"), // 部屋サムネイル画像URL
     emailMessageId: text("email_message_id"), // Gmailのメッセージ ID
+    affiliateUrl: text("affiliate_url"), // アフィリエイトURL（楽天トラベル空室検索APIから取得）
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

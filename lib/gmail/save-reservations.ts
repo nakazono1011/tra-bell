@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { reservations, priceHistory, userSettings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { ParsedEmailResult } from "./parser";
+import { fetchRakutenAffiliateUrl } from "@/lib/utils/rakuten";
 
 /**
  * 予約をデータベースに保存
@@ -9,7 +10,7 @@ import type { ParsedEmailResult } from "./parser";
 export async function saveReservations(
   userId: string,
   results: ParsedEmailResult[]
-): Promise<typeof reservations.$inferSelect[]> {
+): Promise<(typeof reservations.$inferSelect)[]> {
   // 既存の予約IDセットを取得（重複チェック用）
   const existingReservations = await db
     .select()
@@ -28,6 +29,27 @@ export async function saveReservations(
     const key = `${result.reservation.reservationSite}-${result.reservation.reservationId}`;
     if (existingIds.has(key)) {
       continue; // 既に存在する予約はスキップ
+    }
+
+    // 楽天トラベルの場合、アフィリエイトURLを取得
+    let affiliateUrl: string | null = null;
+    if (
+      result.reservation.reservationSite === "rakuten" &&
+      result.reservation.hotelId
+    ) {
+      try {
+        affiliateUrl = await fetchRakutenAffiliateUrl(
+          result.reservation.hotelId,
+          result.reservation.checkInDate,
+          result.reservation.checkOutDate,
+          result.reservation.roomCount,
+          result.reservation.adultCount,
+          result.reservation.childCount
+        );
+      } catch (error) {
+        console.error("Error fetching affiliate URL:", error);
+        // エラーが発生しても予約保存は続行
+      }
     }
 
     // 予約を保存
@@ -58,6 +80,7 @@ export async function saveReservations(
         hotelTelNo: result.reservation.hotelTelNo,
         roomThumbnailUrl: result.reservation.roomThumbnailUrl,
         emailMessageId: result.messageId,
+        affiliateUrl,
         status: "active",
       })
       .returning();
@@ -101,4 +124,3 @@ export async function updateUserSettingsSyncStatus(userId: string) {
     });
   }
 }
-

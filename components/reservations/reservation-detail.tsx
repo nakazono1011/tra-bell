@@ -287,16 +287,16 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
             )}
           </div>
         </div>
-        {reservation.hotelUrl && (
+        {(reservation.affiliateUrl || reservation.hotelUrl) && (
           <div className="w-full pt-2">
             <a
-              href={reservation.hotelUrl}
+              href={reservation.affiliateUrl || reservation.hotelUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-xs font-medium"
             >
               <ExternalLink className="w-4 h-4" />
-              予約ページを開く
+              {reservation.affiliateUrl ? "予約ページを開く（アフィリエイト）" : "予約ページを開く"}
             </a>
           </div>
         )}

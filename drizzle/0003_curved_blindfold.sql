@@ -1,0 +1,1 @@
+ALTER TABLE "reservations" ADD COLUMN "affiliate_url" text;

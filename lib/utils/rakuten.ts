@@ -57,10 +57,10 @@ export function buildRakutenPlanUrl(
 }
 
 /**
- * 楽天トラベルのプランURLにクエリパラメータを追加
+ * URLにクエリパラメータを追加する共通処理
  */
-export function addQueryParamsToRakutenPlanUrl(
-  planUrl: string,
+function addQueryParamsToUrl(
+  urlString: string,
   checkInDate: string,
   checkOutDate: string,
   roomCount?: number | null,
@@ -68,7 +68,7 @@ export function addQueryParamsToRakutenPlanUrl(
   childCount?: number | null
 ): string {
   try {
-    const url = new URL(planUrl);
+    const url = new URL(urlString);
     const params = buildRakutenQueryParams(
       checkInDate,
       checkOutDate,
@@ -86,8 +86,29 @@ export function addQueryParamsToRakutenPlanUrl(
     return url.toString();
   } catch {
     // URLパースに失敗した場合は元のURLを返す
-    return planUrl;
+    return urlString;
   }
+}
+
+/**
+ * 楽天トラベルのプランURLにクエリパラメータを追加
+ */
+export function addQueryParamsToRakutenPlanUrl(
+  planUrl: string,
+  checkInDate: string,
+  checkOutDate: string,
+  roomCount?: number | null,
+  adultCount?: number | null,
+  childCount?: number | null
+): string {
+  return addQueryParamsToUrl(
+    planUrl,
+    checkInDate,
+    checkOutDate,
+    roomCount,
+    adultCount,
+    childCount
+  );
 }
 
 /**
@@ -98,7 +119,7 @@ function buildRakutenQueryParams(
   checkOutDate: string,
   roomCount?: number | null,
   adultCount?: number | null,
-  childCount?: number | null
+  _childCount?: number | null // 将来の拡張用、現在は未使用
 ): string {
   const checkIn = parseDate(checkInDate);
   const checkOut = parseDate(checkOutDate);
@@ -161,30 +182,59 @@ function buildRakutenQueryParams(
 }
 
 /**
- * 楽天トラベル施設検索APIを使って施設IDからroomThumbnailUrlを取得
+ * 日付文字列（ISO 8601形式）をYYYY-MM-DD形式に変換
  */
-export async function fetchRakutenRoomThumbnailUrl(
-  hotelId: string
-): Promise<string | null> {
+function formatDateForApi(dateStr: string): string | null {
   try {
-    const applicationId = process.env.RAKUTEN_APPLICATION_ID;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 楽天APIの環境変数をチェック
+ */
+function getRakutenApiCredentials(): {
+  applicationId: string | null;
+  affiliateId: string | null;
+} {
+  return {
+    applicationId: process.env.RAKUTEN_APPLICATION_ID || null,
+    affiliateId: process.env.RAKUTEN_AFFILIATE_ID || null,
+  };
+}
+
+/**
+ * 楽天APIを呼び出す共通処理
+ */
+async function callRakutenApi(
+  endpoint: string,
+  params: Record<string, string>
+): Promise<Record<string, unknown> | null> {
+  try {
+    const { applicationId } = getRakutenApiCredentials();
     if (!applicationId) {
       console.warn("RAKUTEN_APPLICATION_ID is not set");
       return null;
     }
 
-    const apiUrl = new URL(
-      "https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426"
-    );
+    const apiUrl = new URL(endpoint);
     apiUrl.searchParams.set("applicationId", applicationId);
     apiUrl.searchParams.set("format", "json");
     apiUrl.searchParams.set("formatVersion", "2");
-    apiUrl.searchParams.set("hotelNo", hotelId);
-    // 必要なフィールドのみ取得（パフォーマンス向上）
-    apiUrl.searchParams.set(
-      "elements",
-      "hotelNo,hotelImageUrl,hotelThumbnailUrl,roomThumbnailUrl"
-    );
+
+    // 追加パラメータを設定
+    for (const [key, value] of Object.entries(params)) {
+      apiUrl.searchParams.set(key, value);
+    }
 
     const response = await fetch(apiUrl.toString(), {
       headers: {
@@ -199,22 +249,207 @@ export async function fetchRakutenRoomThumbnailUrl(
       return null;
     }
 
-    const data = await response.json();
+    return await response.json();
+  } catch (error) {
+    console.error("Error calling Rakuten API:", error);
+    return null;
+  }
+}
+
+/**
+ * アフィリエイトURLのpcパラメータ内のURLにクエリパラメータを追加
+ * @param affiliateUrl アフィリエイトURL
+ * @param checkInDate チェックイン日（ISO 8601形式）
+ * @param checkOutDate チェックアウト日（ISO 8601形式）
+ * @param roomCount 部屋数
+ * @param adultCount 大人数
+ * @param childCount 子供数（オプション）
+ * @returns クエリパラメータが追加されたアフィリエイトURL
+ */
+function addQueryParamsToAffiliateUrl(
+  affiliateUrl: string,
+  checkInDate: string,
+  checkOutDate: string,
+  roomCount?: number | null,
+  adultCount?: number | null,
+  childCount?: number | null
+): string {
+  try {
+    const url = new URL(affiliateUrl);
+    const pcParam = url.searchParams.get("pc");
+
+    if (!pcParam) {
+      // pcパラメータがない場合は元のURLを返す
+      return affiliateUrl;
+    }
+
+    // pcパラメータをデコードしてクエリパラメータを追加
+    const decodedPcUrl = decodeURIComponent(pcParam);
+    const updatedPcUrl = addQueryParamsToUrl(
+      decodedPcUrl,
+      checkInDate,
+      checkOutDate,
+      roomCount,
+      adultCount,
+      childCount
+    );
+
+    // pcパラメータに設定（URLSearchParams.set()は自動的にエンコードする）
+    url.searchParams.set("pc", updatedPcUrl);
+
+    return url.toString();
+  } catch (error) {
+    console.error("Error adding query params to affiliate URL:", error);
+    // エラーが発生した場合は元のURLを返す
+    return affiliateUrl;
+  }
+}
+
+/**
+ * 楽天トラベル空室検索APIを使ってアフィリエイトURLを取得
+ * @param hotelId 施設番号
+ * @param checkInDate チェックイン日（ISO 8601形式）
+ * @param checkOutDate チェックアウト日（ISO 8601形式）
+ * @param roomCount 部屋数
+ * @param adultCount 大人数
+ * @param childCount 子供数（オプション、現在は未使用）
+ * @returns アフィリエイトURL（planListUrl）、取得失敗時はnull
+ */
+export async function fetchRakutenAffiliateUrl(
+  hotelId: string,
+  checkInDate: string,
+  checkOutDate: string,
+  roomCount?: number | null,
+  adultCount?: number | null,
+  _childCount?: number | null // 将来の拡張用、現在は未使用
+): Promise<string | null> {
+  try {
+    const { affiliateId } = getRakutenApiCredentials();
+
+    // アフィリエイトIDが設定されていない場合はnullを返す
+    if (!affiliateId) {
+      console.warn(
+        "RAKUTEN_AFFILIATE_ID is not set, affiliate URL will not be generated"
+      );
+      return null;
+    }
+
+    const checkIn = formatDateForApi(checkInDate);
+    const checkOut = formatDateForApi(checkOutDate);
+
+    if (!checkIn || !checkOut) {
+      console.error("Invalid date format for checkInDate or checkOutDate");
+      return null;
+    }
+
+    const params: Record<string, string> = {
+      affiliateId,
+      hotelNo: hotelId,
+      checkinDate: checkIn,
+      checkoutDate: checkOut,
+      adultNum: String(adultCount || 1),
+      elements: "planListUrl",
+    };
+
+    // 部屋数が指定されている場合は設定
+    if (roomCount) {
+      params.roomNum = String(roomCount);
+    }
+
+    const data = await callRakutenApi(
+      "https://app.rakuten.co.jp/services/api/Travel/VacantHotelSearch/20170426",
+      params
+    );
+
+    if (!data) {
+      return null;
+    }
+
+    // formatVersion=2の場合のレスポンス構造
+    // hotels配列の最初の要素からplanListUrlを取得
+    const hotels = data.hotels as unknown;
+    if (
+      hotels &&
+      Array.isArray(hotels) &&
+      hotels.length > 0 &&
+      Array.isArray(hotels[0]) &&
+      hotels[0].length > 0
+    ) {
+      const hotel = hotels[0][0] as {
+        hotelBasicInfo?: { planListUrl?: string };
+      };
+
+      // planListUrlを取得（アフィリエイトIDが設定されている場合、アフィリエイトURLが返される）
+      // レスポンス構造: hotel.hotelBasicInfo.planListUrl
+      if (hotel.hotelBasicInfo?.planListUrl) {
+        const baseAffiliateUrl = hotel.hotelBasicInfo.planListUrl;
+
+        // pcパラメータ内のURLにクエリパラメータを追加
+        return addQueryParamsToAffiliateUrl(
+          baseAffiliateUrl,
+          checkInDate,
+          checkOutDate,
+          roomCount,
+          adultCount,
+          _childCount
+        );
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching Rakuten affiliate URL:", error);
+    return null;
+  }
+}
+
+/**
+ * 楽天トラベル施設検索APIを使って施設IDからroomThumbnailUrlを取得
+ */
+export async function fetchRakutenRoomThumbnailUrl(
+  hotelId: string
+): Promise<string | null> {
+  try {
+    const data = await callRakutenApi(
+      "https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426",
+      {
+        hotelNo: hotelId,
+        elements: "hotelNo,hotelImageUrl,hotelThumbnailUrl,roomThumbnailUrl",
+      }
+    );
+
+    if (!data) {
+      return null;
+    }
 
     // APIレスポンスの構造を確認
     // formatVersion=2の場合、itemsは配列で、各要素は直接フィールドを持つ
+    const hotels = data.hotels as unknown;
     if (
-      data.hotels &&
-      Array.isArray(data.hotels) &&
-      data.hotels[0].length > 0
+      hotels &&
+      Array.isArray(hotels) &&
+      hotels.length > 0 &&
+      Array.isArray(hotels[0]) &&
+      hotels[0].length > 0
     ) {
-      const hotel = data.hotels[0][0].hotelBasicInfo;
+      const hotelBasicInfo = (hotels[0][0] as { hotelBasicInfo?: unknown })
+        .hotelBasicInfo as
+        | {
+            hotelImageUrl?: string;
+            roomThumbnailUrl?: string;
+            hotelThumbnailUrl?: string;
+          }
+        | undefined;
+
+      if (!hotelBasicInfo) {
+        return null;
+      }
 
       // roomThumbnailUrlを優先、なければhotelThumbnailUrl、それもなければhotelImageUrl
       return (
-        hotel.hotelImageUrl ||
-        hotel.roomThumbnailUrl ||
-        hotel.hotelThumbnailUrl ||
+        hotelBasicInfo.hotelImageUrl ||
+        hotelBasicInfo.roomThumbnailUrl ||
+        hotelBasicInfo.hotelThumbnailUrl ||
         null
       );
     }
