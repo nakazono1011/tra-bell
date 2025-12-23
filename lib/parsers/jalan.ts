@@ -140,6 +140,29 @@ export function parseJalanReservationEmail(
       /【電話】\s*([\d-]+)/,
     ]);
 
+    // 予約受付日時を抽出
+    let reservationDate: string | undefined;
+    const reservationDateMatch = body.match(
+      /予約(?:受付)?日時[：:]\s*(\d{4})[年/](\d{1,2})[月/](\d{1,2})日?\s*(\d{1,2})[：:](\d{1,2})/
+    );
+    if (reservationDateMatch) {
+      const year = reservationDateMatch[1];
+      const month = reservationDateMatch[2].padStart(2, '0');
+      const day = reservationDateMatch[3].padStart(2, '0');
+      const hour = reservationDateMatch[4].padStart(2, '0');
+      const minute = reservationDateMatch[5].padStart(2, '0');
+      reservationDate = `${year}-${month}-${day}T${hour}:${minute}:00`;
+    } else {
+      // 時刻がない場合は日付のみを抽出
+      const reservationDateOnly = extractDate(body, [
+        /予約(?:受付)?日[：:]\s*(\d{4})[年/](\d{1,2})[月/](\d{1,2})日?/,
+        /【予約(?:受付)?日】\s*(\d{4})年(\d{1,2})月(\d{1,2})日/,
+      ]);
+      if (reservationDateOnly) {
+        reservationDate = `${reservationDateOnly}T00:00:00`;
+      }
+    }
+
     return {
       hotelName,
       checkInDate,
@@ -157,6 +180,7 @@ export function parseJalanReservationEmail(
       hotelPostalCode: hotelPostalCode || undefined,
       hotelAddress: hotelAddress || undefined,
       hotelTelNo: hotelTelNo || undefined,
+      reservationDate: reservationDate || undefined,
     };
   } catch (error) {
     console.error(

@@ -81,3 +81,36 @@ export function isBeforeDeadline(
       : deadline;
   return new Date() < d;
 }
+
+/**
+ * キャンセル発生日をyyyy/mm/dd形式でフォーマット
+ */
+export function formatCancellationDate(
+  deadline: Date | string | null
+): string | null {
+  if (!deadline) return null;
+  const date =
+    deadline instanceof Date
+      ? deadline
+      : new Date(deadline);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(
+    2,
+    '0'
+  );
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}/${month}/${day}`;
+}
+
+/**
+ * 宿泊日数を計算（チェックイン日からチェックアウト日まで）
+ */
+export function calculateNights(
+  checkInDate: Date | string,
+  checkOutDate: Date | string
+): number {
+  const checkIn = new Date(checkInDate);
+  const checkOut = new Date(checkOutDate);
+  const diffTime = checkOut.getTime() - checkIn.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}

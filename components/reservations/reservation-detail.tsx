@@ -6,31 +6,67 @@ import {
   calculatePriceDrop,
   isBeforeDeadline,
 } from '@/lib/utils';
-import {
-  getSiteLabel,
-  getSiteBadgeColor,
-  getStatusBadge,
-  formatGuestCount,
-} from '@/lib/utils/reservation';
-import type { Reservation } from '@/db/schema';
+import { formatGuestCount } from '@/lib/utils/reservation';
+import type {
+  Reservation,
+  PriceHistory,
+} from '@/db/schema';
 import {
   Calendar,
   Users,
   Bed,
-  Clock,
-  ExternalLink,
   CalendarClock,
   MapPin,
   Phone,
+  ExternalLink,
 } from 'lucide-react';
 import Image from 'next/image';
+import { PriceHistoryChart } from './price-history-chart';
+import { Button } from '../ui/button';
+import type { LucideIcon } from 'lucide-react';
 
 interface ReservationDetailProps {
   reservation: Reservation;
+  priceHistory: PriceHistory[];
+}
+
+interface DetailItemProps {
+  icon: LucideIcon;
+  label: string;
+  value: React.ReactNode;
+  iconBgColor: string;
+  iconColor: string;
+}
+
+function DetailItem({
+  icon: Icon,
+  label,
+  value,
+  iconBgColor,
+  iconColor,
+}: DetailItemProps) {
+  return (
+    <div className="flex gap-4">
+      <div
+        className={`mt-1 p-2 ${iconBgColor} rounded-lg ${iconColor} shrink-0`}
+      >
+        <Icon className="w-5 h-5" />
+      </div>
+      <div>
+        <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
+          {label}
+        </p>
+        <div className="text-xs text-[var(--text-primary)]">
+          {value}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function ReservationDetail({
   reservation,
+  priceHistory,
 }: ReservationDetailProps) {
   const priceDrop = calculatePriceDrop(
     reservation.originalPrice,
@@ -57,41 +93,37 @@ export function ReservationDetail({
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getSiteBadgeColor(
-                    reservation.reservationSite
-                  )}`}
-                >
-                  {getSiteLabel(
-                    reservation.reservationSite
-                  )}
-                </span>
-                {getStatusBadge(reservation.status) && (
-                  <span
-                    className={`${
-                      getStatusBadge(reservation.status)!
-                        .className
-                    } px-2.5 py-0.5 text-xs rounded-full`}
-                  >
-                    {
-                      getStatusBadge(reservation.status)!
-                        .label
-                    }
-                  </span>
-                )}
-              </div>
               <h1 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] leading-tight">
                 {reservation.hotelName}
               </h1>
               {reservation.planName && (
-                <p className="text-xs mt-2 text-[var(--text-primary)] leading-relaxed">
+                <p className="text-xs mt-1 text-[var(--text-primary)] leading-relaxed">
                   {reservation.planName}
                 </p>
               )}
-              <p className="text-xs text-[var(--text-secondary)] mt-2">
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
                 予約番号: {reservation.reservationId}
               </p>
+              {reservation.cancellationDeadline && (
+                <div className="mt-2">
+                  {canCancel ? (
+                    <p className="text-sm font-semibold text-emerald-600">
+                      {new Date(
+                        reservation.cancellationDeadline
+                      ).toLocaleDateString('ja-JP', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      })}{' '}
+                      までキャンセル無料
+                    </p>
+                  ) : (
+                    <p className="text-sm font-semibold text-rose-600">
+                      キャンセル料発生
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -102,18 +134,18 @@ export function ReservationDetail({
         <div className="grid grid-cols-3 gap-4 md:gap-4 lg:gap-8 items-end">
           <div>
             <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-              現在の価格
+              予約時の価格
             </p>
-            <p className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
-              {formatPrice(reservation.currentPrice)}
+            <p className="text-xl font-semibold text-[var(--text-primary)]">
+              {formatPrice(reservation.originalPrice)}
             </p>
           </div>
           <div>
             <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-              予約時の価格
+              現在の価格
             </p>
-            <p className="text-xl font-semibold text-[var(--text-secondary)]">
-              {formatPrice(reservation.originalPrice)}
+            <p className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+              {formatPrice(reservation.currentPrice)}
             </p>
           </div>
           <div>
@@ -140,172 +172,24 @@ export function ReservationDetail({
         </div>
       </div>
 
-      {/* Details Section */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 gap-x-12 gap-y-8">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="mt-1 p-2 bg-orange-50 rounded-lg text-orange-500 shrink-0">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                  宿泊日程
-                </p>
-                <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  {formatDate(reservation.checkInDate)} 〜{' '}
-                  {formatDate(reservation.checkOutDate)}
-                </p>
-              </div>
-            </div>
+      {/* Price History Chart */}
+      <div className="border-[var(--bg-tertiary)]">
+        <PriceHistoryChart
+          priceHistory={priceHistory}
+          originalPrice={reservation.originalPrice}
+        />
+      </div>
 
-            {reservation.roomType && (
-              <div className="flex gap-4">
-                <div className="mt-1 p-2 bg-purple-50 rounded-lg text-purple-500 shrink-0">
-                  <Bed className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    部屋タイプ
-                  </p>
-                  <p className="text-xs text-[var(--text-primary)] leading-normal">
-                    {reservation.roomType}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {reservation.roomCount && (
-              <div className="flex gap-4">
-                <div className="mt-1 p-2 bg-cyan-50 rounded-lg text-cyan-500 shrink-0">
-                  <Bed className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    部屋数
-                  </p>
-                  <p className="text-xs text-[var(--text-primary)]">
-                    {reservation.roomCount}室
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {(reservation.adultCount ||
-              reservation.childCount) && (
-              <div className="flex gap-4">
-                <div className="mt-1 p-2 bg-indigo-50 rounded-lg text-indigo-500 shrink-0">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    宿泊人数
-                  </p>
-                  <p className="text-xs text-[var(--text-primary)]">
-                    {formatGuestCount(
-                      reservation.adultCount,
-                      reservation.childCount
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="mt-1 p-2 bg-rose-50 rounded-lg text-rose-500 shrink-0">
-                <Clock className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                  キャンセル期限
-                </p>
-                {reservation.cancellationDeadline ? (
-                  <div>
-                    <p className="text-xs font-semibold text-[var(--text-primary)]">
-                      {formatDate(
-                        reservation.cancellationDeadline
-                      )}
-                    </p>
-                    {canCancel ? (
-                      <p className="text-xs text-emerald-600 mt-1 font-medium flex items-center gap-1">
-                        ✓ 無料キャンセル可能
-                      </p>
-                    ) : (
-                      <p className="text-xs text-rose-600 mt-1 font-medium flex items-center gap-1">
-                        ✗ キャンセル料発生
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-[var(--text-secondary)]">
-                    不明
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="mt-1 p-2 bg-slate-50 rounded-lg text-slate-500 shrink-0">
-                <CalendarClock className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                  予約登録日
-                </p>
-                <p className="text-xs text-[var(--text-primary)]">
-                  {formatDate(reservation.createdAt)}
-                </p>
-              </div>
-            </div>
-
-            {(reservation.hotelPostalCode ||
-              reservation.hotelAddress) && (
-              <div className="flex gap-4">
-                <div className="mt-1 p-2 bg-green-50 rounded-lg text-green-500 shrink-0">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    ホテル住所
-                  </p>
-                  {reservation.hotelPostalCode && (
-                    <p className="text-xs text-[var(--text-primary)]">
-                      〒{reservation.hotelPostalCode}
-                    </p>
-                  )}
-                  {reservation.hotelAddress && (
-                    <p className="text-xs text-[var(--text-primary)] mt-1">
-                      {reservation.hotelAddress}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {reservation.hotelTelNo && (
-              <div className="flex gap-4">
-                <div className="mt-1 p-2 bg-teal-50 rounded-lg text-teal-500 shrink-0">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-                    ホテル電話番号
-                  </p>
-                  <p className="text-xs text-[var(--text-primary)]">
-                    {reservation.hotelTelNo}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        {(reservation.affiliateUrl ||
-          reservation.hotelUrl) && (
-          <div className="w-full pt-2">
+      {/* Rebook Button */}
+      {(reservation.affiliateUrl ||
+        reservation.hotelUrl) && (
+        <div className="px-6 pb-4 border-b border-[var(--bg-tertiary)]">
+          <Button
+            asChild
+            variant="default"
+            size="lg"
+            className="w-full rounded-full bg-[var(--accent-primary)] text-[var(--text-on-accent)] hover:bg-[var(--accent-primary)]/90"
+          >
             <a
               href={
                 reservation.affiliateUrl ||
@@ -314,15 +198,119 @@ export function ReservationDetail({
               }
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-xs font-medium"
+              className="flex items-center justify-center gap-2"
             >
-              <ExternalLink className="w-4 h-4" />
-              {reservation.affiliateUrl
-                ? '予約ページを開く（アフィリエイト）'
-                : '予約ページを開く'}
+              <ExternalLink className="w-6 h-6 shrink-0" />
+              <span className="text-base font-semibold">
+                予約を取り直して節約する
+              </span>
             </a>
+          </Button>
+        </div>
+      )}
+
+      {/* Details Section */}
+      <div className="p-6">
+        <h2 className="text-base font-bold text-[var(--text-primary)] mb-6">
+          宿泊プラン詳細
+        </h2>
+        <div className="grid grid-cols-1 gap-x-12 gap-y-8">
+          {/* Left Column */}
+          <div className="space-y-6">
+            {reservation.reservationDate && (
+              <DetailItem
+                icon={CalendarClock}
+                label="予約日"
+                value={formatDate(
+                  reservation.reservationDate
+                )}
+                iconBgColor="bg-slate-50"
+                iconColor="text-slate-500"
+              />
+            )}
+            <DetailItem
+              icon={Calendar}
+              label="宿泊日程"
+              value={
+                <>
+                  {formatDate(reservation.checkInDate)} 〜{' '}
+                  {formatDate(reservation.checkOutDate)}
+                </>
+              }
+              iconBgColor="bg-orange-50"
+              iconColor="text-orange-500"
+            />
+            {reservation.roomType && (
+              <DetailItem
+                icon={Bed}
+                label="部屋タイプ"
+                value={
+                  <span className="leading-normal">
+                    {reservation.roomType}
+                  </span>
+                }
+                iconBgColor="bg-purple-50"
+                iconColor="text-purple-500"
+              />
+            )}
+            {reservation.roomCount && (
+              <DetailItem
+                icon={Bed}
+                label="部屋数"
+                value={`${reservation.roomCount}室`}
+                iconBgColor="bg-cyan-50"
+                iconColor="text-cyan-500"
+              />
+            )}
+            {(reservation.adultCount ||
+              reservation.childCount) && (
+              <DetailItem
+                icon={Users}
+                label="宿泊人数"
+                value={formatGuestCount(
+                  reservation.adultCount,
+                  reservation.childCount
+                )}
+                iconBgColor="bg-indigo-50"
+                iconColor="text-indigo-500"
+              />
+            )}
           </div>
-        )}
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            {(reservation.hotelPostalCode ||
+              reservation.hotelAddress) && (
+              <DetailItem
+                icon={MapPin}
+                label="ホテル住所"
+                value={
+                  <>
+                    {reservation.hotelPostalCode && (
+                      <p>〒{reservation.hotelPostalCode}</p>
+                    )}
+                    {reservation.hotelAddress && (
+                      <p className="mt-1">
+                        {reservation.hotelAddress}
+                      </p>
+                    )}
+                  </>
+                }
+                iconBgColor="bg-green-50"
+                iconColor="text-green-500"
+              />
+            )}
+            {reservation.hotelTelNo && (
+              <DetailItem
+                icon={Phone}
+                label="ホテル電話番号"
+                value={reservation.hotelTelNo}
+                iconBgColor="bg-teal-50"
+                iconColor="text-teal-500"
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -168,7 +168,7 @@ export function NotificationList({
               : '通知はありません'}
           </p>
           <p className="text-slate-500 text-sm mt-1">
-            価格変動や自動処理の結果がここに表示されます
+            価格変動の結果がここに表示されます
           </p>
         </div>
       ) : (

@@ -4,6 +4,7 @@ import {
   priceHistory,
   notification,
   userSettings,
+  users,
 } from '@/db/schema';
 import { eq, and, gt } from 'drizzle-orm';
 import type {
@@ -13,6 +14,7 @@ import type {
 import { checkRakutenPrice } from './rakuten';
 import { checkJalanPrice } from './jalan';
 import { isBeforeDeadline } from '@/lib/utils';
+import { sendPriceDropEmail } from '@/lib/utils/email';
 
 /**
  * 予約の価格をチェック
@@ -131,15 +133,19 @@ async function updateReservationPrice(
 }
 
 /**
- * 値下がり通知を作成
+ * 値下がり通知を作成（DB通知 + メール通知）
  */
 async function createPriceDropNotification(
   userId: string,
   reservationId: string,
   hotelName: string,
   priceDropAmount: number,
-  priceDropPercentage: number
+  priceDropPercentage: number,
+  checkInDate: string,
+  checkOutDate: string,
+  affiliateUrl?: string | null
 ): Promise<void> {
+  // DB通知を作成
   await db.insert(notification).values({
     userId,
     reservationId,
@@ -150,6 +156,35 @@ async function createPriceDropNotification(
     )}%）値下がりしました。キャンセル・再予約をご検討ください。`,
     isRead: false,
   });
+
+  // ユーザーのメールアドレスを取得
+  const [user] = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (user?.email) {
+    // メール通知を送信（エラーはログに記録するが、処理は続行）
+    try {
+      await sendPriceDropEmail(
+        user.email,
+        hotelName,
+        priceDropAmount,
+        priceDropPercentage,
+        checkInDate,
+        checkOutDate,
+        reservationId,
+        affiliateUrl
+      );
+    } catch (error) {
+      console.error(
+        `Failed to send price drop email to ${user.email}:`,
+        error
+      );
+      // メール送信失敗してもDB通知は作成済みなので、処理は続行
+    }
+  }
 }
 
 /**
@@ -183,6 +218,7 @@ async function processReservationPriceCheck(reservation: {
   planUrl?: string | null;
   planName?: string | null;
   roomType?: string | null;
+  affiliateUrl?: string | null;
 }): Promise<{
   checked: boolean;
   priceDrop: boolean;
@@ -249,7 +285,10 @@ async function processReservationPriceCheck(reservation: {
           reservation.id,
           reservation.hotelName,
           result.priceDropAmount,
-          result.priceDropPercentage
+          result.priceDropPercentage,
+          reservation.checkInDate,
+          reservation.checkOutDate,
+          reservation.affiliateUrl
         );
         return {
           checked: true,
@@ -292,6 +331,7 @@ export async function checkAllActivePrices(): Promise<{
         planUrl: r.planUrl,
         planName: r.planName,
         roomType: r.roomType,
+        affiliateUrl: r.affiliateUrl,
       });
 
       if (result.checked) checked++;

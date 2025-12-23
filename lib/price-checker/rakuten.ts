@@ -1,96 +1,30 @@
 import type { PriceCheckResult } from '@/types';
 import { chromium, type Page } from 'playwright';
-import { generateObject } from 'ai';
-import { google } from '@ai-sdk/google';
-import { z } from 'zod';
 import {
   createPriceCheckResult,
   createDefaultPriceResult,
 } from './utils';
 
 /**
- * HTMLから価格を抽出するためのスキーマ
+ * 価格テキストから数値を抽出（カンマや記号を除去）
  */
-const priceExtractionSchema = z.object({
-  totalPrice: z
-    .number()
-    .describe(
-      '合計金額（円単位、カンマや記号は除去）。クーポン/割引適用後の『で泊まる方法』等ではなく、通常表示の『合計◯◯円（税込）』を指す'
-    ),
-  priceFound: z
-    .boolean()
-    .describe('価格が見つかったかどうか'),
-  priceElement: z
-    .string()
-    .optional()
-    .describe('価格が含まれていた要素の説明（デバッグ用）'),
-});
-
-/**
- * 楽天トラベルの価格抽出用プロンプトを生成
- */
-function createRakutenPriceExtractionPrompt(
-  hotelName: string,
-  checkInDate: string,
-  checkOutDate: string,
-  planUrl: string,
-  html: string,
-  planName?: string,
-  roomType?: string
-): string {
-  const planNameInfo = planName
-    ? `- プラン名: ${planName}`
-    : '';
-  const roomTypeInfo = roomType
-    ? `- 部屋タイプ: ${roomType}`
-    : '';
-
-  return `以下の楽天トラベルの予約ページのHTMLから、指定されたプランの「合計金額（通常の合計。例: 『合計 17,950円(税込)』）」を抽出してください。
-
-【対象プランの情報】
-- ホテル名: ${hotelName}
-- チェックイン日: ${checkInDate}
-- チェックアウト日: ${checkOutDate}
-${planNameInfo}
-${roomTypeInfo}
-- プランURL: ${planUrl}
-
-【HTML】
-${html}
-
-【抽出要件】
-以下の情報を抽出してください:
-- 合計金額（円単位、カンマや記号は除去）
-- 価格が見つかったかどうか
-- 価格が含まれていた要素の説明（デバッグ用）
-
-【重要な注意事項】
-1. 上記のホテル名、チェックイン日、チェックアウト日${
-    planName ? '、プラン名' : ''
-  }${roomType ? '、部屋タイプ' : ''}に一致するプランの価格を抽出してください
-2. ページに複数のプランや価格が表示されている場合、指定された日付とホテル${
-    planName ? 'とプラン名' : ''
-  }${roomType ? 'と部屋タイプ' : ''}に該当するプランの価格のみを抽出してください
-3. 最優先で取得するのは、文言として「合計」もしくは「合計金額」と強く結びついた価格です（例: 「合計 17,950円(税込)」）。この「合計」ラベルの近傍の金額のみを返してください
-4. 次のような“割引/クーポン導線”に書かれた金額は **絶対に取得しないでください**:
-   - 「今すぐ◯◯円引き」「◯◯円引き」「クーポン」「割引」「キャンペーン」「で泊まる方法」「最安値」等の文言の近くにある金額
-   - className/class に discountedPrice / originalPrice が含まれる要素の金額
-5. 価格の候補が複数ある場合は、次の優先順位で1つに決めてください:
-   - (A) 「合計」ラベル直後/同ブロックの金額（予約ボタンや「大人◯人 / ◯泊の料金」に近い領域）
-   - (B) 「税込」表記を伴う「合計」金額
-   - (C) 上記が見つからない場合のみ、指定プランの“通常表示”の総額（割引/クーポン導線は除外）
-6. 抽出した数値は円の整数に正規化し、カンマ・円記号・括弧内表記は除去してください
-7. HTML内に複数の「合計」候補がある場合、上記の条件（ホテル名、日付${
-    planName ? '、プラン名' : ''
-  }${
-    roomType ? '、部屋タイプ' : ''
-  }）に最も一致するプランの「合計」価格を抽出してください`;
+function extractPriceFromText(
+  priceText: string
+): number | null {
+  // カンマ、円記号、括弧内の文字を除去して数値を抽出
+  const priceMatch = priceText
+    .replace(/[,\s円（()）]/g, '')
+    .match(/\d+/);
+  if (priceMatch) {
+    return parseInt(priceMatch[0], 10);
+  }
+  return null;
 }
 
 /**
  * ページを段階的にスクロールしてJavaScript実行を促す
  */
-async function scrollPageGradually(
+export async function scrollPageGradually(
   page: Page
 ): Promise<void> {
   await page.evaluate(async () => {
@@ -144,8 +78,8 @@ export async function checkRakutenPrice(
 
     // Browserlessに接続
     const browserlessUrl =
-      process.env.BROWSERLESS_URL ||
-      'wss://brd-customer-hl_72b2f430-zone-nakazono_test:722oaqxpvvxk@brd.superproxy.io:9222';
+      "'wss://brd-customer-hl_72b2f430-zone-nakazono_test:722oaqxpvvxk@brd.superproxy.io:9222'";
+
     const browser =
       await chromium.connectOverCDP(browserlessUrl);
 
@@ -163,30 +97,30 @@ export async function checkRakutenPrice(
       await scrollPageGradually(page);
       await page.waitForTimeout(2000);
 
-      // HTMLを取得
-      const html = await page.content();
+      // プラン名と部屋タイプで絞り込んで価格を取得
+      let priceLocator = planName
+        ? page.locator('li.planThumb', {
+            hasText: planName,
+          })
+        : page.locator('li.planThumb');
 
-      // Google AI SDKのgenerateObjectを使用してHTMLから価格を抽出
-      const prompt = createRakutenPriceExtractionPrompt(
-        hotelName,
-        checkInDate,
-        checkOutDate,
-        planUrl,
-        html,
-        planName,
-        roomType
+      if (roomType) {
+        priceLocator = priceLocator.locator(
+          'li.rm-type-wrapper',
+          {
+            hasText: roomType,
+          }
+        );
+      }
+
+      // 価格要素を取得
+      const priceElement = priceLocator.locator(
+        '.discountedPrice > strong'
       );
-      const { object } = await generateObject({
-        model: google('gemini-2.5-flash'),
-        schema: priceExtractionSchema,
-        prompt,
-      });
-
-      console.log('Price extraction result:', object);
-      // 価格が見つからなかった場合は現在価格を返す
-      if (!object.priceFound || !object.totalPrice) {
+      const count = await priceElement.count();
+      if (count === 0) {
         console.log(
-          'Price not found in HTML, returning current price'
+          'Price element not found, returning current price'
         );
         return createDefaultPriceResult(
           reservationId,
@@ -194,7 +128,25 @@ export async function checkRakutenPrice(
         );
       }
 
-      const newPrice = Math.round(object.totalPrice);
+      // 価格テキストを取得して数値を抽出
+      const priceText = await priceElement
+        .first()
+        .innerText();
+      console.log('Price text extracted:', priceText);
+
+      const extractedPrice =
+        extractPriceFromText(priceText);
+      if (extractedPrice === null) {
+        console.log(
+          'Failed to extract price from text, returning current price'
+        );
+        return createDefaultPriceResult(
+          reservationId,
+          currentPrice
+        );
+      }
+
+      const newPrice = Math.round(extractedPrice);
       return createPriceCheckResult(
         reservationId,
         currentPrice,

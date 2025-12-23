@@ -203,6 +203,7 @@ ${body}
       hotelAddress: object.hotelAddress,
       hotelTelNo: object.hotelTelNo,
       roomThumbnailUrl,
+      reservationDate: object.reservationDate,
     };
   } catch (error) {
     console.error(

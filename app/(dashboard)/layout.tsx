@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { FooterNav } from '@/components/dashboard/footer-nav';
 import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { users, notification } from '@/db/schema';
+import { eq, and, count } from 'drizzle-orm';
 
 export default async function DashboardLayout({
   children,
@@ -29,15 +29,28 @@ export default async function DashboardLayout({
     redirect('/onboarding');
   }
 
+  // 未読通知の数を取得
+  const [unreadCountResult] = await db
+    .select({ count: count() })
+    .from(notification)
+    .where(
+      and(
+        eq(notification.userId, session.user.id),
+        eq(notification.isRead, false)
+      )
+    );
+
+  const unreadCount = unreadCountResult?.count ?? 0;
+
   return (
     <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col">
       <DashboardHeader user={session.user} />
       <main className="flex-1 pb-20">
-        <div className="max-w-md mx-auto py-6 px-4">
+        <div className="max-w-md mx-auto py-6 px-2">
           {children}
         </div>
       </main>
-      <FooterNav />
+      <FooterNav unreadCount={unreadCount} />
     </div>
   );
 }

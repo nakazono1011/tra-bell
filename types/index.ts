@@ -90,6 +90,7 @@ export interface ParsedReservation {
   hotelAddress?: string;
   hotelTelNo?: string;
   roomThumbnailUrl?: string;
+  reservationDate?: string; // 予約受付日時（ISO 8601形式）
 }
 
 // Price check result

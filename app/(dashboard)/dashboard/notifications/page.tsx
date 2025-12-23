@@ -30,7 +30,7 @@ export default async function NotificationsPage() {
           通知
         </h1>
         <p className="text-[var(--text-secondary)] mt-1">
-          価格変動と自動処理の通知を確認
+          価格変動の通知を確認
         </p>
       </div>
 

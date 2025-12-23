@@ -94,6 +94,9 @@ export async function saveReservations(
           result.reservation.roomThumbnailUrl,
         emailMessageId: result.messageId,
         affiliateUrl,
+        reservationDate: result.reservation.reservationDate
+          ? new Date(result.reservation.reservationDate)
+          : null,
         status: 'active',
       })
       .returning();

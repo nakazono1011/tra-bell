@@ -6,7 +6,6 @@ import { reservations, priceHistory } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import Link from 'next/link';
 import { ReservationDetail } from '@/components/reservations/reservation-detail';
-import { PriceHistoryChart } from '@/components/reservations/price-history-chart';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -67,12 +66,9 @@ export default async function ReservationDetailPage({
       </div>
 
       {/* Reservation Detail */}
-      <ReservationDetail reservation={reservationData} />
-
-      {/* Price History Chart */}
-      <PriceHistoryChart
+      <ReservationDetail
+        reservation={reservationData}
         priceHistory={priceHistoryData}
-        originalPrice={reservationData.originalPrice}
       />
     </div>
   );

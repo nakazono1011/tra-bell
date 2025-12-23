@@ -3,7 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { formatPrice, formatDateShort } from '@/lib/utils';
+import {
+  formatPrice,
+  formatDateShort,
+  calculatePriceDrop,
+  formatCancellationDate,
+  calculateNights,
+} from '@/lib/utils';
 import type { Reservation } from '@/db/schema';
 
 interface ReservationCardProps {
@@ -26,22 +32,22 @@ export function ReservationCard({
   const planName =
     reservation.planName || reservation.roomType || '';
 
-  // キャンセル発生日のフォーマット（yyyy/mm/dd形式）
-  const cancellationDate = reservation.cancellationDeadline
-    ? (() => {
-        const date =
-          reservation.cancellationDeadline instanceof Date
-            ? reservation.cancellationDeadline
-            : new Date(reservation.cancellationDeadline);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(
-          2,
-          '0'
-        );
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}/${month}/${day}`;
-      })()
-    : null;
+  // キャンセル発生日のフォーマット
+  const cancellationDate = formatCancellationDate(
+    reservation.cancellationDeadline
+  );
+
+  // 節約額の計算
+  const priceDrop = calculatePriceDrop(
+    reservation.originalPrice,
+    reservation.currentPrice
+  );
+
+  // 宿泊日数の計算
+  const nights = calculateNights(
+    reservation.checkInDate,
+    reservation.checkOutDate
+  );
 
   return (
     <Link
@@ -50,7 +56,7 @@ export function ReservationCard({
     >
       <div className="flex gap-4 p-4 relative">
         {/* Left: Hotel Thumbnail */}
-        <div className="relative w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-[var(--bg-secondary)]">
+        <div className="relative w-24 h-24 rounded-lg  overflow-hidden shrink-0 bg-[var(--bg-secondary)]">
           {!imageError ? (
             <Image
               src={thumbnailUrl}
@@ -80,7 +86,7 @@ export function ReservationCard({
         </div>
 
         {/* Right: Reservation Details */}
-        <div className="flex-1 min-w-0 flex flex-col justify-between">
+        <div className="flex-1 min-w-0 flex flex-col">
           <div className="flex flex-col gap-1">
             {/* Hotel Name */}
             <h3 className="text-base font-semibold text-[var(--text-primary)] truncate">
@@ -94,27 +100,44 @@ export function ReservationCard({
               </p>
             )}
 
-            {/* Check-in ~ Check-out Date */}
-            <p className="text-xs text-[var(--text-secondary)]">
-              {formatDateShort(reservation.checkInDate)} ~{' '}
-              {formatDateShort(reservation.checkOutDate)}
-            </p>
-          </div>
-
-          {/* Bottom: Cancellation Date and Price */}
-          <div className="flex items-end justify-between mt-2">
-            {/* Cancellation Date - Bottom Left */}
-            {cancellationDate ? (
-              <p className="text-xs text-[var(--text-secondary)]">
+            {/* Cancellation Date */}
+            {cancellationDate && (
+              <p className="text-xs font-bold text-[var(--text-secondary)]">
                 {cancellationDate} にキャンセル料発生
               </p>
-            ) : (
-              <div />
             )}
-            {/* Current Price - Bottom Right */}
-            <p className="text-lg font-bold text-[var(--text-primary)]">
-              {formatPrice(reservation.currentPrice)}
-            </p>
+
+            {/* Check-in ~ Check-out Date with Price */}
+            <div className="flex items-end justify-between gap-2 mt-1">
+              <p className="text-xs text-[var(--text-secondary)]">
+                {formatDateShort(reservation.checkInDate)} ~{' '}
+                {formatDateShort(reservation.checkOutDate)}{' '}
+                ({nights}泊)
+              </p>
+              <div className="flex flex-col items-end gap-0.5 shrink-0">
+                {priceDrop.amount > 0 ? (
+                  <>
+                    {/* Original Price with strikethrough */}
+                    <p className="text-sm font-semibold text-[var(--text-secondary)] line-through leading-none">
+                      {formatPrice(
+                        reservation.originalPrice
+                      )}
+                    </p>
+                    {/* Current Price */}
+                    <p className="text-lg font-bold text-emerald-600 leading-none">
+                      {formatPrice(
+                        reservation.currentPrice
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  /* Current Price (when not discounted) */
+                  <p className="text-lg font-bold text-[var(--text-primary)] leading-none">
+                    {formatPrice(reservation.currentPrice)}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
