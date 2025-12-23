@@ -134,7 +134,7 @@ export function ReservationDetail({
         <div className="grid grid-cols-3 gap-4 md:gap-4 lg:gap-8 items-end">
           <div>
             <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-              予約時の価格
+              予約時価格
             </p>
             <p className="text-xl font-semibold text-[var(--text-primary)]">
               {formatPrice(reservation.originalPrice)}
@@ -142,7 +142,7 @@ export function ReservationDetail({
           </div>
           <div>
             <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">
-              現在の価格
+              現在価格
             </p>
             <p className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
               {formatPrice(reservation.currentPrice)}
