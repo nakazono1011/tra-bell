@@ -78,7 +78,7 @@ export async function checkRakutenPrice(
 
     // Browserlessに接続
     const browserlessUrl =
-      "'wss://brd-customer-hl_72b2f430-zone-nakazono_test:722oaqxpvvxk@brd.superproxy.io:9222'";
+      'wss://brd-customer-hl_72b2f430-zone-nakazono_test:722oaqxpvvxk@brd.superproxy.io:9222';
 
     const browser =
       await chromium.connectOverCDP(browserlessUrl);
