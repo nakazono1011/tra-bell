@@ -2,10 +2,11 @@ import { Check, Clock, Mail } from 'lucide-react';
 import { MessageCircleIcon } from './message-circle-icon';
 
 export const navLinks = [
-  { href: '#problem', label: 'Tra-bellとは' },
-  { href: '#how-it-works', label: '仕組み' },
-  { href: '#features', label: '特徴' },
-  { href: '#faq', label: 'よくある質問' },
+  // 別ページ（/privacy, /terms 等）からでもホームの該当セクションへ遷移できるように /#... に統一
+  { href: '/#problem', label: 'Tra-bellとは' },
+  { href: '/#how-it-works', label: '仕組み' },
+  { href: '/#features', label: '特徴' },
+  { href: '/#faq', label: 'よくある質問' },
 ];
 
 export const features = [

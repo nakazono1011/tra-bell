@@ -5,6 +5,7 @@ import { signIn } from '@/lib/auth-client';
 import Image from 'next/image';
 import { Clock, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -135,19 +136,19 @@ export default function SignInPage() {
         {/* Terms */}
         <p className="mt-6 sm:mt-8 text-center text-xs text-[var(--text-tertiary)] leading-relaxed shrink-0">
           ログインすることで、
-          <a
-            href="#"
+          <Link
+            href="/terms"
             className="text-[var(--text-secondary)] underline hover:text-[var(--accent-primary)] mx-1"
           >
             利用規約
-          </a>
+          </Link>
           と
-          <a
-            href="#"
+          <Link
+            href="/privacy"
             className="text-[var(--text-secondary)] underline hover:text-[var(--accent-primary)] mx-1"
           >
             プライバシーポリシー
-          </a>
+          </Link>
           に<br />
           同意したものとみなされます。
         </p>

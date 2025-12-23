@@ -15,6 +15,21 @@ export function Footer() {
           />
         </Link>
         <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-[var(--text-secondary)]">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/privacy"
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              プライバシーポリシー
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-[var(--text-primary)] transition-colors"
+            >
+              利用規約
+            </Link>
+          </div>
+          <div className="hidden md:block">|</div>
           <div>© 2025 Tra-bell All rights reserved.</div>
           <div className="hidden md:block">|</div>
           <div>

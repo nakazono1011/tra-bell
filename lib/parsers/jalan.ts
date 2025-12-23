@@ -147,10 +147,16 @@ export function parseJalanReservationEmail(
     );
     if (reservationDateMatch) {
       const year = reservationDateMatch[1];
-      const month = reservationDateMatch[2].padStart(2, '0');
+      const month = reservationDateMatch[2].padStart(
+        2,
+        '0'
+      );
       const day = reservationDateMatch[3].padStart(2, '0');
       const hour = reservationDateMatch[4].padStart(2, '0');
-      const minute = reservationDateMatch[5].padStart(2, '0');
+      const minute = reservationDateMatch[5].padStart(
+        2,
+        '0'
+      );
       reservationDate = `${year}-${month}-${day}T${hour}:${minute}:00`;
     } else {
       // 時刻がない場合は日付のみを抽出

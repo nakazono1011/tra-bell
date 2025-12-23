@@ -17,7 +17,6 @@ export function Navbar() {
             height={400}
             className="h-16 w-auto object-contain"
             priority
-            quality={100}
           />
         </Link>
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--text-secondary)]">
@@ -31,7 +30,7 @@ export function Navbar() {
             </a>
           ))}
           <a
-            href="#waitlist"
+            href="/#waitlist"
             className="text-sm font-bold bg-[var(--accent-primary)] text-[var(--text-on-accent)] px-5 py-2.5 rounded-full hover:bg-[var(--accent-hover)] transition-colors shadow-sm"
           >
             無料で始める
@@ -39,7 +38,7 @@ export function Navbar() {
         </div>
         <div className="md:hidden">
           <a
-            href="#waitlist"
+            href="/#waitlist"
             className="text-sm font-bold bg-[var(--accent-primary)] text-[var(--text-on-accent)] px-4 py-2 rounded-full hover:bg-[var(--accent-hover)] transition-colors"
           >
             無料で始める
