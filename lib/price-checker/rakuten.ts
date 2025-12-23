@@ -64,11 +64,15 @@ export async function checkRakutenPrice(
   planName?: string,
   roomType?: string
 ): Promise<PriceCheckResult | null> {
+  console.log(
+    `[checkRakutenPrice] 開始 - reservationId: ${reservationId}, hotelName: ${hotelName}, planUrl: ${planUrl || 'なし'}`
+  );
+
   try {
     // planUrlがない場合は現在価格を返す
     if (!planUrl) {
       console.log(
-        'Plan URL not provided, returning current price'
+        `[checkRakutenPrice] Plan URL not provided, returning current price - reservationId: ${reservationId}`
       );
       return createDefaultPriceResult(
         reservationId,
@@ -80,24 +84,104 @@ export async function checkRakutenPrice(
     const browserlessUrl =
       'wss://brd-customer-hl_72b2f430-zone-nakazono_test:722oaqxpvvxk@brd.superproxy.io:9222';
 
-    const browser =
-      await chromium.connectOverCDP(browserlessUrl);
+    console.log(
+      `[checkRakutenPrice] Browserless接続開始 - URL: ${browserlessUrl.substring(0, 50)}...`
+    );
+    let browser;
+    try {
+      browser =
+        await chromium.connectOverCDP(browserlessUrl);
+      console.log(
+        `[checkRakutenPrice] Browserless接続成功 - reservationId: ${reservationId}`
+      );
+    } catch (connectError) {
+      console.error(
+        `[checkRakutenPrice] Browserless接続失敗 - reservationId: ${reservationId}`,
+        {
+          error:
+            connectError instanceof Error
+              ? connectError.message
+              : String(connectError),
+          stack:
+            connectError instanceof Error
+              ? connectError.stack
+              : undefined,
+          url: browserlessUrl,
+        }
+      );
+      throw connectError;
+    }
 
     try {
+      console.log(
+        `[checkRakutenPrice] 新しいページを作成中 - reservationId: ${reservationId}`
+      );
       const page = await browser.newPage();
+      console.log(
+        `[checkRakutenPrice] ページ作成成功 - reservationId: ${reservationId}`
+      );
 
       // 楽天トラベルの予約ページを開く
-      console.log(`Opening Rakuten plan page: ${planUrl}`);
-      await page.goto(planUrl, {
-        timeout: 60000,
-        waitUntil: 'domcontentloaded',
-      });
+      console.log(
+        `[checkRakutenPrice] 楽天トラベルの予約ページを開く - planUrl: ${planUrl}, reservationId: ${reservationId}`
+      );
+      try {
+        await page.goto(planUrl, {
+          timeout: 60000,
+          waitUntil: 'domcontentloaded',
+        });
+        console.log(
+          `[checkRakutenPrice] ページナビゲーション成功 - reservationId: ${reservationId}`
+        );
+      } catch (gotoError) {
+        console.error(
+          `[checkRakutenPrice] ページナビゲーション失敗 - reservationId: ${reservationId}`,
+          {
+            error:
+              gotoError instanceof Error
+                ? gotoError.message
+                : String(gotoError),
+            stack:
+              gotoError instanceof Error
+                ? gotoError.stack
+                : undefined,
+            planUrl,
+          }
+        );
+        throw gotoError;
+      }
 
       // ページが完全にレンダリングされるまで待つ
-      await scrollPageGradually(page);
+      console.log(
+        `[checkRakutenPrice] ページスクロール開始 - reservationId: ${reservationId}`
+      );
+      try {
+        await scrollPageGradually(page);
+        console.log(
+          `[checkRakutenPrice] ページスクロール完了 - reservationId: ${reservationId}`
+        );
+      } catch (scrollError) {
+        console.error(
+          `[checkRakutenPrice] ページスクロール失敗 - reservationId: ${reservationId}`,
+          {
+            error:
+              scrollError instanceof Error
+                ? scrollError.message
+                : String(scrollError),
+          }
+        );
+        // スクロールエラーは続行可能なので、ログだけ残して続行
+      }
+
+      console.log(
+        `[checkRakutenPrice] 2秒待機中 - reservationId: ${reservationId}`
+      );
       await page.waitForTimeout(2000);
 
       // プラン名と部屋タイプで絞り込んで価格を取得
+      console.log(
+        `[checkRakutenPrice] 価格要素を検索中 - planName: ${planName || 'なし'}, roomType: ${roomType || 'なし'}, reservationId: ${reservationId}`
+      );
       let priceLocator = planName
         ? page.locator('li.planThumb', {
             hasText: planName,
@@ -105,6 +189,9 @@ export async function checkRakutenPrice(
         : page.locator('li.planThumb');
 
       if (roomType) {
+        console.log(
+          `[checkRakutenPrice] 部屋タイプで絞り込み中 - roomType: ${roomType}, reservationId: ${reservationId}`
+        );
         priceLocator = priceLocator.locator(
           'li.rm-type-wrapper',
           {
@@ -117,10 +204,17 @@ export async function checkRakutenPrice(
       const priceElement = priceLocator.locator(
         '.discountedPrice > strong'
       );
+      console.log(
+        `[checkRakutenPrice] 価格要素の数をカウント中 - reservationId: ${reservationId}`
+      );
       const count = await priceElement.count();
+      console.log(
+        `[checkRakutenPrice] 価格要素の数: ${count} - reservationId: ${reservationId}`
+      );
+
       if (count === 0) {
         console.log(
-          'Price element not found, returning current price'
+          `[checkRakutenPrice] 価格要素が見つかりませんでした - reservationId: ${reservationId}, planName: ${planName || 'なし'}, roomType: ${roomType || 'なし'}`
         );
         return createDefaultPriceResult(
           reservationId,
@@ -129,16 +223,24 @@ export async function checkRakutenPrice(
       }
 
       // 価格テキストを取得して数値を抽出
+      console.log(
+        `[checkRakutenPrice] 価格テキストを取得中 - reservationId: ${reservationId}`
+      );
       const priceText = await priceElement
         .first()
         .innerText();
-      console.log('Price text extracted:', priceText);
+      console.log(
+        `[checkRakutenPrice] 価格テキスト抽出成功: "${priceText}" - reservationId: ${reservationId}`
+      );
 
+      console.log(
+        `[checkRakutenPrice] 価格数値を抽出中 - reservationId: ${reservationId}`
+      );
       const extractedPrice =
         extractPriceFromText(priceText);
       if (extractedPrice === null) {
         console.log(
-          'Failed to extract price from text, returning current price'
+          `[checkRakutenPrice] 価格数値の抽出に失敗 - priceText: "${priceText}", reservationId: ${reservationId}`
         );
         return createDefaultPriceResult(
           reservationId,
@@ -147,16 +249,74 @@ export async function checkRakutenPrice(
       }
 
       const newPrice = Math.round(extractedPrice);
+      console.log(
+        `[checkRakutenPrice] 価格チェック完了 - 現在価格: ${currentPrice}, 新価格: ${newPrice}, reservationId: ${reservationId}`
+      );
       return createPriceCheckResult(
         reservationId,
         currentPrice,
         newPrice
       );
+    } catch (innerError) {
+      console.error(
+        `[checkRakutenPrice] 内部処理エラー - reservationId: ${reservationId}`,
+        {
+          error:
+            innerError instanceof Error
+              ? innerError.message
+              : String(innerError),
+          stack:
+            innerError instanceof Error
+              ? innerError.stack
+              : undefined,
+          errorName:
+            innerError instanceof Error
+              ? innerError.name
+              : undefined,
+        }
+      );
+      throw innerError;
     } finally {
-      await browser.close();
+      console.log(
+        `[checkRakutenPrice] ブラウザを閉じる - reservationId: ${reservationId}`
+      );
+      try {
+        await browser.close();
+        console.log(
+          `[checkRakutenPrice] ブラウザクローズ成功 - reservationId: ${reservationId}`
+        );
+      } catch (closeError) {
+        console.error(
+          `[checkRakutenPrice] ブラウザクローズ失敗 - reservationId: ${reservationId}`,
+          {
+            error:
+              closeError instanceof Error
+                ? closeError.message
+                : String(closeError),
+          }
+        );
+      }
     }
   } catch (error) {
-    console.error('Error checking Rakuten price:', error);
+    console.error(
+      `[checkRakutenPrice] エラー発生 - reservationId: ${reservationId}`,
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : String(error),
+        stack:
+          error instanceof Error ? error.stack : undefined,
+        errorName:
+          error instanceof Error ? error.name : undefined,
+        hotelName,
+        checkInDate,
+        checkOutDate,
+        planUrl,
+        planName,
+        roomType,
+      }
+    );
     // エラーが発生した場合は現在価格を返す
     return createDefaultPriceResult(
       reservationId,
