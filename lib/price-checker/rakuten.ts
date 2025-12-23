@@ -82,7 +82,7 @@ export async function checkRakutenPrice(
 
     // Browserlessに接続
     const browserlessUrl =
-      'wss://brd-customer-hl_72b2f430-zone-nakazono_test:722oaqxpvvxk@brd.superproxy.io:9222';
+      'wss://brd-customer-hl_72b2f430-zone-nakazono_test-country-jp:722oaqxpvvxk@brd.superproxy.io:9222';
 
     console.log(
       `[checkRakutenPrice] Browserless接続開始 - URL: ${browserlessUrl.substring(0, 50)}...`
