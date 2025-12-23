@@ -1,13 +1,15 @@
-import { MetadataRoute } from "next";
+import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://tra-bell.com";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    'https://tra-bell.com';
 
   return [
     {
       url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: 'weekly',
       priority: 1,
     },
     // Add /sign-in if it's considered a public landing page for users to enter,

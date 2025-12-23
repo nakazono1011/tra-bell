@@ -2,7 +2,9 @@
  * 楽天トラベルのURLからhotelIdを抽出
  * URL形式: hotelinfo/plan/{hotelId} または hotelinfo/plan/{hotelId}?...
  */
-export function extractHotelIdFromRakutenUrl(url: string): string | null {
+export function extractHotelIdFromRakutenUrl(
+  url: string
+): string | null {
   try {
     const match = url.match(/hotelinfo\/plan\/(\d+)/);
     return match ? match[1] : null;
@@ -127,56 +129,56 @@ function buildRakutenQueryParams(
   const params = new URLSearchParams();
 
   // 基本パラメータ
-  params.set("f_flg", "PLAN");
-  params.set("f_teikei", "");
-  params.set("f_hizuke", "");
-  params.set("f_hak", "");
-  params.set("f_dai", "japan");
-  params.set("f_chu", "");
-  params.set("f_shou", "");
-  params.set("f_sai", "");
-  params.set("f_tel", "");
-  params.set("f_target_flg", "");
-  params.set("f_tscm_flg", "");
-  params.set("f_p_no", "");
-  params.set("f_custom_code", "");
-  params.set("f_search_type", "");
-  params.set("f_camp_id", "");
-  params.set("f_static", "1");
-  params.set("f_rm_equip", "");
+  params.set('f_flg', 'PLAN');
+  params.set('f_teikei', '');
+  params.set('f_hizuke', '');
+  params.set('f_hak', '');
+  params.set('f_dai', 'japan');
+  params.set('f_chu', '');
+  params.set('f_shou', '');
+  params.set('f_sai', '');
+  params.set('f_tel', '');
+  params.set('f_target_flg', '');
+  params.set('f_tscm_flg', '');
+  params.set('f_p_no', '');
+  params.set('f_custom_code', '');
+  params.set('f_search_type', '');
+  params.set('f_camp_id', '');
+  params.set('f_static', '1');
+  params.set('f_rm_equip', '');
 
   // チェックイン日
   if (checkIn) {
-    params.set("f_hi1", String(checkIn.day));
-    params.set("f_tuki1", String(checkIn.month));
-    params.set("f_nen1", String(checkIn.year));
+    params.set('f_hi1', String(checkIn.day));
+    params.set('f_tuki1', String(checkIn.month));
+    params.set('f_nen1', String(checkIn.year));
   }
 
   // チェックアウト日
   if (checkOut) {
-    params.set("f_hi2", String(checkOut.day));
-    params.set("f_tuki2", String(checkOut.month));
-    params.set("f_nen2", String(checkOut.year));
+    params.set('f_hi2', String(checkOut.day));
+    params.set('f_tuki2', String(checkOut.month));
+    params.set('f_nen2', String(checkOut.year));
   }
 
   // 部屋数（デフォルト: 1）
-  params.set("f_heya_su", String(roomCount || 1));
+  params.set('f_heya_su', String(roomCount || 1));
 
   // 大人数（デフォルト: 1）
-  params.set("f_otona_su", String(adultCount || 1));
+  params.set('f_otona_su', String(adultCount || 1));
 
   // 子供（小学生高学年・低学年、デフォルト: 0）
-  params.set("f_s1", "0");
-  params.set("f_s2", "0");
+  params.set('f_s1', '0');
+  params.set('f_s2', '0');
 
   // 幼児の各種設定（デフォルト: 0）
-  params.set("f_y1", "0");
-  params.set("f_y2", "0");
-  params.set("f_y3", "0");
-  params.set("f_y4", "0");
+  params.set('f_y1', '0');
+  params.set('f_y2', '0');
+  params.set('f_y3', '0');
+  params.set('f_y4', '0');
 
-  params.set("f_kin2", "0");
-  params.set("f_kin", "");
+  params.set('f_kin2', '0');
+  params.set('f_kin', '');
 
   return params.toString();
 }
@@ -191,8 +193,11 @@ function formatDateForApi(dateStr: string): string | null {
       return null;
     }
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(
+      2,
+      '0'
+    );
+    const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   } catch {
     return null;
@@ -207,7 +212,8 @@ function getRakutenApiCredentials(): {
   affiliateId: string | null;
 } {
   return {
-    applicationId: process.env.RAKUTEN_APPLICATION_ID || null,
+    applicationId:
+      process.env.RAKUTEN_APPLICATION_ID || null,
     affiliateId: process.env.RAKUTEN_AFFILIATE_ID || null,
   };
 }
@@ -222,14 +228,14 @@ async function callRakutenApi(
   try {
     const { applicationId } = getRakutenApiCredentials();
     if (!applicationId) {
-      console.warn("RAKUTEN_APPLICATION_ID is not set");
+      console.warn('RAKUTEN_APPLICATION_ID is not set');
       return null;
     }
 
     const apiUrl = new URL(endpoint);
-    apiUrl.searchParams.set("applicationId", applicationId);
-    apiUrl.searchParams.set("format", "json");
-    apiUrl.searchParams.set("formatVersion", "2");
+    apiUrl.searchParams.set('applicationId', applicationId);
+    apiUrl.searchParams.set('format', 'json');
+    apiUrl.searchParams.set('formatVersion', '2');
 
     // 追加パラメータを設定
     for (const [key, value] of Object.entries(params)) {
@@ -238,7 +244,7 @@ async function callRakutenApi(
 
     const response = await fetch(apiUrl.toString(), {
       headers: {
-        "User-Agent": "tra-bell/1.0",
+        'User-Agent': 'tra-bell/1.0',
       },
     });
 
@@ -251,7 +257,7 @@ async function callRakutenApi(
 
     return await response.json();
   } catch (error) {
-    console.error("Error calling Rakuten API:", error);
+    console.error('Error calling Rakuten API:', error);
     return null;
   }
 }
@@ -276,7 +282,7 @@ function addQueryParamsToAffiliateUrl(
 ): string {
   try {
     const url = new URL(affiliateUrl);
-    const pcParam = url.searchParams.get("pc");
+    const pcParam = url.searchParams.get('pc');
 
     if (!pcParam) {
       // pcパラメータがない場合は元のURLを返す
@@ -295,11 +301,14 @@ function addQueryParamsToAffiliateUrl(
     );
 
     // pcパラメータに設定（URLSearchParams.set()は自動的にエンコードする）
-    url.searchParams.set("pc", updatedPcUrl);
+    url.searchParams.set('pc', updatedPcUrl);
 
     return url.toString();
   } catch (error) {
-    console.error("Error adding query params to affiliate URL:", error);
+    console.error(
+      'Error adding query params to affiliate URL:',
+      error
+    );
     // エラーが発生した場合は元のURLを返す
     return affiliateUrl;
   }
@@ -329,7 +338,7 @@ export async function fetchRakutenAffiliateUrl(
     // アフィリエイトIDが設定されていない場合はnullを返す
     if (!affiliateId) {
       console.warn(
-        "RAKUTEN_AFFILIATE_ID is not set, affiliate URL will not be generated"
+        'RAKUTEN_AFFILIATE_ID is not set, affiliate URL will not be generated'
       );
       return null;
     }
@@ -338,7 +347,9 @@ export async function fetchRakutenAffiliateUrl(
     const checkOut = formatDateForApi(checkOutDate);
 
     if (!checkIn || !checkOut) {
-      console.error("Invalid date format for checkInDate or checkOutDate");
+      console.error(
+        'Invalid date format for checkInDate or checkOutDate'
+      );
       return null;
     }
 
@@ -348,7 +359,7 @@ export async function fetchRakutenAffiliateUrl(
       checkinDate: checkIn,
       checkoutDate: checkOut,
       adultNum: String(adultCount || 1),
-      elements: "planListUrl",
+      elements: 'planListUrl',
     };
 
     // 部屋数が指定されている場合は設定
@@ -357,7 +368,7 @@ export async function fetchRakutenAffiliateUrl(
     }
 
     const data = await callRakutenApi(
-      "https://app.rakuten.co.jp/services/api/Travel/VacantHotelSearch/20170426",
+      'https://app.rakuten.co.jp/services/api/Travel/VacantHotelSearch/20170426',
       params
     );
 
@@ -382,7 +393,8 @@ export async function fetchRakutenAffiliateUrl(
       // planListUrlを取得（アフィリエイトIDが設定されている場合、アフィリエイトURLが返される）
       // レスポンス構造: hotel.hotelBasicInfo.planListUrl
       if (hotel.hotelBasicInfo?.planListUrl) {
-        const baseAffiliateUrl = hotel.hotelBasicInfo.planListUrl;
+        const baseAffiliateUrl =
+          hotel.hotelBasicInfo.planListUrl;
 
         // pcパラメータ内のURLにクエリパラメータを追加
         return addQueryParamsToAffiliateUrl(
@@ -398,7 +410,10 @@ export async function fetchRakutenAffiliateUrl(
 
     return null;
   } catch (error) {
-    console.error("Error fetching Rakuten affiliate URL:", error);
+    console.error(
+      'Error fetching Rakuten affiliate URL:',
+      error
+    );
     return null;
   }
 }
@@ -411,10 +426,11 @@ export async function fetchRakutenRoomThumbnailUrl(
 ): Promise<string | null> {
   try {
     const data = await callRakutenApi(
-      "https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426",
+      'https://app.rakuten.co.jp/services/api/Travel/SimpleHotelSearch/20170426',
       {
         hotelNo: hotelId,
-        elements: "hotelNo,hotelImageUrl,hotelThumbnailUrl,roomThumbnailUrl",
+        elements:
+          'hotelNo,hotelImageUrl,hotelThumbnailUrl,roomThumbnailUrl',
       }
     );
 
@@ -432,8 +448,9 @@ export async function fetchRakutenRoomThumbnailUrl(
       Array.isArray(hotels[0]) &&
       hotels[0].length > 0
     ) {
-      const hotelBasicInfo = (hotels[0][0] as { hotelBasicInfo?: unknown })
-        .hotelBasicInfo as
+      const hotelBasicInfo = (
+        hotels[0][0] as { hotelBasicInfo?: unknown }
+      ).hotelBasicInfo as
         | {
             hotelImageUrl?: string;
             roomThumbnailUrl?: string;
@@ -456,7 +473,10 @@ export async function fetchRakutenRoomThumbnailUrl(
 
     return null;
   } catch (error) {
-    console.error("Error fetching Rakuten room thumbnail URL:", error);
+    console.error(
+      'Error fetching Rakuten room thumbnail URL:',
+      error
+    );
     return null;
   }
 }

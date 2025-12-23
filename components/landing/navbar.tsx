@@ -1,6 +1,6 @@
-import Link from "next/link";
-import Image from "next/image";
-import { navLinks } from "./constants";
+import Link from 'next/link';
+import Image from 'next/image';
+import { navLinks } from './constants';
 
 export function Navbar() {
   return (
@@ -49,4 +49,3 @@ export function Navbar() {
     </nav>
   );
 }
-

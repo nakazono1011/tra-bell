@@ -1,15 +1,18 @@
-import { db } from "@/db";
+import { db } from '@/db';
 import {
   reservations,
   priceHistory,
   notification,
   userSettings,
-} from "@/db/schema";
-import { eq, and, gt } from "drizzle-orm";
-import type { PriceCheckResult, ReservationSite } from "@/types";
-import { checkRakutenPrice } from "./rakuten";
-import { checkJalanPrice } from "./jalan";
-import { isBeforeDeadline } from "@/lib/utils";
+} from '@/db/schema';
+import { eq, and, gt } from 'drizzle-orm';
+import type {
+  PriceCheckResult,
+  ReservationSite,
+} from '@/types';
+import { checkRakutenPrice } from './rakuten';
+import { checkJalanPrice } from './jalan';
+import { isBeforeDeadline } from '@/lib/utils';
 
 /**
  * 予約の価格をチェック
@@ -38,7 +41,7 @@ export async function checkReservationPrice(reservationData: {
   } = reservationData;
 
   switch (reservationSite) {
-    case "rakuten":
+    case 'rakuten':
       return checkRakutenPrice(
         hotelName,
         checkInDate,
@@ -49,7 +52,7 @@ export async function checkReservationPrice(reservationData: {
         planName,
         roomType
       );
-    case "jalan":
+    case 'jalan':
       return checkJalanPrice(
         hotelName,
         checkInDate,
@@ -87,7 +90,10 @@ async function getUserThresholds(userId: string): Promise<{
 function isSignificantPriceDrop(
   priceDropAmount: number,
   priceDropPercentage: number,
-  thresholds: { priceDropThreshold: number; priceDropPercentage: number }
+  thresholds: {
+    priceDropThreshold: number;
+    priceDropPercentage: number;
+  }
 ): boolean {
   return (
     priceDropAmount >= thresholds.priceDropThreshold ||
@@ -137,7 +143,7 @@ async function createPriceDropNotification(
   await db.insert(notification).values({
     userId,
     reservationId,
-    type: "price_drop",
+    type: 'price_drop',
     title: `${hotelName}の価格が下がりました`,
     message: `¥${priceDropAmount.toLocaleString()}（${priceDropPercentage.toFixed(
       1
@@ -150,13 +156,13 @@ async function createPriceDropNotification(
  * アクティブな予約を取得
  */
 async function getActiveReservations() {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0];
   return await db
     .select()
     .from(reservations)
     .where(
       and(
-        eq(reservations.status, "active"),
+        eq(reservations.status, 'active'),
         gt(reservations.checkInDate, today)
       )
     );
@@ -177,10 +183,18 @@ async function processReservationPriceCheck(reservation: {
   planUrl?: string | null;
   planName?: string | null;
   roomType?: string | null;
-}): Promise<{ checked: boolean; priceDrop: boolean; error: boolean }> {
+}): Promise<{
+  checked: boolean;
+  priceDrop: boolean;
+  error: boolean;
+}> {
   // キャンセル期限が過ぎている場合はスキップ
   if (!isBeforeDeadline(reservation.cancellationDeadline)) {
-    return { checked: false, priceDrop: false, error: false };
+    return {
+      checked: false,
+      priceDrop: false,
+      error: false,
+    };
   }
 
   // 価格をチェック
@@ -197,19 +211,31 @@ async function processReservationPriceCheck(reservation: {
   });
 
   if (!result) {
-    return { checked: false, priceDrop: false, error: true };
+    return {
+      checked: false,
+      priceDrop: false,
+      error: true,
+    };
   }
 
   // 価格履歴を保存
-  await savePriceHistory(reservation.id, result.currentPrice);
+  await savePriceHistory(
+    reservation.id,
+    result.currentPrice
+  );
 
   // 価格が変わった場合
   if (result.currentPrice !== reservation.currentPrice) {
-    await updateReservationPrice(reservation.id, result.currentPrice);
+    await updateReservationPrice(
+      reservation.id,
+      result.currentPrice
+    );
 
     // 値下がりの場合、通知を作成
     if (result.priceDropAmount > 0) {
-      const thresholds = await getUserThresholds(reservation.userId);
+      const thresholds = await getUserThresholds(
+        reservation.userId
+      );
 
       if (
         isSignificantPriceDrop(
@@ -225,7 +251,11 @@ async function processReservationPriceCheck(reservation: {
           result.priceDropAmount,
           result.priceDropPercentage
         );
-        return { checked: true, priceDrop: true, error: false };
+        return {
+          checked: true,
+          priceDrop: true,
+          error: false,
+        };
       }
     }
   }
@@ -255,7 +285,8 @@ export async function checkAllActivePrices(): Promise<{
         hotelName: r.hotelName,
         checkInDate: r.checkInDate,
         checkOutDate: r.checkOutDate,
-        reservationSite: r.reservationSite as ReservationSite,
+        reservationSite:
+          r.reservationSite as ReservationSite,
         currentPrice: r.currentPrice,
         cancellationDeadline: r.cancellationDeadline,
         planUrl: r.planUrl,
@@ -267,7 +298,10 @@ export async function checkAllActivePrices(): Promise<{
       if (result.priceDrop) priceDrops++;
       if (result.error) errors++;
     } catch (error) {
-      console.error(`Error checking price for reservation ${r.id}:`, error);
+      console.error(
+        `Error checking price for reservation ${r.id}:`,
+        error
+      );
       errors++;
     }
   }

@@ -364,6 +364,3 @@ CRON_SECRET=your-cron-secret
 3. **CSRF対策**: Better Authの組み込み保護を使用
 4. **環境変数**: 機密情報は環境変数で管理
 5. **Cron認証**: Cron エンドポイントはシークレットで保護
-
-
-

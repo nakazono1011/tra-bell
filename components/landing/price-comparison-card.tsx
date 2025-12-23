@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { TrendingDown, Zap } from "lucide-react";
-import { itemVariants } from "./constants";
+import { motion } from 'framer-motion';
+import { TrendingDown, Zap } from 'lucide-react';
+import { itemVariants } from './constants';
 
 export function PriceComparisonCard() {
   return (
@@ -26,7 +26,9 @@ export function PriceComparisonCard() {
                 <div className="text-xs text-[var(--text-tertiary)]">
                   東京ステーションホテル
                 </div>
-                <div className="text-sm font-bold">¥42,000</div>
+                <div className="text-sm font-bold">
+                  ¥42,000
+                </div>
               </div>
             </div>
             <div className="text-xs font-mono text-[var(--text-tertiary)]">
@@ -66,4 +68,3 @@ export function PriceComparisonCard() {
     </motion.div>
   );
 }
-

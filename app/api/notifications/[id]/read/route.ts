@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { db } from "@/db";
-import { notification } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { db } from '@/db';
+import { notification } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 export async function POST(
   request: Request,
@@ -16,7 +16,7 @@ export async function POST(
 
     if (!session) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
+        { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -28,21 +28,27 @@ export async function POST(
       .update(notification)
       .set({ isRead: true })
       .where(
-        and(eq(notification.id, id), eq(notification.userId, session.user.id))
+        and(
+          eq(notification.id, id),
+          eq(notification.userId, session.user.id)
+        )
       );
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error marking notification as read:", error);
+    console.error(
+      'Error marking notification as read:',
+      error
+    );
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Unknown error',
       },
       { status: 500 }
     );
   }
 }
-
-
-

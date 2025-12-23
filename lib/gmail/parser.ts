@@ -1,16 +1,22 @@
-import type { GmailMessage } from "@/types";
-import type { ParsedReservation } from "@/types";
+import type { GmailMessage } from '@/types';
+import type { ParsedReservation } from '@/types';
 import {
   isRakutenEmail,
   parseRakutenReservationEmail,
-} from "@/lib/parsers/rakuten";
-import { isJalanEmail, parseJalanReservationEmail } from "@/lib/parsers/jalan";
-import { getTodayNormalized, normalizeDate } from "@/lib/utils/date";
+} from '@/lib/parsers/rakuten';
+import {
+  isJalanEmail,
+  parseJalanReservationEmail,
+} from '@/lib/parsers/jalan';
+import {
+  getTodayNormalized,
+  normalizeDate,
+} from '@/lib/utils/date';
 
 export interface ParsedEmailResult {
   messageId: string;
   reservation: ParsedReservation | null;
-  source: "rakuten" | "jalan" | "unknown";
+  source: 'rakuten' | 'jalan' | 'unknown';
   receivedAt: Date;
 }
 
@@ -21,15 +27,18 @@ export async function parseReservationEmail(
   message: GmailMessage
 ): Promise<ParsedEmailResult> {
   const messageId = message.id;
-  const receivedAt = new Date(parseInt(message.internalDate, 10));
+  const receivedAt = new Date(
+    parseInt(message.internalDate, 10)
+  );
 
   // 楽天トラベルのメールをパース
   if (isRakutenEmail(message)) {
-    const reservation = await parseRakutenReservationEmail(message);
+    const reservation =
+      await parseRakutenReservationEmail(message);
     return {
       messageId,
       reservation,
-      source: "rakuten",
+      source: 'rakuten',
       receivedAt,
     };
   }
@@ -40,7 +49,7 @@ export async function parseReservationEmail(
     return {
       messageId,
       reservation,
-      source: "jalan",
+      source: 'jalan',
       receivedAt,
     };
   }
@@ -48,7 +57,7 @@ export async function parseReservationEmail(
   return {
     messageId,
     reservation: null,
-    source: "unknown",
+    source: 'unknown',
     receivedAt,
   };
 }
@@ -59,7 +68,11 @@ export async function parseReservationEmail(
 export async function parseReservationEmails(
   messages: GmailMessage[]
 ): Promise<ParsedEmailResult[]> {
-  return Promise.all(messages.map((message) => parseReservationEmail(message)));
+  return Promise.all(
+    messages.map((message) =>
+      parseReservationEmail(message)
+    )
+  );
 }
 
 /**
@@ -74,7 +87,9 @@ export function filterValidReservations(
   return results.filter((result) => {
     if (!result.reservation) return false;
 
-    const checkInDate = normalizeDate(new Date(result.reservation.checkInDate));
+    const checkInDate = normalizeDate(
+      new Date(result.reservation.checkInDate)
+    );
 
     // チェックイン日が今日以降の予約のみを許可
     return checkInDate >= today;

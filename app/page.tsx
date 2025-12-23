@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Navbar } from "@/components/landing/navbar";
-import { HeroSection } from "@/components/landing/hero-section";
-import { ProblemSection } from "@/components/landing/problem-section";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
-import { FeaturesSection } from "@/components/landing/features-section";
-import { CTASection } from "@/components/landing/cta-section";
-import { FAQSection } from "@/components/landing/faq-section";
-import { Footer } from "@/components/landing/footer";
+import { Navbar } from '@/components/landing/navbar';
+import { HeroSection } from '@/components/landing/hero-section';
+import { ProblemSection } from '@/components/landing/problem-section';
+import { HowItWorksSection } from '@/components/landing/how-it-works-section';
+import { FeaturesSection } from '@/components/landing/features-section';
+import { CTASection } from '@/components/landing/cta-section';
+import { FAQSection } from '@/components/landing/faq-section';
+import { Footer } from '@/components/landing/footer';
 
 export default function Home() {
   return (

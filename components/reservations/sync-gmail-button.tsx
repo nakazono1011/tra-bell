@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function SyncGmailButton() {
   const [isSyncing, setIsSyncing] = useState(false);
@@ -16,9 +16,12 @@ export function SyncGmailButton() {
       setIsSyncing(true);
       setResult(null);
 
-      const response = await fetch("/api/gmail/fetch-reservations", {
-        method: "POST",
-      });
+      const response = await fetch(
+        '/api/gmail/fetch-reservations',
+        {
+          method: 'POST',
+        }
+      );
 
       const data = await response.json();
 
@@ -31,13 +34,13 @@ export function SyncGmailButton() {
       } else {
         setResult({
           success: false,
-          message: data.error || "同期に失敗しました",
+          message: data.error || '同期に失敗しました',
         });
       }
     } catch {
       setResult({
         success: false,
-        message: "同期中にエラーが発生しました",
+        message: '同期中にエラーが発生しました',
       });
     } finally {
       setIsSyncing(false);
@@ -97,7 +100,9 @@ export function SyncGmailButton() {
       {result && (
         <p
           className={`text-sm ${
-            result.success ? "text-emerald-400" : "text-red-400"
+            result.success
+              ? 'text-emerald-400'
+              : 'text-red-400'
           }`}
         >
           {result.message}

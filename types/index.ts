@@ -9,7 +9,7 @@ import type {
   ReservationSite,
   ReservationStatus,
   NotificationType,
-} from "@/db/schema";
+} from '@/db/schema';
 
 // Re-export types from schema
 export type {

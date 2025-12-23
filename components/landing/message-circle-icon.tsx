@@ -1,4 +1,8 @@
-export function MessageCircleIcon({ className }: { className?: string }) {
+export function MessageCircleIcon({
+  className,
+}: {
+  className?: string;
+}) {
   return (
     <svg
       className={className}
@@ -13,4 +17,3 @@ export function MessageCircleIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-

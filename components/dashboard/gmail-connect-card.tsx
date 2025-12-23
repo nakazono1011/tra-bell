@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { signIn } from "@/lib/auth-client";
+import { useState } from 'react';
+import { signIn } from '@/lib/auth-client';
 
 export function GmailConnectCard() {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -11,11 +11,11 @@ export function GmailConnectCard() {
       setIsConnecting(true);
       // Google OAuth再認証でGmailスコープを追加
       await signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard?gmail=connected",
+        provider: 'google',
+        callbackURL: '/dashboard?gmail=connected',
       });
     } catch (error) {
-      console.error("Gmail connection error:", error);
+      console.error('Gmail connection error:', error);
     } finally {
       setIsConnecting(false);
     }
@@ -39,10 +39,19 @@ export function GmailConnectCard() {
               height="20"
               patternUnits="userSpaceOnUse"
             >
-              <circle cx="10" cy="10" r="1" fill="currentColor" />
+              <circle
+                cx="10"
+                cy="10"
+                r="1"
+                fill="currentColor"
+              />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#gmail-pattern)" />
+          <rect
+            width="100%"
+            height="100%"
+            fill="url(#gmail-pattern)"
+          />
         </svg>
       </div>
 
@@ -116,7 +125,9 @@ export function GmailConnectCard() {
               />
             </svg>
           )}
-          <span>{isConnecting ? "連携中..." : "Gmailを連携"}</span>
+          <span>
+            {isConnecting ? '連携中...' : 'Gmailを連携'}
+          </span>
         </button>
       </div>
 
@@ -134,7 +145,9 @@ export function GmailConnectCard() {
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-sm text-slate-300">読み取り専用</span>
+          <span className="text-sm text-slate-300">
+            読み取り専用
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <svg
@@ -148,7 +161,9 @@ export function GmailConnectCard() {
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-sm text-slate-300">予約メールのみ</span>
+          <span className="text-sm text-slate-300">
+            予約メールのみ
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <svg
@@ -162,12 +177,11 @@ export function GmailConnectCard() {
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-sm text-slate-300">いつでも解除可能</span>
+          <span className="text-sm text-slate-300">
+            いつでも解除可能
+          </span>
         </div>
       </div>
     </div>
   );
 }
-
-
-

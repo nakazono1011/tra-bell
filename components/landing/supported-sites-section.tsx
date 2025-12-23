@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from 'next/image';
 
 export function SupportedSitesSection() {
   return (
@@ -62,4 +62,3 @@ export function SupportedSitesSection() {
     </section>
   );
 }
-

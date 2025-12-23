@@ -1,8 +1,15 @@
-"use client";
+'use client';
 
-import { formatPrice, formatDateShort, formatDateTime } from "@/lib/utils";
-import type { PriceHistory } from "@/db/schema";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import {
+  formatPrice,
+  formatDateShort,
+  formatDateTime,
+} from '@/lib/utils';
+import type { PriceHistory } from '@/db/schema';
+import {
+  ChartContainer,
+  ChartTooltip,
+} from '@/components/ui/chart';
 import {
   LineChart,
   Line,
@@ -10,7 +17,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-} from "recharts";
+} from 'recharts';
 
 interface PriceHistoryChartProps {
   priceHistory: PriceHistory[];
@@ -56,7 +63,9 @@ export function PriceHistoryChart({
 
   // 価格データを時系列順に並び替え
   const sortedHistory = [...priceHistory].sort(
-    (a, b) => new Date(a.checkedAt).getTime() - new Date(b.checkedAt).getTime()
+    (a, b) =>
+      new Date(a.checkedAt).getTime() -
+      new Date(b.checkedAt).getTime()
   );
 
   // Recharts用のデータ形式に変換
@@ -74,15 +83,16 @@ export function PriceHistoryChart({
 
   // 現在価格と予約時価格の差
   const currentPrice =
-    sortedHistory[sortedHistory.length - 1]?.price || originalPrice;
+    sortedHistory[sortedHistory.length - 1]?.price ||
+    originalPrice;
   const priceDiff = originalPrice - currentPrice;
   const isLower = priceDiff > 0;
 
   // チャート設定
   const chartConfig = {
     price: {
-      label: "価格",
-      color: "hsl(142, 76%, 36%)", // emerald-600
+      label: '価格',
+      color: 'hsl(142, 76%, 36%)', // emerald-600
     },
   };
 
@@ -135,19 +145,30 @@ export function PriceHistoryChart({
             </p>
             <p
               className={`text-lg font-bold ${
-                isLower ? "text-emerald-600" : "text-[var(--text-secondary)]"
+                isLower
+                  ? 'text-emerald-600'
+                  : 'text-[var(--text-secondary)]'
               }`}
             >
-              {isLower ? "↓" : ""} {formatPrice(Math.abs(priceDiff))}
+              {isLower ? '↓' : ''}{' '}
+              {formatPrice(Math.abs(priceDiff))}
             </p>
           </div>
         </div>
 
         {/* Chart */}
-        <ChartContainer config={chartConfig} className="h-[220px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[220px] w-full"
+        >
           <LineChart
             data={chartData}
-            margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+            margin={{
+              top: 5,
+              right: 10,
+              left: 0,
+              bottom: 5,
+            }}
           >
             <CartesianGrid
               strokeDasharray="4 4"
@@ -156,7 +177,10 @@ export function PriceHistoryChart({
             />
             <XAxis
               dataKey="date"
-              tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
+              tick={{
+                fill: 'var(--text-tertiary)',
+                fontSize: 12,
+              }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value, index) => {
@@ -166,13 +190,19 @@ export function PriceHistoryChart({
                 }
                 // 前のデータポイントの日付と比較
                 const currentDate = value;
-                const previousDate = chartData[index - 1]?.date;
+                const previousDate =
+                  chartData[index - 1]?.date;
                 // 日付が異なる場合のみ表示、同じ場合は空文字列を返して非表示
-                return currentDate !== previousDate ? value : "";
+                return currentDate !== previousDate
+                  ? value
+                  : '';
               }}
             />
             <YAxis
-              tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
+              tick={{
+                fill: 'var(--text-tertiary)',
+                fontSize: 12,
+              }}
               tickLine={false}
               axisLine={false}
               domain={[minPrice * 0.95, maxPrice * 1.05]}
@@ -180,7 +210,11 @@ export function PriceHistoryChart({
             />
             <ChartTooltip
               content={({ active, payload }) => {
-                if (!active || !payload || payload.length === 0) {
+                if (
+                  !active ||
+                  !payload ||
+                  payload.length === 0
+                ) {
                   return null;
                 }
                 const data = payload[0].payload;
@@ -189,11 +223,13 @@ export function PriceHistoryChart({
                     <div className="font-semibold text-white mb-1">
                       {formatPrice(data.price)}
                     </div>
-                    <div className="text-gray-300">{data.dateTime}</div>
+                    <div className="text-gray-300">
+                      {data.dateTime}
+                    </div>
                   </div>
                 );
               }}
-              cursor={{ stroke: "#10b981", strokeWidth: 2 }}
+              cursor={{ stroke: '#10b981', strokeWidth: 2 }}
             />
             <ReferenceLine
               y={originalPrice}
@@ -207,7 +243,8 @@ export function PriceHistoryChart({
               stroke="#10b981"
               strokeWidth={3}
               dot={(props) => {
-                const isLast = props.index === chartData.length - 1;
+                const isLast =
+                  props.index === chartData.length - 1;
                 if (isLast) {
                   return (
                     <g key={`dot-${props.index}`}>
@@ -242,7 +279,11 @@ export function PriceHistoryChart({
                   />
                 );
               }}
-              activeDot={{ r: 6, strokeWidth: 3, fill: "#10b981" }}
+              activeDot={{
+                r: 6,
+                strokeWidth: 3,
+                fill: '#10b981',
+              }}
             />
           </LineChart>
         </ChartContainer>

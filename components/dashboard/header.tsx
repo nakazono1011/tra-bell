@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { signOut } from "@/lib/auth-client";
-import { useState } from "react";
-import Image from "next/image";
+import { signOut } from '@/lib/auth-client';
+import { useState } from 'react';
+import Image from 'next/image';
 
 interface DashboardHeaderProps {
   user: {
@@ -13,14 +13,16 @@ interface DashboardHeaderProps {
   };
 }
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader({
+  user,
+}: DashboardHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut({
       fetchOptions: {
         onSuccess: () => {
-          window.location.href = "/sign-in";
+          window.location.href = '/sign-in';
         },
       },
     });
@@ -61,7 +63,9 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                 </span>
               </div>
             )}
-            <span className="text-sm hidden sm:block">{user.name}</span>
+            <span className="text-sm hidden sm:block">
+              {user.name}
+            </span>
           </button>
 
           {/* Dropdown Menu */}

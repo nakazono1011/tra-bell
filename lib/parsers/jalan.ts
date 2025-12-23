@@ -1,12 +1,12 @@
-import type { ParsedReservation } from "@/types";
-import type { GmailMessage } from "@/types";
-import { GmailClient } from "@/lib/gmail/client";
+import type { ParsedReservation } from '@/types';
+import type { GmailMessage } from '@/types';
+import { GmailClient } from '@/lib/gmail/client';
 import {
   getEmailBody,
   extractText,
   extractDate,
   extractNumber,
-} from "@/lib/utils/parsers";
+} from '@/lib/utils/parsers';
 
 /**
  * じゃらんの予約確認メールをパース
@@ -18,7 +18,7 @@ export function parseJalanReservationEmail(
     const body = getEmailBody(message);
 
     if (!body) {
-      console.log("No body found in Jalan email");
+      console.log('No body found in Jalan email');
       return null;
     }
 
@@ -29,7 +29,7 @@ export function parseJalanReservationEmail(
     ]);
 
     if (!hotelName) {
-      console.log("Hotel name not found in Jalan email");
+      console.log('Hotel name not found in Jalan email');
       return null;
     }
 
@@ -40,7 +40,9 @@ export function parseJalanReservationEmail(
     ]);
 
     if (!reservationId) {
-      console.log("Reservation ID not found in Jalan email");
+      console.log(
+        'Reservation ID not found in Jalan email'
+      );
       return null;
     }
 
@@ -51,7 +53,7 @@ export function parseJalanReservationEmail(
     ]);
 
     if (!checkInDate) {
-      console.log("Check-in date not found in Jalan email");
+      console.log('Check-in date not found in Jalan email');
       return null;
     }
 
@@ -65,11 +67,13 @@ export function parseJalanReservationEmail(
     if (!checkOutDate && checkInDate) {
       const checkIn = new Date(checkInDate);
       checkIn.setDate(checkIn.getDate() + 1);
-      checkOutDate = checkIn.toISOString().split("T")[0];
+      checkOutDate = checkIn.toISOString().split('T')[0];
     }
 
     if (!checkOutDate) {
-      console.log("Check-out date not found in Jalan email");
+      console.log(
+        'Check-out date not found in Jalan email'
+      );
       return null;
     }
 
@@ -142,7 +146,7 @@ export function parseJalanReservationEmail(
       checkOutDate,
       price,
       reservationId,
-      reservationSite: "jalan",
+      reservationSite: 'jalan',
       cancellationDeadline,
       roomType,
       adultCount: adultCount || undefined,
@@ -155,7 +159,10 @@ export function parseJalanReservationEmail(
       hotelTelNo: hotelTelNo || undefined,
     };
   } catch (error) {
-    console.error("Error parsing Jalan reservation email:", error);
+    console.error(
+      'Error parsing Jalan reservation email:',
+      error
+    );
     return null;
   }
 }
@@ -163,7 +170,11 @@ export function parseJalanReservationEmail(
 /**
  * じゃらんからのメールかどうかを判定
  */
-export function isJalanEmail(message: GmailMessage): boolean {
-  const from = GmailClient.getHeader(message, "From") || "";
-  return from.includes("jalan.net") || from.includes("じゃらん");
+export function isJalanEmail(
+  message: GmailMessage
+): boolean {
+  const from = GmailClient.getHeader(message, 'From') || '';
+  return (
+    from.includes('jalan.net') || from.includes('じゃらん')
+  );
 }

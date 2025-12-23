@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/auth-client";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn } from '@/lib/auth-client';
 
 interface SettingsFormProps {
   initialSettings: {
@@ -19,9 +19,10 @@ export function SettingsForm({
 }: SettingsFormProps) {
   const [settings, setSettings] = useState(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
-  const [isConnectingGmail, setIsConnectingGmail] = useState(false);
+  const [isConnectingGmail, setIsConnectingGmail] =
+    useState(false);
   const [message, setMessage] = useState<{
-    type: "success" | "error";
+    type: 'success' | 'error';
     text: string;
   } | null>(null);
   const router = useRouter();
@@ -31,22 +32,31 @@ export function SettingsForm({
       setIsSaving(true);
       setMessage(null);
 
-      const response = await fetch("/api/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setMessage({ type: "success", text: "設定を保存しました" });
+        setMessage({
+          type: 'success',
+          text: '設定を保存しました',
+        });
         router.refresh();
       } else {
-        setMessage({ type: "error", text: data.error || "保存に失敗しました" });
+        setMessage({
+          type: 'error',
+          text: data.error || '保存に失敗しました',
+        });
       }
     } catch {
-      setMessage({ type: "error", text: "保存中にエラーが発生しました" });
+      setMessage({
+        type: 'error',
+        text: '保存中にエラーが発生しました',
+      });
     } finally {
       setIsSaving(false);
     }
@@ -56,11 +66,14 @@ export function SettingsForm({
     try {
       setIsConnectingGmail(true);
       await signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard/settings?gmail=connected",
+        provider: 'google',
+        callbackURL: '/dashboard/settings?gmail=connected',
       });
     } catch {
-      setMessage({ type: "error", text: "Gmail連携に失敗しました" });
+      setMessage({
+        type: 'error',
+        text: 'Gmail連携に失敗しました',
+      });
     } finally {
       setIsConnectingGmail(false);
     }
@@ -109,7 +122,10 @@ export function SettingsForm({
             >
               {isConnectingGmail ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                  <svg
+                    className="animate-spin w-4 h-4"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -129,7 +145,10 @@ export function SettingsForm({
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       fill="#4285F4"
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -162,14 +181,17 @@ export function SettingsForm({
                 onChange={(e) =>
                   setSettings({
                     ...settings,
-                    priceDropThreshold: parseInt(e.target.value, 10) || 0,
+                    priceDropThreshold:
+                      parseInt(e.target.value, 10) || 0,
                   })
                 }
                 className="w-32 px-4 py-2 rounded-xl bg-white border border-gray-300 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                 min="0"
                 step="100"
               />
-              <span className="text-[var(--text-secondary)]">円以上</span>
+              <span className="text-[var(--text-secondary)]">
+                円以上
+              </span>
             </div>
             <p className="text-xs text-[var(--text-tertiary)] mt-1">
               この金額以上値下がりした場合に通知します
@@ -188,14 +210,17 @@ export function SettingsForm({
                 onChange={(e) =>
                   setSettings({
                     ...settings,
-                    priceDropPercentage: parseInt(e.target.value, 10) || 0,
+                    priceDropPercentage:
+                      parseInt(e.target.value, 10) || 0,
                   })
                 }
                 className="w-32 px-4 py-2 rounded-xl bg-white border border-gray-300 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                 min="0"
                 max="100"
               />
-              <span className="text-[var(--text-secondary)]">%以上</span>
+              <span className="text-[var(--text-secondary)]">
+                %以上
+              </span>
             </div>
             <p className="text-xs text-[var(--text-tertiary)] mt-1">
               このパーセント以上値下がりした場合に通知します（金額とOR条件）
@@ -209,7 +234,9 @@ export function SettingsForm({
         {message && (
           <p
             className={`text-sm ${
-              message.type === "success" ? "text-emerald-600" : "text-red-600"
+              message.type === 'success'
+                ? 'text-emerald-600'
+                : 'text-red-600'
             }`}
           >
             {message.text}
@@ -222,7 +249,10 @@ export function SettingsForm({
         >
           {isSaving ? (
             <>
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+              <svg
+                className="animate-spin w-4 h-4"
+                viewBox="0 0 24 24"
+              >
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -241,7 +271,7 @@ export function SettingsForm({
               保存中...
             </>
           ) : (
-            "設定を保存"
+            '設定を保存'
           )}
         </button>
       </div>

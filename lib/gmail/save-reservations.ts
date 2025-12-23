@@ -1,8 +1,12 @@
-import { db } from "@/db";
-import { reservations, priceHistory, userSettings } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import type { ParsedEmailResult } from "./parser";
-import { fetchRakutenAffiliateUrl } from "@/lib/utils/rakuten";
+import { db } from '@/db';
+import {
+  reservations,
+  priceHistory,
+  userSettings,
+} from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import type { ParsedEmailResult } from './parser';
+import { fetchRakutenAffiliateUrl } from '@/lib/utils/rakuten';
 
 /**
  * 予約をデータベースに保存
@@ -18,7 +22,9 @@ export async function saveReservations(
     .where(eq(reservations.userId, userId));
 
   const existingIds = new Set(
-    existingReservations.map((r) => `${r.reservationSite}-${r.reservationId}`)
+    existingReservations.map(
+      (r) => `${r.reservationSite}-${r.reservationId}`
+    )
   );
 
   // 新しい予約を保存
@@ -34,7 +40,7 @@ export async function saveReservations(
     // 楽天トラベルの場合、アフィリエイトURLを取得
     let affiliateUrl: string | null = null;
     if (
-      result.reservation.reservationSite === "rakuten" &&
+      result.reservation.reservationSite === 'rakuten' &&
       result.reservation.hotelId
     ) {
       try {
@@ -47,7 +53,10 @@ export async function saveReservations(
           result.reservation.childCount
         );
       } catch (error) {
-        console.error("Error fetching affiliate URL:", error);
+        console.error(
+          'Error fetching affiliate URL:',
+          error
+        );
         // エラーが発生しても予約保存は続行
       }
     }
@@ -64,8 +73,11 @@ export async function saveReservations(
         currentPrice: result.reservation.price,
         reservationSite: result.reservation.reservationSite,
         reservationId: result.reservation.reservationId,
-        cancellationDeadline: result.reservation.cancellationDeadline
-          ? new Date(result.reservation.cancellationDeadline)
+        cancellationDeadline: result.reservation
+          .cancellationDeadline
+          ? new Date(
+              result.reservation.cancellationDeadline
+            )
           : null,
         roomType: result.reservation.roomType,
         adultCount: result.reservation.adultCount,
@@ -78,10 +90,11 @@ export async function saveReservations(
         hotelPostalCode: result.reservation.hotelPostalCode,
         hotelAddress: result.reservation.hotelAddress,
         hotelTelNo: result.reservation.hotelTelNo,
-        roomThumbnailUrl: result.reservation.roomThumbnailUrl,
+        roomThumbnailUrl:
+          result.reservation.roomThumbnailUrl,
         emailMessageId: result.messageId,
         affiliateUrl,
-        status: "active",
+        status: 'active',
       })
       .returning();
 
@@ -101,7 +114,9 @@ export async function saveReservations(
 /**
  * ユーザー設定を更新（Gmail連携済みフラグと最終同期日時）
  */
-export async function updateUserSettingsSyncStatus(userId: string) {
+export async function updateUserSettingsSyncStatus(
+  userId: string
+) {
   const [settings] = await db
     .select()
     .from(userSettings)

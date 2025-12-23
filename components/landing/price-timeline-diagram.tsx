@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from 'lucide-react';
 
 export function PriceTimelineDiagram() {
   return (
@@ -47,4 +47,3 @@ export function PriceTimelineDiagram() {
     </div>
   );
 }
-

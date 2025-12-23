@@ -1,5 +1,5 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -18,7 +18,7 @@ export function Footer() {
           <div>© 2025 Tra-bell All rights reserved.</div>
           <div className="hidden md:block">|</div>
           <div>
-            運営会社:{" "}
+            運営会社:{' '}
             <a
               href="https://www.smile-comfort.com/"
               target="_blank"
@@ -33,4 +33,3 @@ export function Footer() {
     </footer>
   );
 }
-

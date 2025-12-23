@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Search } from "lucide-react";
+import { Search } from 'lucide-react';
 
 interface SearchBarProps {
   value: string;
@@ -11,7 +11,7 @@ interface SearchBarProps {
 export function SearchBar({
   value,
   onChange,
-  placeholder = "ホテル名、プラン名で検索...",
+  placeholder = 'ホテル名、プラン名で検索...',
 }: SearchBarProps) {
   return (
     <div className="relative">

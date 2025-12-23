@@ -1,11 +1,11 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/dashboard/header";
-import { FooterNav } from "@/components/dashboard/footer-nav";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { DashboardHeader } from '@/components/dashboard/header';
+import { FooterNav } from '@/components/dashboard/footer-nav';
+import { db } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 export default async function DashboardLayout({
   children,
@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   });
 
   if (!session) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   // オンボーディング完了チェック
@@ -26,14 +26,16 @@ export default async function DashboardLayout({
   });
 
   if (!dbUser?.onboardingCompletedAt) {
-    redirect("/onboarding");
+    redirect('/onboarding');
   }
 
   return (
     <div className="min-h-screen bg-[var(--bg-warm)] flex flex-col">
       <DashboardHeader user={session.user} />
       <main className="flex-1 pb-20">
-        <div className="max-w-md mx-auto py-6 px-4">{children}</div>
+        <div className="max-w-md mx-auto py-6 px-4">
+          {children}
+        </div>
       </main>
       <FooterNav />
     </div>

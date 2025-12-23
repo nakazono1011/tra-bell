@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { db } from "@/db";
-import { userSettings } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { db } from '@/db';
+import { userSettings } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 const settingsSchema = z.object({
   priceDropThreshold: z.number().int().min(0).max(1000000),
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
 
     if (!session) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
@@ -33,13 +33,16 @@ export async function POST(request: Request) {
     const validationResult = settingsSchema.safeParse(body);
     if (!validationResult.success) {
       return NextResponse.json(
-        { success: false, error: "Invalid input data" },
-        { status: 400 },
+        { success: false, error: 'Invalid input data' },
+        { status: 400 }
       );
     }
 
-    const { priceDropThreshold, priceDropPercentage, autoRebookEnabled } =
-      validationResult.data;
+    const {
+      priceDropThreshold,
+      priceDropPercentage,
+      autoRebookEnabled,
+    } = validationResult.data;
 
     // 既存の設定を確認
     const [existingSettings] = await db
@@ -71,13 +74,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error saving settings:", error);
+    console.error('Error saving settings:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Unknown error',
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -91,8 +97,8 @@ export async function GET() {
 
     if (!session) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 },
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
@@ -112,13 +118,16 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Error fetching settings:", error);
+    console.error('Error fetching settings:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Unknown error',
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

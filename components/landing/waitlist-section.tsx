@@ -1,41 +1,48 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { Check } from "lucide-react";
-import { containerVariants, itemVariants } from "./constants";
-import { RadioOption } from "./radio-option";
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { Check } from 'lucide-react';
+import {
+  containerVariants,
+  itemVariants,
+} from './constants';
+import { RadioOption } from './radio-option';
 
 export function WaitlistSection() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [waitlistId, setWaitlistId] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [waitlistId, setWaitlistId] = useState<
+    string | null
+  >(null);
+  const [error, setError] = useState('');
   const [surveyData, setSurveyData] = useState({
-    ota: "",
-    osOrNotification: "",
-    bookingTiming: "",
+    ota: '',
+    osOrNotification: '',
+    bookingTiming: '',
   });
-  const [isSurveySubmitting, setIsSurveySubmitting] = useState(false);
-  const [isSurveySubmitted, setIsSurveySubmitted] = useState(false);
+  const [isSurveySubmitting, setIsSurveySubmitting] =
+    useState(false);
+  const [isSurveySubmitted, setIsSurveySubmitted] =
+    useState(false);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "登録に失敗しました");
+        throw new Error(data.error || '登録に失敗しました');
       }
 
       setIsSubmitted(true);
@@ -44,12 +51,16 @@ export function WaitlistSection() {
       } else if (data.alreadyRegistered) {
         // 既に登録済みの場合でも、waitlistIdが返されない場合はエラーを表示
         setError(
-          "登録情報の取得に失敗しました。ページを再読み込みしてください。"
+          '登録情報の取得に失敗しました。ページを再読み込みしてください。'
         );
         setIsSubmitted(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "登録に失敗しました");
+      setError(
+        err instanceof Error
+          ? err.message
+          : '登録に失敗しました'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -57,19 +68,19 @@ export function WaitlistSection() {
 
   const handleSurveySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setIsSurveySubmitting(true);
 
     if (!waitlistId) {
-      setError("メール登録が完了していません");
+      setError('メール登録が完了していません');
       setIsSurveySubmitting(false);
       return;
     }
 
     try {
-      const response = await fetch("/api/waitlist/survey", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/waitlist/survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           waitlistId,
           ...surveyData,
@@ -79,13 +90,17 @@ export function WaitlistSection() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "アンケートの送信に失敗しました");
+        throw new Error(
+          data.error || 'アンケートの送信に失敗しました'
+        );
       }
 
       setIsSurveySubmitted(true);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "アンケートの送信に失敗しました"
+        err instanceof Error
+          ? err.message
+          : 'アンケートの送信に失敗しました'
       );
     } finally {
       setIsSurveySubmitting(false);
@@ -100,7 +115,7 @@ export function WaitlistSection() {
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: '-100px' }}
         variants={containerVariants}
         className="bg-white rounded-3xl py-8 px-4 lg:p-12 border border-[var(--bg-tertiary)] shadow-lg"
       >
@@ -137,11 +152,15 @@ export function WaitlistSection() {
                   disabled={isSubmitting}
                   className="bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "登録中..." : "ウェイトリストに登録"}
+                  {isSubmitting
+                    ? '登録中...'
+                    : 'ウェイトリストに登録'}
                 </button>
               </div>
               {error && (
-                <p className="mt-4 text-sm text-red-500 text-center">{error}</p>
+                <p className="mt-4 text-sm text-red-500 text-center">
+                  {error}
+                </p>
               )}
             </motion.form>
           </>
@@ -163,30 +182,47 @@ export function WaitlistSection() {
               </p>
             </div>
 
-            <form onSubmit={handleSurveySubmit} className="space-y-6">
+            <form
+              onSubmit={handleSurveySubmit}
+              className="space-y-6"
+            >
               <div>
                 <label className="block text-sm font-bold mb-3 text-[var(--text-primary)]">
                   A. 普段利用する予約サイト（OTA）は？
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
-                    { value: "rakuten", label: "楽天トラベル" },
-                    { value: "jalan", label: "じゃらん" },
-                    { value: "ikkyu", label: "一休.com" },
-                    { value: "yahoo", label: "Yahoo!トラベル" },
-                    { value: "booking", label: "Booking.com" },
-                    { value: "agoda", label: "Agoda" },
-                    { value: "expedia", label: "Expedia" },
-                    { value: "other", label: "その他" },
+                    {
+                      value: 'rakuten',
+                      label: '楽天トラベル',
+                    },
+                    { value: 'jalan', label: 'じゃらん' },
+                    { value: 'ikkyu', label: '一休.com' },
+                    {
+                      value: 'yahoo',
+                      label: 'Yahoo!トラベル',
+                    },
+                    {
+                      value: 'booking',
+                      label: 'Booking.com',
+                    },
+                    { value: 'agoda', label: 'Agoda' },
+                    { value: 'expedia', label: 'Expedia' },
+                    { value: 'other', label: 'その他' },
                   ].map((option) => (
                     <RadioOption
                       key={option.value}
                       name="ota"
                       value={option.value}
                       label={option.label}
-                      checked={surveyData.ota === option.value}
+                      checked={
+                        surveyData.ota === option.value
+                      }
                       onChange={(e) =>
-                        setSurveyData({ ...surveyData, ota: e.target.value })
+                        setSurveyData({
+                          ...surveyData,
+                          ota: e.target.value,
+                        })
                       }
                     />
                   ))}
@@ -199,17 +235,32 @@ export function WaitlistSection() {
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
-                    { value: "email", label: "メールで通知が欲しい" },
-                    { value: "line", label: "LINEで通知が欲しい" },
-                    { value: "ios", label: "iOSアプリから通知" },
-                    { value: "android", label: "Androidアプリから通知" },
+                    {
+                      value: 'email',
+                      label: 'メールで通知が欲しい',
+                    },
+                    {
+                      value: 'line',
+                      label: 'LINEで通知が欲しい',
+                    },
+                    {
+                      value: 'ios',
+                      label: 'iOSアプリから通知',
+                    },
+                    {
+                      value: 'android',
+                      label: 'Androidアプリから通知',
+                    },
                   ].map((option) => (
                     <RadioOption
                       key={option.value}
                       name="osOrNotification"
                       value={option.value}
                       label={option.label}
-                      checked={surveyData.osOrNotification === option.value}
+                      checked={
+                        surveyData.osOrNotification ===
+                        option.value
+                      }
                       onChange={(e) =>
                         setSurveyData({
                           ...surveyData,
@@ -227,17 +278,26 @@ export function WaitlistSection() {
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: "6months", label: "半年以上前" },
-                    { value: "2-3months", label: "2〜3ヶ月前" },
-                    { value: "1month", label: "1ヶ月前" },
-                    { value: "lastminute", label: "直前" },
+                    {
+                      value: '6months',
+                      label: '半年以上前',
+                    },
+                    {
+                      value: '2-3months',
+                      label: '2〜3ヶ月前',
+                    },
+                    { value: '1month', label: '1ヶ月前' },
+                    { value: 'lastminute', label: '直前' },
                   ].map((option) => (
                     <RadioOption
                       key={option.value}
                       name="bookingTiming"
                       value={option.value}
                       label={option.label}
-                      checked={surveyData.bookingTiming === option.value}
+                      checked={
+                        surveyData.bookingTiming ===
+                        option.value
+                      }
                       onChange={(e) =>
                         setSurveyData({
                           ...surveyData,
@@ -250,7 +310,9 @@ export function WaitlistSection() {
               </div>
 
               {error && (
-                <p className="text-sm text-red-500 text-center">{error}</p>
+                <p className="text-sm text-red-500 text-center">
+                  {error}
+                </p>
               )}
 
               <button
@@ -258,7 +320,9 @@ export function WaitlistSection() {
                 disabled={isSurveySubmitting}
                 className="w-full bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] px-8 py-4 rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSurveySubmitting ? "送信中..." : "アンケートを送信"}
+                {isSurveySubmitting
+                  ? '送信中...'
+                  : 'アンケートを送信'}
               </button>
             </form>
           </motion.div>
@@ -285,4 +349,3 @@ export function WaitlistSection() {
     </div>
   );
 }
-

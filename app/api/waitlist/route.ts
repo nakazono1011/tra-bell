@@ -1,14 +1,16 @@
-import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { waitlist } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { Resend } from "resend";
-import { z } from "zod";
+import { NextResponse } from 'next/server';
+import { db } from '@/db';
+import { waitlist } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { Resend } from 'resend';
+import { z } from 'zod';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const waitlistSchema = z.object({
-  email: z.string().email("有効なメールアドレスを入力してください"),
+  email: z
+    .string()
+    .email('有効なメールアドレスを入力してください'),
 });
 
 export async function POST(request: Request) {
@@ -27,7 +29,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: true,
-          message: "既に登録済みです",
+          message: '既に登録済みです',
           alreadyRegistered: true,
           waitlistId: existing[0].id,
         },
@@ -44,9 +46,11 @@ export async function POST(request: Request) {
     // ウェルカムメールを送信
     try {
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || "support@tra-bell.com",
+        from:
+          process.env.RESEND_FROM_EMAIL ||
+          'support@tra-bell.com',
         to: email,
-        subject: "Tra-bellウェイトリストへようこそ",
+        subject: 'Tra-bellウェイトリストへようこそ',
         html: `
           <!DOCTYPE html>
           <html>
@@ -99,14 +103,17 @@ export async function POST(request: Request) {
         `,
       });
     } catch (emailError) {
-      console.error("Failed to send welcome email:", emailError);
+      console.error(
+        'Failed to send welcome email:',
+        emailError
+      );
       // メール送信失敗しても登録は成功とする
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: "ウェイトリストに登録しました",
+        message: 'ウェイトリストに登録しました',
         waitlistId: newWaitlist.id,
       },
       { status: 201 }
@@ -119,9 +126,9 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("Waitlist registration error:", error);
+    console.error('Waitlist registration error:', error);
     return NextResponse.json(
-      { success: false, error: "登録に失敗しました" },
+      { success: false, error: '登録に失敗しました' },
       { status: 500 }
     );
   }

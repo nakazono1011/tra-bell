@@ -1,24 +1,42 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useQueryState, parseAsString } from "nuqs";
-import { Hotel, Frown, RefreshCw, Send, SearchX } from "lucide-react";
-import { signIn } from "@/lib/auth-client";
-import { ReservationCard } from "./reservation-card";
-import { SearchBar } from "./search-bar";
-import { StatusFilter } from "./status-filter";
-import { EmptyState } from "./empty-state";
-import { GmailSyncButton } from "./gmail-sync-button";
-import { Spinner } from "@/components/ui/spinner";
-import type { Reservation } from "@/db/schema";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import {
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
+import { useQueryState, parseAsString } from 'nuqs';
+import {
+  Hotel,
+  Frown,
+  RefreshCw,
+  Send,
+  SearchX,
+} from 'lucide-react';
+import { signIn } from '@/lib/auth-client';
+import { ReservationCard } from './reservation-card';
+import { SearchBar } from './search-bar';
+import { StatusFilter } from './status-filter';
+import { EmptyState } from './empty-state';
+import { GmailSyncButton } from './gmail-sync-button';
+import { Spinner } from '@/components/ui/spinner';
+import type { Reservation } from '@/db/schema';
 
 interface ReservationListProps {
   reservations: Reservation[];
   isGmailConnected?: boolean;
 }
 
-type FilterStatus = "all" | "active" | "cancelled" | "rebooked";
+type FilterStatus =
+  | 'all'
+  | 'active'
+  | 'cancelled'
+  | 'rebooked';
 
 // フィルタリングロジック
 function filterReservations(
@@ -28,7 +46,7 @@ function filterReservations(
 ): Reservation[] {
   // ステータスフィルタリング
   const statusFiltered = reservations.filter((r) => {
-    if (filter === "all") return true;
+    if (filter === 'all') return true;
     return r.status === filter;
   });
 
@@ -37,17 +55,22 @@ function filterReservations(
 
   const query = searchQuery.toLowerCase();
   return statusFiltered.filter((r) => {
-    const hotelName = r.hotelName?.toLowerCase() || "";
-    const planName = r.roomType?.toLowerCase() || "";
-    return hotelName.includes(query) || planName.includes(query);
+    const hotelName = r.hotelName?.toLowerCase() || '';
+    const planName = r.roomType?.toLowerCase() || '';
+    return (
+      hotelName.includes(query) || planName.includes(query)
+    );
   });
 }
 
 // ソートロジック
-function sortReservationsByCheckIn(reservations: Reservation[]): Reservation[] {
+function sortReservationsByCheckIn(
+  reservations: Reservation[]
+): Reservation[] {
   return [...reservations].sort(
     (a, b) =>
-      new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime()
+      new Date(a.checkInDate).getTime() -
+      new Date(b.checkInDate).getTime()
   );
 }
 
@@ -56,12 +79,12 @@ export function ReservationList({
   isGmailConnected = false,
 }: ReservationListProps) {
   const [filter, setFilter] = useQueryState(
-    "filter",
-    parseAsString.withDefault("all")
+    'filter',
+    parseAsString.withDefault('all')
   );
   const [searchQuery, setSearchQuery] = useQueryState(
-    "search",
-    parseAsString.withDefault("")
+    'search',
+    parseAsString.withDefault('')
   );
   const [isConnecting, setIsConnecting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -72,11 +95,11 @@ export function ReservationList({
     try {
       setIsConnecting(true);
       await signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard?gmail=connected",
+        provider: 'google',
+        callbackURL: '/dashboard?gmail=connected',
       });
     } catch (error) {
-      console.error("Gmail connection error:", error);
+      console.error('Gmail connection error:', error);
     } finally {
       setIsConnecting(false);
     }
@@ -85,18 +108,21 @@ export function ReservationList({
   const handleSyncGmail = useCallback(async () => {
     try {
       setIsSyncing(true);
-      const response = await fetch("/api/gmail/fetch-reservations", {
-        method: "POST",
-      });
+      const response = await fetch(
+        '/api/gmail/fetch-reservations',
+        {
+          method: 'POST',
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
-        router.replace("/dashboard");
+        router.replace('/dashboard');
         router.refresh();
       }
     } catch (error) {
-      console.error("Sync error:", error);
+      console.error('Sync error:', error);
     } finally {
       setIsSyncing(false);
     }
@@ -104,24 +130,37 @@ export function ReservationList({
 
   // Gmail接続完了後に自動的に同期処理を実行
   useEffect(() => {
-    const gmailConnected = searchParams.get("gmail");
-    const hasProcessed = sessionStorage.getItem("gmail-sync-processed");
+    const gmailConnected = searchParams.get('gmail');
+    const hasProcessed = sessionStorage.getItem(
+      'gmail-sync-processed'
+    );
 
-    if (gmailConnected === "connected" && !isSyncing && !hasProcessed) {
-      sessionStorage.setItem("gmail-sync-processed", "true");
+    if (
+      gmailConnected === 'connected' &&
+      !isSyncing &&
+      !hasProcessed
+    ) {
+      sessionStorage.setItem(
+        'gmail-sync-processed',
+        'true'
+      );
       handleSyncGmail();
     }
 
     if (!gmailConnected && hasProcessed) {
-      sessionStorage.removeItem("gmail-sync-processed");
+      sessionStorage.removeItem('gmail-sync-processed');
     }
   }, [searchParams, handleSyncGmail, isSyncing]);
 
   // フィルタリングとソート
-  const filterValue = (filter || "all") as FilterStatus;
-  const searchValue = searchQuery || "";
+  const filterValue = (filter || 'all') as FilterStatus;
+  const searchValue = searchQuery || '';
   const sortedReservations = useMemo(() => {
-    const filtered = filterReservations(reservations, filterValue, searchValue);
+    const filtered = filterReservations(
+      reservations,
+      filterValue,
+      searchValue
+    );
     return sortReservationsByCheckIn(filtered);
   }, [reservations, filterValue, searchValue]);
 
@@ -193,8 +232,14 @@ export function ReservationList({
       {/* Filters - Only show if there are reservations */}
       {reservations.length > 0 && (
         <div className="space-y-4">
-          <SearchBar value={searchQuery || ""} onChange={setSearchQuery} />
-          <StatusFilter value={filterValue} onChange={setFilter} />
+          <SearchBar
+            value={searchQuery || ''}
+            onChange={setSearchQuery}
+          />
+          <StatusFilter
+            value={filterValue}
+            onChange={setFilter}
+          />
         </div>
       )}
 

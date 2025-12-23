@@ -1,11 +1,11 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { db } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { redirect } from 'next/navigation';
 
 export async function completeOnboarding() {
   const session = await auth.api.getSession({
@@ -13,7 +13,7 @@ export async function completeOnboarding() {
   });
 
   if (!session) {
-    throw new Error("Unauthorized");
+    throw new Error('Unauthorized');
   }
 
   await db
@@ -23,5 +23,5 @@ export async function completeOnboarding() {
     })
     .where(eq(users.id, session.user.id));
 
-  redirect("/dashboard");
+  redirect('/dashboard');
 }

@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { steps } from "./constants";
+import Image from 'next/image';
+import { steps } from './constants';
 
 export function HowItWorksSection() {
   return (
@@ -46,7 +46,9 @@ export function HowItWorksSection() {
               <div className="absolute top-6 right-6 text-4xl font-black text-gray-100 -z-10 select-none">
                 {step.step}
               </div>
-              <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+              <h3 className="text-xl font-bold mb-3">
+                {step.title}
+              </h3>
               <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
                 {step.desc}
               </p>
@@ -57,4 +59,3 @@ export function HowItWorksSection() {
     </section>
   );
 }
-

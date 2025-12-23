@@ -1,6 +1,6 @@
-import { AlertCircle, Hotel } from "lucide-react";
-import { InfoCard } from "./info-card";
-import { PriceTimelineDiagram } from "./price-timeline-diagram";
+import { AlertCircle, Hotel } from 'lucide-react';
+import { InfoCard } from './info-card';
+import { PriceTimelineDiagram } from './price-timeline-diagram';
 
 export function ProblemSection() {
   return (
@@ -10,7 +10,7 @@ export function ProblemSection() {
     >
       <div className="text-center mb-8 lg:mb-16">
         <h2 className="text-2xl lg:text-3xl font-bold mb-4">
-          {" "}
+          {' '}
           Tra-bell（トラベル）とは？
         </h2>
         <p className="text-[var(--text-secondary)]">
@@ -23,7 +23,9 @@ export function ProblemSection() {
             <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-[var(--text-primary)]">
               ホテルの価格は
               <br />
-              <span className="text-[var(--accent-primary)]">予約後</span>
+              <span className="text-[var(--accent-primary)]">
+                予約後
+              </span>
               によく下がります
             </h3>
             <p className="text-[var(--text-secondary)] text-sm lg:text-lg mb-8 leading-relaxed">
@@ -49,4 +51,3 @@ export function ProblemSection() {
     </section>
   );
 }
-

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
 import {
   formatPrice,
   formatDate,
   calculatePriceDrop,
   isBeforeDeadline,
-} from "@/lib/utils";
+} from '@/lib/utils';
 import {
   getSiteLabel,
   getSiteBadgeColor,
   getStatusBadge,
   formatGuestCount,
-} from "@/lib/utils/reservation";
-import type { Reservation } from "@/db/schema";
+} from '@/lib/utils/reservation';
+import type { Reservation } from '@/db/schema';
 import {
   Calendar,
   Users,
@@ -22,19 +22,23 @@ import {
   CalendarClock,
   MapPin,
   Phone,
-} from "lucide-react";
-import Image from "next/image";
+} from 'lucide-react';
+import Image from 'next/image';
 
 interface ReservationDetailProps {
   reservation: Reservation;
 }
 
-export function ReservationDetail({ reservation }: ReservationDetailProps) {
+export function ReservationDetail({
+  reservation,
+}: ReservationDetailProps) {
   const priceDrop = calculatePriceDrop(
     reservation.originalPrice,
     reservation.currentPrice
   );
-  const canCancel = isBeforeDeadline(reservation.cancellationDeadline);
+  const canCancel = isBeforeDeadline(
+    reservation.cancellationDeadline
+  );
 
   return (
     <div className="rounded-2xl border border-[var(--bg-tertiary)] bg-white overflow-hidden shadow-sm">
@@ -59,15 +63,21 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                     reservation.reservationSite
                   )}`}
                 >
-                  {getSiteLabel(reservation.reservationSite)}
+                  {getSiteLabel(
+                    reservation.reservationSite
+                  )}
                 </span>
                 {getStatusBadge(reservation.status) && (
                   <span
                     className={`${
-                      getStatusBadge(reservation.status)!.className
+                      getStatusBadge(reservation.status)!
+                        .className
                     } px-2.5 py-0.5 text-xs rounded-full`}
                   >
-                    {getStatusBadge(reservation.status)!.label}
+                    {
+                      getStatusBadge(reservation.status)!
+                        .label
+                    }
                   </span>
                 )}
               </div>
@@ -144,7 +154,7 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                   宿泊日程
                 </p>
                 <p className="text-xs font-semibold text-[var(--text-primary)]">
-                  {formatDate(reservation.checkInDate)} 〜{" "}
+                  {formatDate(reservation.checkInDate)} 〜{' '}
                   {formatDate(reservation.checkOutDate)}
                 </p>
               </div>
@@ -182,7 +192,8 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
               </div>
             )}
 
-            {(reservation.adultCount || reservation.childCount) && (
+            {(reservation.adultCount ||
+              reservation.childCount) && (
               <div className="flex gap-4">
                 <div className="mt-1 p-2 bg-indigo-50 rounded-lg text-indigo-500 shrink-0">
                   <Users className="w-5 h-5" />
@@ -215,7 +226,9 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                 {reservation.cancellationDeadline ? (
                   <div>
                     <p className="text-xs font-semibold text-[var(--text-primary)]">
-                      {formatDate(reservation.cancellationDeadline)}
+                      {formatDate(
+                        reservation.cancellationDeadline
+                      )}
                     </p>
                     {canCancel ? (
                       <p className="text-xs text-emerald-600 mt-1 font-medium flex items-center gap-1">
@@ -228,7 +241,9 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
                     )}
                   </div>
                 ) : (
-                  <p className="text-[var(--text-secondary)]">不明</p>
+                  <p className="text-[var(--text-secondary)]">
+                    不明
+                  </p>
                 )}
               </div>
             </div>
@@ -247,7 +262,8 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
               </div>
             </div>
 
-            {(reservation.hotelPostalCode || reservation.hotelAddress) && (
+            {(reservation.hotelPostalCode ||
+              reservation.hotelAddress) && (
               <div className="flex gap-4">
                 <div className="mt-1 p-2 bg-green-50 rounded-lg text-green-500 shrink-0">
                   <MapPin className="w-5 h-5" />
@@ -287,16 +303,23 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
             )}
           </div>
         </div>
-        {(reservation.affiliateUrl || reservation.hotelUrl) && (
+        {(reservation.affiliateUrl ||
+          reservation.hotelUrl) && (
           <div className="w-full pt-2">
             <a
-              href={reservation.affiliateUrl || reservation.hotelUrl || "#"}
+              href={
+                reservation.affiliateUrl ||
+                reservation.hotelUrl ||
+                '#'
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors text-xs font-medium"
             >
               <ExternalLink className="w-4 h-4" />
-              {reservation.affiliateUrl ? "予約ページを開く（アフィリエイト）" : "予約ページを開く"}
+              {reservation.affiliateUrl
+                ? '予約ページを開く（アフィリエイト）'
+                : '予約ページを開く'}
             </a>
           </div>
         )}

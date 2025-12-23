@@ -1,45 +1,52 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 // Re-export reservation utilities
-export * from "./utils/reservation";
+export * from './utils/reservation';
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("ja-JP", {
-    style: "currency",
-    currency: "JPY",
+  return new Intl.NumberFormat('ja-JP', {
+    style: 'currency',
+    currency: 'JPY',
   }).format(price);
 }
 
 export function formatDate(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const d =
+    typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   }).format(d);
 }
 
-export function formatDateShort(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("ja-JP", {
-    month: "short",
-    day: "numeric",
+export function formatDateShort(
+  date: Date | string
+): string {
+  const d =
+    typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat('ja-JP', {
+    month: 'short',
+    day: 'numeric',
   }).format(d);
 }
 
-export function formatDateTime(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+export function formatDateTime(
+  date: Date | string
+): string {
+  const d =
+    typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   }).format(d);
 }
 
@@ -51,19 +58,26 @@ export function calculatePriceDrop(
   percentage: number;
 } {
   const amount = originalPrice - currentPrice;
-  const percentage = originalPrice > 0 ? (amount / originalPrice) * 100 : 0;
+  const percentage =
+    originalPrice > 0 ? (amount / originalPrice) * 100 : 0;
   return { amount, percentage: Math.round(percentage) };
 }
 
 export function getDaysUntil(date: Date | string): number {
-  const target = typeof date === "string" ? new Date(date) : date;
+  const target =
+    typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   const diff = target.getTime() - now.getTime();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-export function isBeforeDeadline(deadline: Date | string | null): boolean {
+export function isBeforeDeadline(
+  deadline: Date | string | null
+): boolean {
   if (!deadline) return true;
-  const d = typeof deadline === "string" ? new Date(deadline) : deadline;
+  const d =
+    typeof deadline === 'string'
+      ? new Date(deadline)
+      : deadline;
   return new Date() < d;
 }

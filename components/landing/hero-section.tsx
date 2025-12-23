@@ -1,7 +1,11 @@
-import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
-import { containerVariants, itemVariants, features } from "./constants";
-import { PriceComparisonCard } from "./price-comparison-card";
+import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
+import {
+  containerVariants,
+  itemVariants,
+  features,
+} from './constants';
+import { PriceComparisonCard } from './price-comparison-card';
 
 export function HeroSection() {
   return (
@@ -18,7 +22,9 @@ export function HeroSection() {
             className="mb-6 inline-flex items-center gap-2 bg-[var(--bg-secondary)] px-3 py-1 rounded-full text-xs font-semibold text-[var(--text-secondary)] border border-[var(--bg-tertiary)]"
           >
             <Sparkles className="w-3.5 h-3.5 text-[var(--accent-secondary)]" />
-            <span>予約後の「損」をゼロにするAIエージェント</span>
+            <span>
+              予約後の「損」をゼロにするAIエージェント
+            </span>
           </motion.div>
 
           <motion.h1
@@ -44,7 +50,10 @@ export function HeroSection() {
             もっと安いプランに簡単に乗り換えられます。
           </motion.p>
 
-          <motion.div variants={itemVariants} className="mb-4 lg:mb-8">
+          <motion.div
+            variants={itemVariants}
+            className="mb-4 lg:mb-8"
+          >
             <a
               href="#waitlist"
               className="inline-flex justify-center items-center bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-[var(--text-on-accent)] lg:px-8 px-4 lg:py-3 py-2 rounded-xl font-bold text-base lg:text-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -60,7 +69,10 @@ export function HeroSection() {
             {features.map((feature, i) => {
               const Icon = feature.icon;
               return (
-                <div key={i} className="flex items-center gap-2">
+                <div
+                  key={i}
+                  className="flex items-center gap-2"
+                >
                   <Icon className="w-4 h-4 text-[var(--accent-primary)]" />
                   {feature.text}
                 </div>
@@ -74,4 +86,3 @@ export function HeroSection() {
     </motion.section>
   );
 }
-

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from '@/components/ui/spinner';
 
 interface GmailSyncButtonProps {
   onClick: () => void;
@@ -39,4 +39,3 @@ export function GmailSyncButton({
     </button>
   );
 }
-

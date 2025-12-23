@@ -240,7 +240,7 @@ curl -X GET https://your-domain.com/api/cron/check-prices \
   "crons": [
     {
       "path": "/api/cron/check-prices",
-      "schedule": "0 */6 * * *"  // この値を変更
+      "schedule": "0 */6 * * *" // この値を変更
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { WaitlistSection } from "./waitlist-section";
+import { WaitlistSection } from './waitlist-section';
 
 export function CTASection() {
   return (
@@ -21,4 +21,3 @@ export function CTASection() {
     </section>
   );
 }
-

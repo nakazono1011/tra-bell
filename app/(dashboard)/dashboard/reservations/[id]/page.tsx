@@ -1,24 +1,26 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect, notFound } from "next/navigation";
-import { db } from "@/db";
-import { reservations, priceHistory } from "@/db/schema";
-import { eq, and, desc } from "drizzle-orm";
-import Link from "next/link";
-import { ReservationDetail } from "@/components/reservations/reservation-detail";
-import { PriceHistoryChart } from "@/components/reservations/price-history-chart";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect, notFound } from 'next/navigation';
+import { db } from '@/db';
+import { reservations, priceHistory } from '@/db/schema';
+import { eq, and, desc } from 'drizzle-orm';
+import Link from 'next/link';
+import { ReservationDetail } from '@/components/reservations/reservation-detail';
+import { PriceHistoryChart } from '@/components/reservations/price-history-chart';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ReservationDetailPage({ params }: PageProps) {
+export default async function ReservationDetailPage({
+  params,
+}: PageProps) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   const { id } = await params;
@@ -28,7 +30,10 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     .select()
     .from(reservations)
     .where(
-      and(eq(reservations.id, id), eq(reservations.userId, session.user.id))
+      and(
+        eq(reservations.id, id),
+        eq(reservations.userId, session.user.id)
+      )
     )
     .limit(1);
 
@@ -53,7 +58,9 @@ export default async function ReservationDetailPage({ params }: PageProps) {
         >
           プラン
         </Link>
-        <span className="text-[var(--text-tertiary)]">/</span>
+        <span className="text-[var(--text-tertiary)]">
+          /
+        </span>
         <span className="text-[var(--text-primary)]">
           {reservationData.hotelName}
         </span>

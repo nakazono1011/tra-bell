@@ -1,4 +1,4 @@
-import type { PriceCheckResult } from "@/types";
+import type { PriceCheckResult } from '@/types';
 
 /**
  * 価格チェック結果を生成する共通ヘルパー
@@ -10,8 +10,11 @@ export function createPriceCheckResult(
 ): PriceCheckResult {
   const priceDropAmount = previousPrice - currentPrice;
   const priceDropPercentage =
-    previousPrice > 0 ? (priceDropAmount / previousPrice) * 100 : 0;
-  const isSignificantDrop = priceDropAmount >= 500 || priceDropPercentage >= 5;
+    previousPrice > 0
+      ? (priceDropAmount / previousPrice) * 100
+      : 0;
+  const isSignificantDrop =
+    priceDropAmount >= 500 || priceDropPercentage >= 5;
 
   return {
     reservationId,
@@ -19,7 +22,8 @@ export function createPriceCheckResult(
     currentPrice,
     priceDropAmount: Math.max(0, priceDropAmount),
     priceDropPercentage: Math.max(0, priceDropPercentage),
-    isSignificantDrop: priceDropAmount > 0 && isSignificantDrop,
+    isSignificantDrop:
+      priceDropAmount > 0 && isSignificantDrop,
     checkedAt: new Date(),
   };
 }
@@ -31,6 +35,9 @@ export function createDefaultPriceResult(
   reservationId: string,
   currentPrice: number
 ): PriceCheckResult {
-  return createPriceCheckResult(reservationId, currentPrice, currentPrice);
+  return createPriceCheckResult(
+    reservationId,
+    currentPrice,
+    currentPrice
+  );
 }
-

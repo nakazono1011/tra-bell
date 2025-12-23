@@ -1,26 +1,30 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
-import { formatPrice, formatDateShort } from "@/lib/utils";
-import type { Reservation } from "@/db/schema";
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import { formatPrice, formatDateShort } from '@/lib/utils';
+import type { Reservation } from '@/db/schema';
 
 interface ReservationCardProps {
   reservation: Reservation;
 }
 
-export function ReservationCard({ reservation }: ReservationCardProps) {
+export function ReservationCard({
+  reservation,
+}: ReservationCardProps) {
   const [imageError, setImageError] = useState(false);
 
   // ホテルサムネイル画像のURL
   // roomThumbnailUrlを優先、なければプレースホルダー画像を使用
   const thumbnailUrl = imageError
-    ? "/images/hotel-placeholder.jpg"
-    : reservation.roomThumbnailUrl || "/images/hotel-placeholder.jpg";
+    ? '/images/hotel-placeholder.jpg'
+    : reservation.roomThumbnailUrl ||
+      '/images/hotel-placeholder.jpg';
 
   // プラン名（planNameを優先、なければroomTypeを使用）
-  const planName = reservation.planName || reservation.roomType || "";
+  const planName =
+    reservation.planName || reservation.roomType || '';
 
   // キャンセル発生日のフォーマット（yyyy/mm/dd形式）
   const cancellationDate = reservation.cancellationDeadline
@@ -30,8 +34,11 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
             ? reservation.cancellationDeadline
             : new Date(reservation.cancellationDeadline);
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(
+          2,
+          '0'
+        );
+        const day = String(date.getDate()).padStart(2, '0');
         return `${year}/${month}/${day}`;
       })()
     : null;
@@ -89,7 +96,7 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
 
             {/* Check-in ~ Check-out Date */}
             <p className="text-xs text-[var(--text-secondary)]">
-              {formatDateShort(reservation.checkInDate)} ~{" "}
+              {formatDateShort(reservation.checkInDate)} ~{' '}
               {formatDateShort(reservation.checkOutDate)}
             </p>
           </div>

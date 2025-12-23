@@ -7,81 +7,97 @@ import {
   uuid,
   index,
   date,
-} from "drizzle-orm/pg-core";
+} from 'drizzle-orm/pg-core';
 
 // ==========================================
 // Better Auth Tables
 // ==========================================
 
-export const users = pgTable("users", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified')
+    .default(false)
+    .notNull(),
+  image: text('image'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-  onboardingCompletedAt: timestamp("onboarding_completed_at"),
+  onboardingCompletedAt: timestamp(
+    'onboarding_completed_at'
+  ),
 });
 
-export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
-  token: text("token").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+export const sessions = pgTable('sessions', {
+  id: text('id').primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  userId: text("user_id")
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  userId: text('user_id')
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const accounts = pgTable(
-  "accounts",
+  'accounts',
   {
-    id: text("id").primaryKey(),
-    accountId: text("account_id").notNull(),
-    providerId: text("provider_id").notNull(),
-    userId: text("user_id")
+    id: text('id').primaryKey(),
+    accountId: text('account_id').notNull(),
+    providerId: text('provider_id').notNull(),
+    userId: text('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    accessToken: text("access_token"),
-    refreshToken: text("refresh_token"),
-    idToken: text("id_token"),
-    accessTokenExpiresAt: timestamp("access_token_expires_at"),
-    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
-    scope: text("scope"),
-    password: text("password"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+      .references(() => users.id, { onDelete: 'cascade' }),
+    accessToken: text('access_token'),
+    refreshToken: text('refresh_token'),
+    idToken: text('id_token'),
+    accessTokenExpiresAt: timestamp(
+      'access_token_expires_at'
+    ),
+    refreshTokenExpiresAt: timestamp(
+      'refresh_token_expires_at'
+    ),
+    scope: text('scope'),
+    password: text('password'),
+    createdAt: timestamp('created_at')
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at')
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)]
+  (table) => [index('account_userId_idx').on(table.userId)]
 );
 
 export const verifications = pgTable(
-  "verifications",
+  'verifications',
   {
-    id: text("id").primaryKey(),
-    identifier: text("identifier").notNull(),
-    value: text("value").notNull(),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    id: text('id').primaryKey(),
+    identifier: text('identifier').notNull(),
+    value: text('value').notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    createdAt: timestamp('created_at')
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at')
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index("verification_identifier_idx").on(table.identifier)]
+  (table) => [
+    index('verification_identifier_idx').on(
+      table.identifier
+    ),
+  ]
 );
 
 // ==========================================
@@ -89,118 +105,144 @@ export const verifications = pgTable(
 // ==========================================
 
 // 予約サイトの種類
-export type ReservationSite = "rakuten" | "jalan";
+export type ReservationSite = 'rakuten' | 'jalan';
 
 // 予約ステータス
-export type ReservationStatus = "active" | "cancelled" | "rebooked";
+export type ReservationStatus =
+  | 'active'
+  | 'cancelled'
+  | 'rebooked';
 
 // 通知タイプ
 export type NotificationType =
-  | "price_drop"
-  | "auto_cancel"
-  | "auto_rebook"
-  | "info";
+  | 'price_drop'
+  | 'auto_cancel'
+  | 'auto_rebook'
+  | 'info';
 
 // 予約情報テーブル
 export const reservations = pgTable(
-  "reservations",
+  'reservations',
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    userId: text("user_id")
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: text('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    hotelName: text("hotel_name").notNull(),
-    checkInDate: date("check_in_date").notNull(),
-    checkOutDate: date("check_out_date").notNull(),
-    originalPrice: integer("original_price").notNull(),
-    currentPrice: integer("current_price").notNull(),
-    reservationSite: text("reservation_site")
+      .references(() => users.id, { onDelete: 'cascade' }),
+    hotelName: text('hotel_name').notNull(),
+    checkInDate: date('check_in_date').notNull(),
+    checkOutDate: date('check_out_date').notNull(),
+    originalPrice: integer('original_price').notNull(),
+    currentPrice: integer('current_price').notNull(),
+    reservationSite: text('reservation_site')
       .$type<ReservationSite>()
       .notNull(),
-    reservationId: text("reservation_id").notNull(),
-    cancellationDeadline: timestamp("cancellation_deadline"),
-    status: text("status")
+    reservationId: text('reservation_id').notNull(),
+    cancellationDeadline: timestamp(
+      'cancellation_deadline'
+    ),
+    status: text('status')
       .$type<ReservationStatus>()
-      .default("active")
+      .default('active')
       .notNull(),
-    hotelUrl: text("hotel_url"),
-    roomType: text("room_type"),
-    adultCount: integer("adult_count"),
-    childCount: integer("child_count"),
-    roomCount: integer("room_count"),
-    planName: text("plan_name"),
-    planUrl: text("plan_url"),
-    hotelId: text("hotel_id"),
-    hotelPostalCode: text("hotel_postal_code"),
-    hotelAddress: text("hotel_address"),
-    hotelTelNo: text("hotel_tel_no"),
-    roomThumbnailUrl: text("room_thumbnail_url"), // 部屋サムネイル画像URL
-    emailMessageId: text("email_message_id"), // Gmailのメッセージ ID
-    affiliateUrl: text("affiliate_url"), // アフィリエイトURL（楽天トラベル空室検索APIから取得）
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
+    hotelUrl: text('hotel_url'),
+    roomType: text('room_type'),
+    adultCount: integer('adult_count'),
+    childCount: integer('child_count'),
+    roomCount: integer('room_count'),
+    planName: text('plan_name'),
+    planUrl: text('plan_url'),
+    hotelId: text('hotel_id'),
+    hotelPostalCode: text('hotel_postal_code'),
+    hotelAddress: text('hotel_address'),
+    hotelTelNo: text('hotel_tel_no'),
+    roomThumbnailUrl: text('room_thumbnail_url'), // 部屋サムネイル画像URL
+    emailMessageId: text('email_message_id'), // Gmailのメッセージ ID
+    affiliateUrl: text('affiliate_url'), // アフィリエイトURL（楽天トラベル空室検索APIから取得）
+    createdAt: timestamp('created_at')
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at')
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
   },
   (table) => [
-    index("reservations_userId_idx").on(table.userId),
-    index("reservations_status_idx").on(table.status),
+    index('reservations_userId_idx').on(table.userId),
+    index('reservations_status_idx').on(table.status),
   ]
 );
 
 // 価格履歴テーブル
 export const priceHistory = pgTable(
-  "price_history",
+  'price_history',
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    reservationId: uuid("reservation_id")
+    id: uuid('id').defaultRandom().primaryKey(),
+    reservationId: uuid('reservation_id')
       .notNull()
-      .references(() => reservations.id, { onDelete: "cascade" }),
-    price: integer("price").notNull(),
-    checkedAt: timestamp("checked_at").defaultNow().notNull(),
-    sourceUrl: text("source_url"),
+      .references(() => reservations.id, {
+        onDelete: 'cascade',
+      }),
+    price: integer('price').notNull(),
+    checkedAt: timestamp('checked_at')
+      .defaultNow()
+      .notNull(),
+    sourceUrl: text('source_url'),
   },
-  (table) => [index("price_history_reservationId_idx").on(table.reservationId)]
+  (table) => [
+    index('price_history_reservationId_idx').on(
+      table.reservationId
+    ),
+  ]
 );
 
 // 通知テーブル
 export const notification = pgTable(
-  "notification",
+  'notification',
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    userId: text("user_id")
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: text('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    reservationId: uuid("reservation_id").references(() => reservations.id, {
-      onDelete: "set null",
-    }),
-    type: text("type").$type<NotificationType>().notNull(),
-    title: text("title").notNull(),
-    message: text("message").notNull(),
-    isRead: boolean("is_read").default(false).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+      .references(() => users.id, { onDelete: 'cascade' }),
+    reservationId: uuid('reservation_id').references(
+      () => reservations.id,
+      {
+        onDelete: 'set null',
+      }
+    ),
+    type: text('type').$type<NotificationType>().notNull(),
+    title: text('title').notNull(),
+    message: text('message').notNull(),
+    isRead: boolean('is_read').default(false).notNull(),
+    createdAt: timestamp('created_at')
+      .defaultNow()
+      .notNull(),
   },
   (table) => [
-    index("notification_userId_idx").on(table.userId),
-    index("notification_isRead_idx").on(table.isRead),
+    index('notification_userId_idx').on(table.userId),
+    index('notification_isRead_idx').on(table.isRead),
   ]
 );
 
 // ユーザー設定テーブル
-export const userSettings = pgTable("user_settings", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id")
+export const userSettings = pgTable('user_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id')
     .notNull()
     .unique()
-    .references(() => users.id, { onDelete: "cascade" }),
-  priceDropThreshold: integer("price_drop_threshold").default(500), // 値下がり通知閾値（円）
-  priceDropPercentage: integer("price_drop_percentage").default(5), // 値下がり通知閾値（%）
-  autoRebookEnabled: boolean("auto_rebook_enabled").default(false), // 自動再予約有効フラグ
-  gmailConnected: boolean("gmail_connected").default(false), // Gmail連携済みフラグ
-  gmailLastSyncAt: timestamp("gmail_last_sync_at"), // Gmail最終同期日時
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
+    .references(() => users.id, { onDelete: 'cascade' }),
+  priceDropThreshold: integer(
+    'price_drop_threshold'
+  ).default(500), // 値下がり通知閾値（円）
+  priceDropPercentage: integer(
+    'price_drop_percentage'
+  ).default(5), // 値下がり通知閾値（%）
+  autoRebookEnabled: boolean('auto_rebook_enabled').default(
+    false
+  ), // 自動再予約有効フラグ
+  gmailConnected: boolean('gmail_connected').default(false), // Gmail連携済みフラグ
+  gmailLastSyncAt: timestamp('gmail_last_sync_at'), // Gmail最終同期日時
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
@@ -220,16 +262,20 @@ export type Account = typeof accounts.$inferSelect;
 export type NewAccount = typeof accounts.$inferInsert;
 
 export type Reservation = typeof reservations.$inferSelect;
-export type NewReservation = typeof reservations.$inferInsert;
+export type NewReservation =
+  typeof reservations.$inferInsert;
 
 export type PriceHistory = typeof priceHistory.$inferSelect;
-export type NewPriceHistory = typeof priceHistory.$inferInsert;
+export type NewPriceHistory =
+  typeof priceHistory.$inferInsert;
 
 export type Notification = typeof notification.$inferSelect;
-export type NewNotification = typeof notification.$inferInsert;
+export type NewNotification =
+  typeof notification.$inferInsert;
 
 export type UserSettings = typeof userSettings.$inferSelect;
-export type NewUserSettings = typeof userSettings.$inferInsert;
+export type NewUserSettings =
+  typeof userSettings.$inferInsert;
 
 // ==========================================
 // Waitlist Tables
@@ -237,29 +283,33 @@ export type NewUserSettings = typeof userSettings.$inferInsert;
 
 // ウェイトリストテーブル
 export const waitlist = pgTable(
-  "waitlist",
+  'waitlist',
   {
-    id: uuid("id").defaultRandom().primaryKey(),
-    email: text("email").notNull().unique(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    id: uuid('id').defaultRandom().primaryKey(),
+    email: text('email').notNull().unique(),
+    createdAt: timestamp('created_at')
+      .defaultNow()
+      .notNull(),
   },
-  (table) => [index("waitlist_email_idx").on(table.email)]
+  (table) => [index('waitlist_email_idx').on(table.email)]
 );
 
 // ウェイトリストアンケートテーブル
-export const waitlistSurvey = pgTable("waitlist_survey", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  waitlistId: uuid("waitlist_id")
+export const waitlistSurvey = pgTable('waitlist_survey', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  waitlistId: uuid('waitlist_id')
     .notNull()
-    .references(() => waitlist.id, { onDelete: "cascade" }),
-  ota: text("ota").notNull(), // 普段利用するOTA
-  osOrNotification: text("os_or_notification").notNull(), // OS/通知希望
-  bookingTiming: text("booking_timing").notNull(), // 予約タイミング
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+    .references(() => waitlist.id, { onDelete: 'cascade' }),
+  ota: text('ota').notNull(), // 普段利用するOTA
+  osOrNotification: text('os_or_notification').notNull(), // OS/通知希望
+  bookingTiming: text('booking_timing').notNull(), // 予約タイミング
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 export type Waitlist = typeof waitlist.$inferSelect;
 export type NewWaitlist = typeof waitlist.$inferInsert;
 
-export type WaitlistSurvey = typeof waitlistSurvey.$inferSelect;
-export type NewWaitlistSurvey = typeof waitlistSurvey.$inferInsert;
+export type WaitlistSurvey =
+  typeof waitlistSurvey.$inferSelect;
+export type NewWaitlistSurvey =
+  typeof waitlistSurvey.$inferInsert;

@@ -1,9 +1,9 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { db } from '@/db';
+import { users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 export default async function OnboardingLayout({
   children,
@@ -15,7 +15,7 @@ export default async function OnboardingLayout({
   });
 
   if (!session) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   // すでにオンボーディング完了している場合はダッシュボードへ
@@ -24,7 +24,7 @@ export default async function OnboardingLayout({
   });
 
   if (dbUser?.onboardingCompletedAt) {
-    redirect("/dashboard");
+    redirect('/dashboard');
   }
 
   return <>{children}</>;

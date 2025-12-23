@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
-import { BedDouble, Bell, Settings } from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { BedDouble, Bell, Settings } from 'lucide-react';
 
 const navItems = [
   {
-    name: "プラン",
-    href: "/dashboard",
+    name: 'プラン',
+    href: '/dashboard',
     icon: <BedDouble className="w-5 h-5" />,
   },
   {
-    name: "通知",
-    href: "/dashboard/notifications",
+    name: '通知',
+    href: '/dashboard/notifications',
     icon: <Bell className="w-5 h-5" />,
   },
   {
-    name: "設定",
-    href: "/dashboard/settings",
+    name: '設定',
+    href: '/dashboard/settings',
     icon: <Settings className="w-5 h-5" />,
   },
 ];
@@ -44,7 +44,7 @@ export function FooterNav() {
                     className="absolute inset-0 bg-[var(--accent-primary)]/10 rounded-lg"
                     initial={false}
                     transition={{
-                      type: "spring",
+                      type: 'spring',
                       stiffness: 500,
                       damping: 30,
                     }}
@@ -55,14 +55,14 @@ export function FooterNav() {
                     scale: isActive ? 1.1 : 1,
                   }}
                   transition={{
-                    type: "spring",
+                    type: 'spring',
                     stiffness: 500,
                     damping: 30,
                   }}
                   className={`relative z-10 ${
                     isActive
-                      ? "text-[var(--accent-primary)]"
-                      : "text-[var(--text-secondary)]"
+                      ? 'text-[var(--accent-primary)]'
+                      : 'text-[var(--text-secondary)]'
                   }`}
                 >
                   {item.icon}
@@ -70,8 +70,8 @@ export function FooterNav() {
                 <motion.span
                   className={`relative z-10 text-xs ${
                     isActive
-                      ? "text-[var(--accent-primary)] font-semibold"
-                      : "text-[var(--text-secondary)]"
+                      ? 'text-[var(--accent-primary)] font-semibold'
+                      : 'text-[var(--text-secondary)]'
                   }`}
                 >
                   {item.name}

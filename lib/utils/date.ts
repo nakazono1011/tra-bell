@@ -13,4 +13,3 @@ export function normalizeDate(date: Date): Date {
 export function getTodayNormalized(): Date {
   return normalizeDate(new Date());
 }
-

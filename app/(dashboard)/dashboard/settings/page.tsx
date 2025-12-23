@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { userSettings, accounts } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
-import { SettingsForm } from "@/components/settings/settings-form";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { db } from '@/db';
+import { userSettings, accounts } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { SettingsForm } from '@/components/settings/settings-form';
 
 export default async function SettingsPage() {
   const session = await auth.api.getSession({
@@ -12,7 +12,7 @@ export default async function SettingsPage() {
   });
 
   if (!session) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   // ユーザー設定を取得
@@ -29,19 +29,22 @@ export default async function SettingsPage() {
     .where(
       and(
         eq(accounts.userId, session.user.id),
-        eq(accounts.providerId, "google")
+        eq(accounts.providerId, 'google')
       )
     )
     .limit(1);
 
   const hasGmailScope =
-    googleAccount?.scope?.includes("gmail.readonly") || false;
+    googleAccount?.scope?.includes('gmail.readonly') ||
+    false;
 
   return (
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">設定</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          設定
+        </h1>
         <p className="text-[var(--text-secondary)] mt-1">
           価格監視と自動処理の設定を管理
         </p>
@@ -50,11 +53,16 @@ export default async function SettingsPage() {
       {/* Settings Form */}
       <SettingsForm
         initialSettings={{
-          priceDropThreshold: settings?.priceDropThreshold ?? 500,
-          priceDropPercentage: settings?.priceDropPercentage ?? 5,
+          priceDropThreshold:
+            settings?.priceDropThreshold ?? 500,
+          priceDropPercentage:
+            settings?.priceDropPercentage ?? 5,
           gmailConnected: settings?.gmailConnected ?? false,
         }}
-        hasGmailScope={hasGmailScope || (settings?.gmailConnected ?? false)}
+        hasGmailScope={
+          hasGmailScope ||
+          (settings?.gmailConnected ?? false)
+        }
       />
     </div>
   );

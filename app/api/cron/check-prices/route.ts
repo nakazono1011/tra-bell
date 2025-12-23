@@ -1,17 +1,19 @@
-import { NextResponse } from "next/server";
-import { checkAllActivePrices } from "@/lib/price-checker";
+import { NextResponse } from 'next/server';
+import { checkAllActivePrices } from '@/lib/price-checker';
 
 export async function GET(request: Request) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const authHeader = request.headers.get('authorization');
+    if (
+      authHeader !== `Bearer ${process.env.CRON_SECRET}`
+    ) {
       return NextResponse.json(
-        { success: false, error: "Unauthorized" },
+        { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    console.log("Starting price check cron job...");
+    console.log('Starting price check cron job...');
     const startTime = Date.now();
 
     // 全てのアクティブな予約の価格をチェック
@@ -31,11 +33,14 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Price check cron error:", error);
+    console.error('Price check cron error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Unknown error',
       },
       { status: 500 }
     );

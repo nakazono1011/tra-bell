@@ -1,4 +1,4 @@
-import { SupportedSitesSection } from "./supported-sites-section";
+import { SupportedSitesSection } from './supported-sites-section';
 
 export function FeaturesSection() {
   return (
@@ -15,4 +15,3 @@ export function FeaturesSection() {
     </section>
   );
 }
-

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 interface EmptyStateProps {
   title: string;
@@ -23,7 +23,9 @@ export function EmptyState({
           <div className="relative w-48 h-48 mx-auto">
             <div className="absolute inset-0 bg-orange-50 rounded-full blur-3xl" />
             <div className="relative flex items-center justify-center w-full h-full">
-              <div className="flex flex-col items-center gap-4">{icon}</div>
+              <div className="flex flex-col items-center gap-4">
+                {icon}
+              </div>
             </div>
           </div>
         </div>
@@ -41,11 +43,15 @@ export function EmptyState({
 
       {/* Actions */}
       {actions && (
-        <div className="flex flex-col gap-4 w-full max-w-md">{actions}</div>
+        <div className="flex flex-col gap-4 w-full max-w-md">
+          {actions}
+        </div>
       )}
 
       {/* Footer */}
-      {footer && <div className="mt-4 w-full max-w-md">{footer}</div>}
+      {footer && (
+        <div className="mt-4 w-full max-w-md">{footer}</div>
+      )}
     </div>
   );
 }

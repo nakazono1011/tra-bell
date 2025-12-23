@@ -1,10 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { completeOnboarding } from "@/app/actions/onboarding";
-import { ArrowRight, Check, Mail, Bell, Hotel } from "lucide-react";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { completeOnboarding } from '@/app/actions/onboarding';
+import {
+  ArrowRight,
+  Check,
+  Mail,
+  Bell,
+  Hotel,
+} from 'lucide-react';
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1);
@@ -25,9 +31,9 @@ export default function OnboardingPage() {
     try {
       await completeOnboarding();
     } catch (err) {
-      console.error("Onboarding failed:", err);
+      console.error('Onboarding failed:', err);
       setError(
-        "オンボーディングの完了に失敗しました。もう一度お試しください。"
+        'オンボーディングの完了に失敗しました。もう一度お試しください。'
       );
       setIsLoading(false);
     }
@@ -42,8 +48,8 @@ export default function OnboardingPage() {
   const steps = [
     {
       id: 1,
-      title: "Tra-bellへようこそ",
-      description: "旅行の予約後も、もっとお得に。",
+      title: 'Tra-bellへようこそ',
+      description: '旅行の予約後も、もっとお得に。',
       content: (
         <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
           <div className="relative w-48 h-48 sm:w-64 sm:h-64 bg-orange-50 rounded-full flex items-center justify-center p-6 sm:p-8 mb-2 sm:mb-4 shrink-0">
@@ -72,8 +78,8 @@ export default function OnboardingPage() {
     },
     {
       id: 2,
-      title: "Gmailと連携",
-      description: "予約確認メールから自動で登録",
+      title: 'Gmailと連携',
+      description: '予約確認メールから自動で登録',
       content: (
         <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
           <div className="relative w-48 h-48 sm:w-64 sm:h-64 bg-blue-50 rounded-full flex items-center justify-center p-6 sm:p-8 mb-2 sm:mb-4 shrink-0">
@@ -91,8 +97,8 @@ export default function OnboardingPage() {
     },
     {
       id: 3,
-      title: "値下がりを検知",
-      description: "キャンセル期限まで監視を継続",
+      title: '値下がりを検知',
+      description: 'キャンセル期限まで監視を継続',
       content: (
         <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
           <div className="relative w-48 h-48 sm:w-64 sm:h-64 bg-orange-50 rounded-full flex items-center justify-center p-6 sm:p-8 mb-2 sm:mb-4 shrink-0">
@@ -120,20 +126,21 @@ export default function OnboardingPage() {
       <div className="w-full max-w-[360px] flex flex-col items-center h-full py-4 sm:py-6">
         {/* Progress Dots */}
         <div className="flex space-x-2 mb-4 sm:mb-6 shrink-0">
-          {Array.from({ length: totalSteps }, (_, i) => i + 1).map(
-            (stepNumber) => (
-              <div
-                key={stepNumber}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  stepNumber === step
-                    ? "w-8 bg-[var(--accent-primary)]"
-                    : stepNumber < step
-                    ? "w-2 bg-orange-200"
-                    : "w-2 bg-[var(--bg-tertiary)]"
-                }`}
-              />
-            )
-          )}
+          {Array.from(
+            { length: totalSteps },
+            (_, i) => i + 1
+          ).map((stepNumber) => (
+            <div
+              key={stepNumber}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                stepNumber === step
+                  ? 'w-8 bg-[var(--accent-primary)]'
+                  : stepNumber < step
+                    ? 'w-2 bg-orange-200'
+                    : 'w-2 bg-[var(--bg-tertiary)]'
+              }`}
+            />
+          ))}
         </div>
 
         {/* Content Area */}
@@ -181,7 +188,7 @@ export default function OnboardingPage() {
               <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <span className="flex items-center gap-2">
-                {step === totalSteps ? "始める" : "次へ"}
+                {step === totalSteps ? '始める' : '次へ'}
                 {step === totalSteps ? (
                   <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                 ) : (

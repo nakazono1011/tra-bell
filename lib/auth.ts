@@ -1,11 +1,11 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db";
-import * as schema from "@/db/schema"; // schemaを追加インポート
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { db } from '@/db';
+import * as schema from '@/db/schema'; // schemaを追加インポート
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: 'pg',
     usePlural: true,
     schema: {
       ...schema,
@@ -14,7 +14,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       onboardingCompletedAt: {
-        type: "date",
+        type: 'date',
         required: false,
       },
     },
@@ -25,13 +25,14 @@ export const auth = betterAuth({
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientSecret: process.env
+        .GOOGLE_CLIENT_SECRET as string,
       // Gmail APIのスコープを追加
       scope: [
-        "openid",
-        "email",
-        "profile",
-        "https://www.googleapis.com/auth/gmail.readonly",
+        'openid',
+        'email',
+        'profile',
+        'https://www.googleapis.com/auth/gmail.readonly',
       ],
     },
   },
@@ -43,7 +44,9 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes
     },
   },
-  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;

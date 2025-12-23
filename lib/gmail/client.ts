@@ -1,8 +1,8 @@
-import { google } from "googleapis";
-import { db } from "@/db";
-import { accounts } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
-import type { GmailMessage } from "@/types";
+import { google } from 'googleapis';
+import { db } from '@/db';
+import { accounts } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
+import type { GmailMessage } from '@/types';
 
 export class GmailClient {
   private accessToken: string;
@@ -22,12 +22,17 @@ export class GmailClient {
   /**
    * ユーザーのGmailクライアントを作成
    */
-  static async fromUserId(userId: string): Promise<GmailClient | null> {
+  static async fromUserId(
+    userId: string
+  ): Promise<GmailClient | null> {
     const [userAccount] = await db
       .select()
       .from(accounts)
       .where(
-        and(eq(accounts.userId, userId), eq(accounts.providerId, "google"))
+        and(
+          eq(accounts.userId, userId),
+          eq(accounts.providerId, 'google')
+        )
       )
       .limit(1);
 
@@ -45,7 +50,10 @@ export class GmailClient {
   /**
    * トークンをデータベースに保存
    */
-  private async saveTokens(accessToken: string, refreshToken: string | null) {
+  private async saveTokens(
+    accessToken: string,
+    refreshToken: string | null
+  ) {
     await db
       .update(accounts)
       .set({
@@ -54,7 +62,10 @@ export class GmailClient {
         updatedAt: new Date(),
       })
       .where(
-        and(eq(accounts.userId, this.userId), eq(accounts.providerId, "google"))
+        and(
+          eq(accounts.userId, this.userId),
+          eq(accounts.providerId, 'google')
+        )
       );
 
     // インスタンスのトークンも更新
@@ -72,7 +83,10 @@ export class GmailClient {
       .select()
       .from(accounts)
       .where(
-        and(eq(accounts.userId, this.userId), eq(accounts.providerId, "google"))
+        and(
+          eq(accounts.userId, this.userId),
+          eq(accounts.providerId, 'google')
+        )
       )
       .limit(1);
 
@@ -102,7 +116,7 @@ export class GmailClient {
     });
 
     // トークンがリフレッシュされたときにデータベースに保存
-    oauth2Client.on("tokens", async (tokens) => {
+    oauth2Client.on('tokens', async (tokens) => {
       if (tokens.access_token) {
         await this.saveTokens(
           tokens.access_token,
@@ -119,7 +133,7 @@ export class GmailClient {
    */
   private async getGmailApi() {
     return google.gmail({
-      version: "v1",
+      version: 'v1',
       auth: await this.getOAuth2Client(),
     });
   }
@@ -136,14 +150,17 @@ export class GmailClient {
     for (const message of messageIds) {
       if (!message.id) continue;
 
-      const messageResponse = await gmail.users.messages.get({
-        userId: "me",
-        id: message.id,
-        format: "full",
-      });
+      const messageResponse =
+        await gmail.users.messages.get({
+          userId: 'me',
+          id: message.id,
+          format: 'full',
+        });
 
       if (messageResponse.data) {
-        fullMessages.push(messageResponse.data as unknown as GmailMessage);
+        fullMessages.push(
+          messageResponse.data as unknown as GmailMessage
+        );
       }
     }
 
@@ -167,12 +184,15 @@ export class GmailClient {
 
     // 日付フィルター
     if (afterDate) {
-      const dateStr = afterDate.toISOString().split("T")[0].replace(/-/g, "/");
+      const dateStr = afterDate
+        .toISOString()
+        .split('T')[0]
+        .replace(/-/g, '/');
       queries.push(`after:${dateStr}`);
     }
 
-    const searchQuery = `(${queries.slice(0, 2).join(" OR ")})${
-      queries.length > 2 ? ` ${queries[2]}` : ""
+    const searchQuery = `(${queries.slice(0, 2).join(' OR ')})${
+      queries.length > 2 ? ` ${queries[2]}` : ''
     }`;
 
     try {
@@ -180,22 +200,35 @@ export class GmailClient {
 
       // メッセージ一覧を取得
       const listResponse = await gmail.users.messages.list({
-        userId: "me",
+        userId: 'me',
         q: searchQuery,
         maxResults,
       });
 
       const messages = listResponse.data.messages || [];
-      return await this.fetchMessageDetails(gmail, messages);
+      return await this.fetchMessageDetails(
+        gmail,
+        messages
+      );
     } catch (error) {
       // 認証エラーの場合、トークンをリフレッシュして再試行
       const isAuthError =
-        (error as { code?: number; response?: { status?: number } })?.code ===
-          401 ||
-        (error as { code?: number; response?: { status?: number } })?.response
-          ?.status === 401;
+        (
+          error as {
+            code?: number;
+            response?: { status?: number };
+          }
+        )?.code === 401 ||
+        (
+          error as {
+            code?: number;
+            response?: { status?: number };
+          }
+        )?.response?.status === 401;
       if (isAuthError) {
-        console.log("Authentication error, refreshing tokens and retrying...");
+        console.log(
+          'Authentication error, refreshing tokens and retrying...'
+        );
 
         // データベースから最新のトークンを取得
         await this.refreshTokensFromDb();
@@ -204,7 +237,8 @@ export class GmailClient {
         try {
           const oauth2Client = await this.getOAuth2Client();
           // トークンを強制的にリフレッシュ
-          const { credentials } = await oauth2Client.refreshAccessToken();
+          const { credentials } =
+            await oauth2Client.refreshAccessToken();
 
           if (credentials.access_token) {
             await this.saveTokens(
@@ -215,27 +249,37 @@ export class GmailClient {
 
           // Gmail APIを再取得して再試行
           const gmail = google.gmail({
-            version: "v1",
+            version: 'v1',
             auth: oauth2Client,
           });
 
-          const listResponse = await gmail.users.messages.list({
-            userId: "me",
-            q: searchQuery,
-            maxResults,
-          });
+          const listResponse =
+            await gmail.users.messages.list({
+              userId: 'me',
+              q: searchQuery,
+              maxResults,
+            });
 
           const messages = listResponse.data.messages || [];
-          return await this.fetchMessageDetails(gmail, messages);
+          return await this.fetchMessageDetails(
+            gmail,
+            messages
+          );
         } catch (retryError) {
-          console.error("Error retrying Gmail API request:", retryError);
+          console.error(
+            'Error retrying Gmail API request:',
+            retryError
+          );
           throw new Error(
-            "Gmail認証に失敗しました。再度Gmail連携を行ってください。"
+            'Gmail認証に失敗しました。再度Gmail連携を行ってください。'
           );
         }
       }
 
-      console.error("Error fetching Gmail messages:", error);
+      console.error(
+        'Error fetching Gmail messages:',
+        error
+      );
       throw error;
     }
   }
@@ -243,30 +287,40 @@ export class GmailClient {
   /**
    * メッセージのテキスト本文を取得
    */
-  static extractTextFromMessage(message: GmailMessage): string {
+  static extractTextFromMessage(
+    message: GmailMessage
+  ): string {
     const { payload } = message;
 
     // プレーンテキストを探す
-    const extractText = (parts: typeof payload.parts): string => {
-      if (!parts) return "";
+    const extractText = (
+      parts: typeof payload.parts
+    ): string => {
+      if (!parts) return '';
 
       for (const part of parts) {
         // text/plainパートを探す
-        if (part.mimeType === "text/plain") {
+        if (part.mimeType === 'text/plain') {
           if (part.body?.data) {
             try {
-              return Buffer.from(part.body.data, "base64").toString("utf-8");
+              return Buffer.from(
+                part.body.data,
+                'base64'
+              ).toString('utf-8');
             } catch (error) {
-              console.error("Error decoding text body:", error);
+              console.error(
+                'Error decoding text body:',
+                error
+              );
               continue;
             }
           }
           // attachmentIdがある場合はスキップ（後で処理する必要がある）
           if (part.body?.attachmentId) {
             console.warn(
-              "Text body is too large, attachmentId found:",
+              'Text body is too large, attachmentId found:',
               part.body.attachmentId,
-              "Message ID:",
+              'Message ID:',
               message.id
             );
             continue;
@@ -278,7 +332,7 @@ export class GmailClient {
           if (text) return text;
         }
       }
-      return "";
+      return '';
     };
 
     // パーツがある場合
@@ -289,42 +343,58 @@ export class GmailClient {
     // 直接ボディにデータがある場合（シンプルなメッセージ）
     if (payload.body?.data) {
       try {
-        return Buffer.from(payload.body.data, "base64").toString("utf-8");
+        return Buffer.from(
+          payload.body.data,
+          'base64'
+        ).toString('utf-8');
       } catch (error) {
-        console.error("Error decoding payload body:", error);
-        return "";
+        console.error(
+          'Error decoding payload body:',
+          error
+        );
+        return '';
       }
     }
 
-    return "";
+    return '';
   }
 
   /**
    * メッセージのHTMLを取得
    */
-  static extractHtmlFromMessage(message: GmailMessage): string {
+  static extractHtmlFromMessage(
+    message: GmailMessage
+  ): string {
     const { payload } = message;
 
-    const extractHtml = (parts: typeof payload.parts): string => {
-      if (!parts) return "";
+    const extractHtml = (
+      parts: typeof payload.parts
+    ): string => {
+      if (!parts) return '';
 
       for (const part of parts) {
         // text/htmlパートを探す
-        if (part.mimeType === "text/html") {
+        if (part.mimeType === 'text/html') {
           if (part.body?.data) {
             try {
-              return Buffer.from(part.body.data, "base64").toString("utf-8");
+              return Buffer.from(
+                part.body.data,
+                'base64'
+              ).toString('utf-8');
             } catch (error) {
-              console.error("Error decoding HTML body:", error);
+              console.error(
+                'Error decoding HTML body:',
+                error
+              );
               continue;
             }
           }
           // attachmentIdがある場合はスキップ（後で処理する必要がある）
           if (part.body?.attachmentId) {
             console.warn(
-              "HTML body is too large, attachmentId found:",
+              'HTML body is too large, attachmentId found:',
               part.body.attachmentId,
-              "Message ID:",
+              'Message ID:',
               message.id
             );
             continue;
@@ -336,7 +406,7 @@ export class GmailClient {
           if (html) return html;
         }
       }
-      return "";
+      return '';
     };
 
     // パーツがある場合
@@ -347,20 +417,29 @@ export class GmailClient {
     // 直接ボディにデータがある場合（シンプルなメッセージ）
     if (payload.body?.data) {
       try {
-        return Buffer.from(payload.body.data, "base64").toString("utf-8");
+        return Buffer.from(
+          payload.body.data,
+          'base64'
+        ).toString('utf-8');
       } catch (error) {
-        console.error("Error decoding payload HTML body:", error);
-        return "";
+        console.error(
+          'Error decoding payload HTML body:',
+          error
+        );
+        return '';
       }
     }
 
-    return "";
+    return '';
   }
 
   /**
    * メッセージのヘッダーから値を取得
    */
-  static getHeader(message: GmailMessage, name: string): string | undefined {
+  static getHeader(
+    message: GmailMessage,
+    name: string
+  ): string | undefined {
     const header = message.payload.headers.find(
       (h) => h.name.toLowerCase() === name.toLowerCase()
     );

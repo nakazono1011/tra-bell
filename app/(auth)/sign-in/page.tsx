@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { signIn } from "@/lib/auth-client";
-import Image from "next/image";
-import { Clock, MessageCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { signIn } from '@/lib/auth-client';
+import Image from 'next/image';
+import { Clock, MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,12 +15,14 @@ export default function SignInPage() {
       setIsLoading(true);
       setError(null);
       await signIn.social({
-        provider: "google",
-        callbackURL: "/dashboard",
+        provider: 'google',
+        callbackURL: '/dashboard',
       });
     } catch (err) {
-      setError("ログインに失敗しました。もう一度お試しください。");
-      console.error("Sign in error:", err);
+      setError(
+        'ログインに失敗しました。もう一度お試しください。'
+      );
+      console.error('Sign in error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +47,9 @@ export default function SignInPage() {
           <h1 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight">
             そのホテル予約、
             <br />
-            <span className="text-[var(--accent-primary)]">もっと安く</span>
+            <span className="text-[var(--accent-primary)]">
+              もっと安く
+            </span>
             なるかもしれません。
           </h1>
           <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">

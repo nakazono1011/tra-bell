@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { reservations, userSettings } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
-import { ReservationList } from "@/components/reservations/reservation-list";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { db } from '@/db';
+import { reservations, userSettings } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
+import { ReservationList } from '@/components/reservations/reservation-list';
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   });
 
   if (!session) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   // ユーザー設定を取得

@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { notification } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
-import { NotificationList } from "@/components/notifications/notification-list";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { db } from '@/db';
+import { notification } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
+import { NotificationList } from '@/components/notifications/notification-list';
 
 export default async function NotificationsPage() {
   const session = await auth.api.getSession({
@@ -12,7 +12,7 @@ export default async function NotificationsPage() {
   });
 
   if (!session) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   // ユーザーの通知を取得
@@ -26,7 +26,9 @@ export default async function NotificationsPage() {
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">通知</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          通知
+        </h1>
         <p className="text-[var(--text-secondary)] mt-1">
           価格変動と自動処理の通知を確認
         </p>
