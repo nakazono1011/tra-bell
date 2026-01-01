@@ -43,6 +43,17 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 GOOGLE_GENERATIVE_AI_API_KEY=your-google-generative-ai-api-key
 
 # ==========================================
+# R2 Storage設定（スクリーンショット保存用）
+# ==========================================
+# Cloudflare Dashboard > R2 > Manage R2 API Tokens で取得
+R2_ACCOUNT_ID=your-cloudflare-account-id
+R2_ACCESS_KEY_ID=your-r2-access-key-id
+R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
+R2_BUCKET_NAME=tra-bell-screenshots
+# カスタムドメイン（設定した場合）または R2.dev URL
+R2_PUBLIC_URL=https://blob.tra-bell.com
+
+# ==========================================
 # アプリケーションURL
 # ==========================================
 # クライアントサイドで使用されるアプリケーションURL

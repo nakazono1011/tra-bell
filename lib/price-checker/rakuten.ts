@@ -4,6 +4,7 @@ import {
   createPriceCheckResult,
   createDefaultPriceResult,
 } from './utils';
+import { uploadScreenshot } from '@/lib/storage/r2';
 
 /**
  * 価格テキストから数値を抽出（カンマや記号を除去）
@@ -117,6 +118,16 @@ export async function checkRakutenPrice(
         `[checkRakutenPrice] 新しいページを作成中 - reservationId: ${reservationId}`
       );
       const page = await browser.newPage();
+
+      // フォント読み込み待機を回避するため、フォントリソースをブロック
+      // これによりスクリーンショット時のタイムアウトを防ぐ
+      await page.route(
+        '**/*.{woff,woff2,ttf,otf,eot}',
+        (route) => {
+          route.abort();
+        }
+      );
+
       console.log(
         `[checkRakutenPrice] ページ作成成功 - reservationId: ${reservationId}`
       );
@@ -160,6 +171,29 @@ export async function checkRakutenPrice(
         console.log(
           `[checkRakutenPrice] ページスクロール完了 - reservationId: ${reservationId}`
         );
+
+        // デバッグ用スクリーンショット撮影
+        try {
+          console.log(
+            `[checkRakutenPrice] スクリーンショット撮影中 - reservationId: ${reservationId}`
+          );
+          const screenshotData = await page.screenshot({
+            fullPage: true,
+            timeout: 0,
+          });
+          const screenshot = Buffer.from(screenshotData);
+
+          await uploadScreenshot(
+            reservationId,
+            'scroll_complete',
+            screenshot
+          );
+        } catch (screenshotError) {
+          console.error(
+            `[checkRakutenPrice] スクリーンショット保存失敗 - reservationId: ${reservationId}`,
+            screenshotError
+          );
+        }
       } catch (scrollError) {
         console.error(
           `[checkRakutenPrice] ページスクロール失敗 - reservationId: ${reservationId}`,
